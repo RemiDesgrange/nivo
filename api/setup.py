@@ -9,6 +9,6 @@ setup(name='Distutils',
       author='Remi Desgrange',
       author_email='remi+nivo@desgran.ge',
       url='',
-      packages=find_packages()
+      packages=find_packages(),
       install_requires=REQUIREMENTS
-     )
+    )
