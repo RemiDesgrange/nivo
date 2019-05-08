@@ -1,0 +1,19 @@
+version: '3.7'
+services:
+  app:
+    build: .
+    ports:
+      - 8080:8080
+    environment:
+      DB_URL: postgresql://nivo:nivo@db/nivo
+      ENV: PROD
+      LOG_LEVEL: WARNING
+    depends_on:
+      - db
+  db:
+    image: mdillon/postgis:11
+    environment:
+      POSTGRES_PASSWORD: nivo
+      POSTGRES_USER: nivo
+      POSTGRES_DB: nivo
+

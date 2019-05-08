@@ -17,5 +17,7 @@ setup(name='nivo_api',
             import_all_nivo_data=nivo_api.cli:import_all_nivo_data
             import_last_bra=nivo_api.cli:import_last_bra
             import_all_bra=nivo_api.cli:import_all_bra
+            import_nivo_sensor_station=niv_api.cli:import_nivo_sensor_station
+            init_db=nivo_api.cli:init_db
         ''',
       )

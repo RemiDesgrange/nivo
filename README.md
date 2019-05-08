@@ -1,5 +1,7 @@
 # nivo
 
+*!! WIP !!*
+
 A portal to share and display meteofrance opendata.
 
 ## Idea
@@ -23,6 +25,8 @@ openapi, powered by python(3). Tested on python3.7. Normally should run on pytho
 * `cd api`
 * make a virtualenv (`pew`, `mkvirtualenv` or `virtualenv .venv && .venv/bin/activate`
 * run `python app.py` it listen on http://localhost:5000
+* you can `pip install -e .` if you want to use cli directly.
+* To init the database, you can use the `init_db` cmd that comes if you run `pip install -e .`
 
 # Frontend
 

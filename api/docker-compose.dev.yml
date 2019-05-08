@@ -1,0 +1,10 @@
+version: '3.7'
+services:
+  app:
+    environment:
+      ENV: DEV
+  db:
+    ports:
+      - 5432:5432
+
+
