@@ -1,1 +1,1 @@
-from .routes import nivo_meteo
+from .routes import nivo_meteo, NivoSensorStation

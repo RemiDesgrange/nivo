@@ -16,3 +16,4 @@ class Config(dict):
                                            'https://donneespubliques.meteofrance.fr/donnees_libres/Txt/Nivo')
     METEO_FRANCE_LAST_NIVO_JS_URL = os.getenv('METEO_FRANCE_LAST_NIVO_JS_URL',
                                               f"{METEO_FRANCE_NIVO_BASE_URL}/lastNivo.js")
+    METEO_FRANCE_FTP_DOMAIN_NAME = os.getenv('METEO_FRANCE_FTP_DOMAIN_NAME', 'ftp.meteo.fr')

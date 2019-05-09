@@ -6,8 +6,11 @@ from sqlalchemy.dialects.postgresql import UUID
 
 from nivo_api.core.db.connection import metadata
 
+
+from nivo_api.core.db.models import AbstractSpatialTable, AbstractTable
+
 # position of all the sensor. Usually in ski resort.
-NivoSensorStation = Table("nivo_sensor_station", metadata,
+NivoSensorStation = AbstractSpatialTable("nivo_sensor_station", metadata,
                           Column('nss_id', UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
                           Column('nss_name', TEXT, unique=True, nullable=False),
                           Column('nss_meteofrance_id', Integer, unique=True),
@@ -15,7 +18,7 @@ NivoSensorStation = Table("nivo_sensor_station", metadata,
                           )
 
 # Snow data from a sensor station.
-NivoRecord = Table("nivo_record", metadata,
+NivoRecord = AbstractTable("nivo_record", metadata,
                    Column('nr_id', UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
                    Column('nr_date', DateTime, nullable=False),
                    Column('nr_haut_sta', Float),
@@ -69,7 +72,7 @@ NivoRecord = Table("nivo_record", metadata,
                    )
 
 # Since all the field are not quite obvious. Document the field
-NivoRecordDescription = Table('nivo_record_description', metadata,
+NivoRecordDescription = AbstractTable('nivo_record_description', metadata,
                               Column('nrd_id', UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
                               Column('nrd_name', TEXT, nullable=False),
                               Column('nrd_description', TEXT, nullable=False),

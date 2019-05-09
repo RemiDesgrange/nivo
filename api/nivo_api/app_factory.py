@@ -43,5 +43,5 @@ def init_app() -> Flask:
     api = create_api(app)
     load_config(app)
     setup_logging(app)
-    return app
+    return api.app
 

@@ -5,12 +5,13 @@ import re
 from abc import ABC
 from csv import DictReader
 from datetime import datetime, date
+from ftplib import FTP
 from typing import List, Dict
 
 import requests
 from sqlalchemy import select, exists, Date, cast
 from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy.engine import Connection
+from sqlalchemy.engine import Connection, RowProxy
 
 from nivo_api.core.db.connection import connection_scope
 from nivo_api.core.db.models.nivo import NivoRecord, NivoSensorStation
@@ -19,6 +20,8 @@ from nivo_api.settings import Config
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+# data quality is not the best stuiff at meteofrance.
+SPECIAL_CHAR_TO_SET_TO_NONE =  ['mq', '/']
 
 class ANivoCsv(ABC):
     """
@@ -53,7 +56,7 @@ class ANivoCsv(ABC):
         def remove_unvalid_int(line: Dict) -> Dict:
             # change invalid value that should be int but are string.
             for title, value in line.items():
-                if value == 'mq':
+                if value in SPECIAL_CHAR_TO_SET_TO_NONE:
                     line[title] = None
             return line
 
@@ -79,11 +82,16 @@ class ANivoCsv(ABC):
 
     def find_and_replace_foreign_key_value(self) -> List[Dict]:
         def replace_num_sta_by_column_name(line: Dict, con: Connection) -> Dict:
+            """
+            You have to know that some station have no id (yes...)
+            """
+            nivo_sensor = int(line['nr_nivo_sensor'])
             s = select([NivoSensorStation.c.nss_id]).where(
-                NivoSensorStation.c.nss_meteofrance_id == int(line['nr_nivo_sensor']))
+                NivoSensorStation.c.nss_meteofrance_id == nivo_sensor)
             res = con.execute(s).first()
             if res is None:
-                raise ValueError(f"It appear that the station number {line['nr_nivo_sensor']} doesn't exist in database. Maybe you should import the sensor station list.")
+                logger.warning(f'No station have been found for id {nivo_sensor} creating an empty one.')
+                res = create_new_unkown_nivo_sensor_station(nivo_sensor, con)
             line['nr_nivo_sensor'] = res.nss_id
             return line
 
@@ -108,15 +116,16 @@ class ArchiveNivoCss(ANivoCsv):
         download_date = date.strftime(nivo_date, "%Y%m")
         self.download_url = download_url or f"{Config.METEO_FRANCE_NIVO_BASE_URL}/Archive/nivo.{download_date}.csv.gz"
 
-    def fetch_and_parse(self):
-        res = requests.get(self.download_url)
-        assert res.status_code == 200 # 302 means not found on meteofrance
-        with gzip.open(io.BytesIO(res.content), 'r') as csv_ungzip:
-            self.nivo_csv = DictReader(io.StringIO(csv_ungzip))
-        return self.nivo_csv
+
+def create_new_unkown_nivo_sensor_station(nivo_id: int, connection: Connection) -> RowProxy:
+    ins = insert(NivoSensorStation).values(nss_name=f'UNKNOWN_{nivo_id}',
+                                    nss_meteofrance_id=nivo_id,
+                                    the_geom='SRID=4326;POINT(0 0 0)').returning(NivoSensorStation.c.nss_id)
+    return connection.execute(ins).first()
 
 
-def get_last_nivo() -> date:
+
+def get_last_nivo_date() -> date:
     url = Config.METEO_FRANCE_LAST_NIVO_JS_URL
     res = requests.get(url)
     date_str = re.search('jour=(.*);', res.text).group(1)
@@ -149,3 +158,30 @@ def import_nivo(csv_file: ANivoCsv):
         with con.begin():
             ins = insert(NivoRecord).values(csv_file.cleaned_csv)#.on_conflict_do_nothing(index_elements=['nss_name'])
             con.execute(ins)
+
+
+
+def get_all_nivo_date() -> List[Dict]:
+    ftp = FTP(Config.METEO_FRANCE_FTP_DOMAIN_NAME)
+    ftp.login()
+    ftp.cwd('FDPMSP/Txt/Nivo/')
+    nivo = ftp.nlst('nivo*.csv')
+    def parse_filename(filename: str) -> Dict:
+        date_str = re.search('nivo.(.*).csv', filename).group(1)
+        return {
+            'is_archive': False,
+            'nivo_date': datetime.strptime(date_str, '%Y%m%d').date()
+        }
+    nivo_list = list(map(parse_filename, nivo))
+    ftp.cwd('Archive')
+    nivo = ftp.nlst('nivo*.csv.gz')
+
+    def parse_filename_archived(filename: str) -> Dict:
+        date_str = re.search('nivo.(.*).csv.gz', filename).group(1)
+        return {
+            'is_archive': True,
+            'nivo_date': datetime.strptime(date_str, '%Y%m').date()
+        }
+    nivo_list_archived = list(map(parse_filename_archived, nivo))
+    ftp.close()
+    return nivo_list + nivo_list_archived
