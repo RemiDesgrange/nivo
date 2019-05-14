@@ -75,18 +75,33 @@ def import_all_nivo_data():
 
 @click.command()
 def import_last_bra():
-    # setup, check if we have the massifs here : ftp://ftp.meteo.fr/FDPMSP/Pdf/BRA/massifs.json
-    # list all folder from the FTP. get the last date
-    # from the last date, get xml file for each of the region
+    # setup,
+    # get https://donneespubliques.meteofrance.fr/donnees_libres/Pdf/BRA/bra.%Y%m%d.json
+    # if not 302 (302 means 404 at meteofrance 😭)
+    # for all the date, get the xml
     # process
     # import
-    pass
+    cli_setup()
+    bra_dates = get_last_bra_date()
+    if bra_dates:
+        with connection_scope() as con:
+            for massif, date in bra_dates.items():
+                try:
+                    xml = get_bra_xml(massif, dates)
+                    processed_bra = process_xml(xml)
+                    import_bra(con, processed_bra)
+                except Exception as e:
+                    log.critical(f'an error occured when processing massif {massif} for date {date}')
+    else:
+        log.info('BRA is not (yet?) available for today')
 
 
 @click.command()
 def import_all_bra():
     # setup
-    # list all xml files in ftp
+    # request https://donneespubliques.meteofrance.fr/donnees_libres/Pdf/BRA/bra.%Y%m%d.json with all the date from december 2016 to today
+    # if not 302 (302 means 404 at meteofrance 😭)
+    # for all the date in all the json, download the xml of bra
     # process (download + post process)
     # import
     pass

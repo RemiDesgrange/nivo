@@ -3,12 +3,12 @@ services:
   api:
     build:
       context: api
-    port:
+    ports:
       - 8080
-    environment: 
-      DB_URL: postgresql://nivo:${POSTGRES_PASSWORD}@db/nivo
+    environment:
+      DB_URL: postgresql://nivo:${POSTGRES_PASSWORD:-nivo}@db/nivo
       ENV: PROD
-    depends_on: 
+    depends_on:
       - db
     labels:
       - "traefik.enable=true"
@@ -16,23 +16,22 @@ services:
   db:
     image: mdillon/postgis:11
     environment: 
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:nivo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nivo}
       POSTGRES_USER: nivo
       POSTGRES_DB: nivo
   front:
     build:
       context: frontend/nivo_front
-    environment: 
+    environment:
       NODE_ENV: production
-    depends_on: 
+    depends_on:
       - api
-    port:
+    ports:
       - 3000
     labels:
       - "traefik.enable=true"
       - "traefik.frontend.rule=Host:nivo.desgran.ge"
   proxy:
     image: traefik
-    "traefik.enable=true"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
