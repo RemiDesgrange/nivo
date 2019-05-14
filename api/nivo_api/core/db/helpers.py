@@ -1,8 +1,6 @@
 from typing import List, Union, Dict
 
 from sqlalchemy.engine import RowProxy
-import json
-from uuid import UUID
 
 
 def _check_geom(geom: Dict) -> Dict:
@@ -29,10 +27,10 @@ def _build_feature(db_row: RowProxy, geom_field: str) -> Dict:
     }
     for field, value in db_row.items():
         if field == geom_field:
-            final_dict['geometry'][field] = _check_geom(value)
-        final_dict["properties"][field] = value
+            final_dict['geometry'] = _check_geom(value)
+        else:
+            final_dict["properties"][field] = value
     return final_dict
-
 
 
 def _build_featurecollection(db_rows: List[RowProxy], geom_field: str) -> Dict:
@@ -43,18 +41,9 @@ def _build_featurecollection(db_rows: List[RowProxy], geom_field: str) -> Dict:
         ]
     }
 
+
 def to_geojson(db_row_or_rows: Union[List[RowProxy], RowProxy], geom_field: str = 'the_geom') -> Dict:
     if isinstance(db_row_or_rows, List):
         return _build_featurecollection(db_row_or_rows, geom_field)
     elif isinstance(db_row_or_rows, RowProxy):
         return _build_feature(db_row_or_rows, geom_field)
-
-
-
-
-class UUIDEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, UUID):
-            # if the obj is uuid, we simply return the value of uuid
-            return obj.hex
-        return json.JSONEncoder.default(self, obj)
