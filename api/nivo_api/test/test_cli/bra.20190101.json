@@ -1,0 +1,219 @@
+[
+  {
+    "massif": "ASPE-OSSAU",
+    "heures": [
+      "20190101135947",
+      "20190101135359"
+    ]
+  },
+  {
+    "massif": "AURE-LOURON",
+    "heures": [
+      "20190101135947"
+    ]
+  },
+  {
+    "massif": "HAUTE-BIGORRE",
+    "heures": [
+      "20190101135947"
+    ]
+  },
+  {
+    "massif": "PAYS-BASQUE",
+    "heures": [
+      "20190101135947"
+    ]
+  },
+  {
+    "massif": "BELLEDONNE",
+    "heures": [
+      "20190101141124"
+    ]
+  },
+  {
+    "massif": "CHARTREUSE",
+    "heures": [
+      "20190101141124"
+    ]
+  },
+  {
+    "massif": "GRANDES-ROUSSES",
+    "heures": [
+      "20190101141124"
+    ]
+  },
+  {
+    "massif": "OISANS",
+    "heures": [
+      "20190101141124"
+    ]
+  },
+  {
+    "massif": "VERCORS",
+    "heures": [
+      "20190101141124"
+    ]
+  },
+  {
+    "massif": "ARAVIS",
+    "heures": [
+      "20190101142328"
+    ]
+  },
+  {
+    "massif": "CHABLAIS",
+    "heures": [
+      "20190101142328"
+    ]
+  },
+  {
+    "massif": "MONT-BLANC",
+    "heures": [
+      "20190101142328"
+    ]
+  },
+  {
+    "massif": "COUSERANS",
+    "heures": [
+      "20190101143030"
+    ]
+  },
+  {
+    "massif": "HAUTE-ARIEGE",
+    "heures": [
+      "20190101143030"
+    ]
+  },
+  {
+    "massif": "LUCHONNAIS",
+    "heures": [
+      "20190101143030"
+    ]
+  },
+  {
+    "massif": "ORLU__ST_BARTHELEMY",
+    "heures": [
+      "20190101143030"
+    ]
+  },
+  {
+    "massif": "ANDORRE",
+    "heures": [
+      "20190101144112"
+    ]
+  },
+  {
+    "massif": "CAPCIR-PUYMORENS",
+    "heures": [
+      "20190101144112"
+    ]
+  },
+  {
+    "massif": "CERDAGNE-CANIGOU",
+    "heures": [
+      "20190101144112"
+    ]
+  },
+  {
+    "massif": "BAUGES",
+    "heures": [
+      "20190101144807"
+    ]
+  },
+  {
+    "massif": "BEAUFORTAIN",
+    "heures": [
+      "20190101144807"
+    ]
+  },
+  {
+    "massif": "HAUTE-MAURIENNE",
+    "heures": [
+      "20190101144807"
+    ]
+  },
+  {
+    "massif": "HAUTE-TARENTAISE",
+    "heures": [
+      "20190101144807"
+    ]
+  },
+  {
+    "massif": "MAURIENNE",
+    "heures": [
+      "20190101144807"
+    ]
+  },
+  {
+    "massif": "VANOISE",
+    "heures": [
+      "20190101144807"
+    ]
+  },
+  {
+    "massif": "CINTO-ROTONDO",
+    "heures": [
+      "20190101150201"
+    ]
+  },
+  {
+    "massif": "RENOSO-INCUDINE",
+    "heures": [
+      "20190101150201"
+    ]
+  },
+  {
+    "massif": "CHAMPSAUR",
+    "heures": [
+      "20190101151352"
+    ]
+  },
+  {
+    "massif": "DEVOLUY",
+    "heures": [
+      "20190101151352"
+    ]
+  },
+  {
+    "massif": "EMBRUNAIS-PARPAILLON",
+    "heures": [
+      "20190101151352"
+    ]
+  },
+  {
+    "massif": "HAUT-VAR_HAUT-VERDON",
+    "heures": [
+      "20190101151352"
+    ]
+  },
+  {
+    "massif": "MERCANTOUR",
+    "heures": [
+      "20190101151352"
+    ]
+  },
+  {
+    "massif": "PELVOUX",
+    "heures": [
+      "20190101151352"
+    ]
+  },
+  {
+    "massif": "QUEYRAS",
+    "heures": [
+      "20190101151352"
+    ]
+  },
+  {
+    "massif": "THABOR",
+    "heures": [
+      "20190101151352"
+    ]
+  },
+  {
+    "massif": "UBAYE",
+    "heures": [
+      "20190101151352"
+    ]
+  }
+]

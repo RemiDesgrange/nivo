@@ -10,6 +10,8 @@ from sqlalchemy.dialects.postgresql import UUID, ARRAY, ENUM
 # XML data model : https://donneespubliques.meteofrance.fr/client/document/docbraxml_248.pdf
 
 # french department. The polygon is extract from OSM.
+from nivo_api.core.db.models.helper import ArrayOfEnum, XML
+
 Department = AbstractSpatialTable('bra_department', metadata,
                                   Column('bd_id', UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
                                   Column('bd_name', TEXT, unique=True, nullable=False),
@@ -36,7 +38,7 @@ Massif = AbstractSpatialTable("bra_massif", metadata,
 
 Risk = AbstractTable('bra_risk', metadata,
                      Column('r_id', UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
-                     Column('r_number', Integer, CheckConstraint('bm_maxrisk>0 AND bm_maxrisk<5'), unique=True,
+                     Column('r_number', Integer, CheckConstraint('r_number>0 AND r_number<5'), unique=True,
                             nullable=False),
                      Column('r_description', TEXT)
                      )
@@ -49,12 +51,15 @@ BraRecord = AbstractTable('bra_record', metadata,
                           Column('br_production_date', DateTime, nullable=False),
                           Column('br_expiration_date', DateTime, nullable=False),
                           Column('br_is_amended', Boolean),
+                          Column('br_max_risk', ForeignKey('bra_risk.r_id')),
                           Column('br_risk1', ForeignKey('bra_risk.r_id')),
+                          Column('br_risk1_altitude_limit', TEXT),
                           Column('br_risk1_evolution', ForeignKey('bra_risk.r_id')),
                           Column('br_risk2', ForeignKey('bra_risk.r_id')),
+                          Column('br_risk2_altitude_limit', TEXT),
                           Column('br_risk2_evolution', ForeignKey('bra_risk.r_id')),
                           Column('br_risk_comment', TEXT),
-                          Column('br_dangerous_slopes', ARRAY(DangerousSlopes)),
+                          Column('br_dangerous_slopes', ArrayOfEnum(DangerousSlopes)),
                           Column('br_dangerous_slopes_comment', TEXT),
                           Column('br_opinion', TEXT),
                           Column('br_snow_quality', TEXT),
@@ -62,9 +67,8 @@ BraRecord = AbstractTable('bra_record', metadata,
                           Column('br_last_snowfall_date', Date),
                           Column('br_snowlimit_south', Integer, CheckConstraint('br_snowlimit_south>0')),
                           Column('br_snowlimit_north', Integer, CheckConstraint('br_snowlimit_north>0')),
-                          Column('br_')
-Column('br_raw_xml', DateTime, nullable=False)
-)
+                          Column('br_raw_xml', XML, nullable=False)
+                          )
 
 BraSnowRecord = AbstractTable('bra_snow_record', metadata,
                               Column('s_id', UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
@@ -96,8 +100,7 @@ WeatherForcast = AbstractTable('bra_weather_forcast', metadata,
                                       nullable=False),
                                # Maybe an ENUM or a table
                                Column('wf_weather_type', Integer, nullable=False),
-                               # TODO how to translate this ?
-                               Column('wf_mernuage', Integer),
+                               Column('wf_sea_of_clouds', Integer),
                                Column('wf_rain_snow_limit', Integer, CheckConstraint('wf_rain_snow_limit>0')),
                                Column('wf_iso0', Integer, CheckConstraint('wf_iso0>0')),
                                Column('wf_iso_minus_10', Integer, CheckConstraint('wf_iso_minus_10>0')),

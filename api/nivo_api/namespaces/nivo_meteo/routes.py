@@ -50,7 +50,7 @@ class OneNivoRecordResource(Resource):
         return jsonify(res)
 
 
-@nivo_meteo.route('/records/<date:date_from>/<date:date_to>')
+@nivo_meteo.route('/records/<string:date_from>/<string:date_to>')
 class NivoRecordDateResource(Resource):
     @nivo_meteo.response(200, 'OK')
     def get(self, date_from, date_to):

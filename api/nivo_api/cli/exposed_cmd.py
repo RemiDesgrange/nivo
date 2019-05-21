@@ -4,6 +4,7 @@ import click
 import requests
 from sqlalchemy import func, select
 
+from nivo_api.cli.bra_record_helper import get_last_bra_date, get_bra_date, get_bra_xml, process_xml, persist_bra
 from nivo_api.cli.database import create_schema_and_table, NivoSensorStation
 
 import logging
@@ -33,6 +34,7 @@ def import_last_nivo_data():
 
 @click.command()
 def import_nivo_sensor_station():
+    # this need refactor
     cli_setup()
     res = requests.get(f'{Config.METEO_FRANCE_NIVO_BASE_URL}/postesNivo.json')
     assert res.status_code == 200
@@ -83,17 +85,28 @@ def import_last_bra():
     # import
     cli_setup()
     bra_dates = get_last_bra_date()
-    if bra_dates:
-        with connection_scope() as con:
-            for massif, date in bra_dates.items():
-                try:
-                    xml = get_bra_xml(massif, dates)
-                    processed_bra = process_xml(xml)
-                    import_bra(con, processed_bra)
-                except Exception as e:
-                    log.critical(f'an error occured when processing massif {massif} for date {date}')
-    else:
-        log.info('BRA is not (yet?) available for today')
+    with connection_scope() as con:
+        for massif, date in bra_dates.items():
+            try:
+                xml = get_bra_xml(massif, date)
+                processed_bra = process_xml(con, xml)
+                persist_bra(con, processed_bra)
+            except Exception as e:
+                log.critical(f'an error occured when processing massif {massif} for date {date}')
+
+
+@click.command()
+@click.argument('date', type=click.DateTime(format(('%Y-%m-%d',))))
+def import_bra(date):
+    bra_dates = get_bra_date(date)
+    with connection_scope() as con:
+        for massif, date in bra_dates.items():
+            try:
+                xml = get_bra_xml(massif, date)
+                processed_bra = process_xml(con, xml)
+                persist_bra(con, processed_bra)
+            except Exception as e:
+                log.critical(f'an error occured when processing massif {massif} for date {date}')
 
 
 @click.command()
@@ -105,6 +118,11 @@ def import_all_bra():
     # process (download + post process)
     # import
     pass
+
+
+@click.command()
+def import_massif():
+    raise NotImplemented('Not Yet implemented :-/')
 
 
 @click.command()

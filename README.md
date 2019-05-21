@@ -27,6 +27,8 @@ openapi, powered by python(3). Tested on python3.7. Normally should run on pytho
 * run `python app.py` it listen on http://localhost:5000
 * you can `pip install -e .` if you want to use cli directly.
 * To init the database, you can use the `init_db` cmd that comes if you run `pip install -e .`
+* follow README.md in `api` folder for more
+
 
 # Frontend
 
