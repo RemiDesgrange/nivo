@@ -7,8 +7,8 @@ from nivo_api.settings import Config
 
 
 #Global Instance of metadata
-metadata = MetaData()
-db_engine = create_engine(Config.DB_URL)
+metadata: MetaData = MetaData()
+db_engine: Engine = create_engine(Config.DB_URL)
 
 @contextmanager
 def connection_scope(engine: Engine=None) -> Connection:

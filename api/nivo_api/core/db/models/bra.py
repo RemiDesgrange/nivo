@@ -5,7 +5,7 @@ from sqlalchemy import Column, TEXT, Integer, DateTime, ForeignKey, CheckConstra
 
 from nivo_api.core.db.connection import metadata
 from nivo_api.core.db.models import AbstractSpatialTable, AbstractTable
-from sqlalchemy.dialects.postgresql import UUID, ARRAY, ENUM
+from sqlalchemy.dialects.postgresql import UUID, ENUM
 
 # XML data model : https://donneespubliques.meteofrance.fr/client/document/docbraxml_248.pdf
 
@@ -47,7 +47,7 @@ DangerousSlopes = ENUM('NE', 'E', 'SE', 'S', 'SW', 'W', 'NW', 'N', name='dangero
 
 BraRecord = AbstractTable('bra_record', metadata,
                           Column('br_id', UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
-                          Column('br_massif', UUID(as_uuid=True), ForeignKey('bra_massif'), nullable=False),
+                          Column('br_massif', UUID(as_uuid=True), ForeignKey('bra_massif.bm_id'), nullable=False),
                           Column('br_production_date', DateTime, nullable=False),
                           Column('br_expiration_date', DateTime, nullable=False),
                           Column('br_is_amended', Boolean),

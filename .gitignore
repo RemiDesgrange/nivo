@@ -99,6 +99,9 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+#pyre
+.pyre
+.pyre_configuration
 
 .idea/*
 **/.idea/*

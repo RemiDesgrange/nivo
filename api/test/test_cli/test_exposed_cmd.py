@@ -38,10 +38,9 @@ class TestInitDb():
         runner.invoke(init_db)
         runner.invoke(init_db)  # Two call shouln't fail.
 
-
+@setup_db()
 def test_create_new_unkown_nivo_sensor_station():
-    with setup_db():
-        with connection_scope() as con:
-            res = create_new_unkown_nivo_sensor_station(123456, con)
-            assert isinstance(res, RowProxy)
-            assert isinstance(res.nss_id, UUID)
+    with connection_scope() as con:
+        res = create_new_unkown_nivo_sensor_station(123456, con)
+        assert isinstance(res, RowProxy)
+        assert isinstance(res.nss_id, UUID)

@@ -4,7 +4,9 @@ import click
 import requests
 from sqlalchemy import func, select
 
-from nivo_api.cli.bra_record_helper import get_last_bra_date, get_bra_date, get_bra_xml, process_xml, persist_bra
+from nivo_api.cli.bra_record_helper.miscellaneous import get_last_bra_date, get_bra_xml, get_bra_date
+from nivo_api.cli.bra_record_helper.persist import persist_bra
+from nivo_api.cli.bra_record_helper.process import process_xml
 from nivo_api.cli.database import create_schema_and_table, NivoSensorStation
 
 import logging
