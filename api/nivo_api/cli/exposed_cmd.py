@@ -5,7 +5,7 @@ import requests
 from sqlalchemy import func, select
 
 from nivo_api.cli.bra_record_helper.miscellaneous import get_last_bra_date, get_bra_xml, get_bra_date
-from nivo_api.cli.bra_record_helper.persist import persist_bra
+from nivo_api.cli.bra_record_helper.persist import persist_bra, persist_massif
 from nivo_api.cli.bra_record_helper.process import process_xml
 from nivo_api.cli.database import create_schema_and_table, NivoSensorStation
 
@@ -122,9 +122,19 @@ def import_all_bra():
     pass
 
 
+
 @click.command()
 def import_massif():
-    raise NotImplemented('Not Yet implemented :-/')
+    massif_json = requests.get(Config.BRA_BASE_URL + '/massifs.json').json()
+    with connection_scope() as con:
+        for zone in massif_json:
+            for dept in zone['departements']:
+                for massif in dept['massifs']:
+                    persist_massif(con,
+                                   massif,
+                                   {'name': dept['nom_dept'], 'number': dept['num_dept']},
+                                   zone['zone'])
+
 
 
 @click.command()

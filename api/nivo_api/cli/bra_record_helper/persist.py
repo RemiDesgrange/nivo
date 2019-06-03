@@ -2,7 +2,6 @@ import logging
 from typing import Generator, Dict
 from uuid import UUID
 
-from geoalchemy2 import Geometry
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.engine import Connection
 

@@ -2,13 +2,19 @@ import logging
 from datetime import datetime, date
 
 from json import JSONDecodeError
-from typing import Dict, Tuple
+from typing import Dict, Tuple, List
 
-
+import geojson
 import requests
 import lxml.etree as ET
-from geoalchemy2 import Geometry
+from geoalchemy2 import WKBElement
+from geoalchemy2.shape import from_shape, to_shape
+from shapely.geometry import shape
+from shapely.ops import unary_union
+from sqlalchemy import select
+from sqlalchemy.engine import Connection
 
+from nivo_api.core.db.models.bra import Department
 from nivo_api.settings import Config
 
 log = logging.getLogger(__name__)
@@ -54,11 +60,18 @@ def get_bra_xml(massif: str, bra_date: datetime) -> ET:
     return ET.fromstring(r.content)
 
 
-def fetch_massif_geom_from_opendata(massif: str) -> Geometry:
+def fetch_massif_geom_from_opendata(massif: str) -> WKBElement:
     raise NotImplemented()
 
-def fetch_department_geom_from_opendata(department: str) -> Geometry:
-    raise NotImplemented()
+def fetch_department_geom_from_opendata(dept: str, dept_nb: str) -> WKBElement:
+    dept = dept.lower()
+    raw_dept = requests.get(f'https://france-geojson.gregoiredavid.fr/repo/departements/{dept_nb}-{dept}/departement-{dept_nb}-{dept}.geojson')
+    assert raw_dept.status_code == 200, "Something went wrong with department geometry fetching from the internet"
+    gj = geojson.loads(raw_dept.text)
+    return from_shape(shape(gj.geometry))
 
-def build_zone_from_department_geom(zone: str) -> Geometry:
-    raise NotImplemented()
+def build_zone_from_department_geom(con: Connection, dept_list: List[str]) -> WKBElement:
+    s = select([Department.c.the_geom]).where(Department.c.bd_name in dept_list)
+    res = con.execute(s).fetchall()
+    geoms = [to_shape(x) for x in res.the_geom]
+    return from_shape(unary_union(geoms))

@@ -5,13 +5,15 @@ from datetime import datetime
 from typing import Generator
 from uuid import uuid4
 
+from geoalchemy2 import Geometry, WKBElement
 from lxml import etree
 import pytest
 import responses
 from freezegun import freeze_time
 from sqlalchemy import text
 
-from nivo_api.cli.bra_record_helper.miscellaneous import get_last_bra_date, get_bra_xml
+from nivo_api.cli.bra_record_helper.miscellaneous import get_last_bra_date, get_bra_xml, \
+    fetch_department_geom_from_opendata, build_zone_from_department_geom
 from nivo_api.cli.bra_record_helper.process import process_xml, _get_risk_forcast, _get_risk_entity, _get_massif_entity
 from nivo_api.cli.bra_record_helper.persist import persist_massif
 from nivo_api.core.db.connection import metadata, db_engine, connection_scope
@@ -140,4 +142,29 @@ class TestGetMassifEntity:
     @setup_db()
     def test_massif(self):
         with connection_scope() as con:
-            persist_massif(name='CHABLAIS', )
+            persist_massif(con, 'CHABLAIS', {'nom_dept': 'Haute-savoie', "num_dept": '74'}, 'Alpes du Nord')
+
+
+class TestFetchDepartementGeojsonFromOpenData:
+    @responses.activate
+    def test_exist(self):
+        with open(os.path.join(CURRENT_DIR, 'departement-74-haute-savoie.geojson')) as dept_json:
+            responses.add(responses.GET, 'https://france-geojson.gregoiredavid.fr/repo/departements/74-haute-savoie/departement-74-haute-savoie.geojson',
+                          json=json.load(dept_json))
+
+        # dept num is a string, see massifs.json file, bc we can have for exemple "01" as dept.
+        ret = fetch_department_geom_from_opendata('Haute-Savoie', '74')
+        assert isinstance(ret, WKBElement)
+
+
+    @responses.activate
+    def test_non_existant_dept(self):
+        responses.add(responses.GET, 'https://france-geojson.gregoiredavid.fr/repo/departements/10-haute-savoie/departement-10-haute-savoie.geojson', status=404)
+        with pytest.raises(AssertionError) as e:
+            fetch_department_geom_from_opendata('Haute-Savoie', '10')
+        assert str(e.value) == 'Something went wrong with department geometry fetching from the internet'
+
+
+class TestUnionDeptToHaveAZoneGeometry:
+    def test_xxxxx(self):
+        build_zone_from_department_geom()

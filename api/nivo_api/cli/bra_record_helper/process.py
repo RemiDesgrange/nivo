@@ -91,8 +91,7 @@ def _get_risk_forcast(bra_xml: _Element, bra_id: UUID):
 
 
 def process_xml(con: Connection, bra_xml: ET._Element):
-    # split the XML in multiple entit object before merging them.
-
+    # split the XML in multiple entity object before merging them.
     bra_id = uuid4()
 
     yield {
