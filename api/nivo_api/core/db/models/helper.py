@@ -14,8 +14,7 @@ class ArrayOfEnum(TypeDecorator):
         return sa.cast(bindvalue, self)
 
     def result_processor(self, dialect, coltype):
-        super_rp = super(ArrayOfEnum, self).result_processor(
-            dialect, coltype)
+        super_rp = super(ArrayOfEnum, self).result_processor(dialect, coltype)
 
         def handle_raw_string(value):
             inner = re.match(r"^{(.*)}$", value).group(1)
@@ -28,10 +27,11 @@ class ArrayOfEnum(TypeDecorator):
 
         return process
 
+
 # sqlalchemy doesn't have XML type. Need to implement it.
 class XML(sa.types.UserDefinedType):
     def get_col_spec(self):
-        return 'XML'
+        return "XML"
 
     def bind_processor(self, dialect):
         def process(value):
@@ -42,6 +42,7 @@ class XML(sa.types.UserDefinedType):
                     return etree.tostring(value)
             else:
                 return None
+
         return process
 
     def result_processor(self, dialect, coltype):
@@ -49,4 +50,5 @@ class XML(sa.types.UserDefinedType):
             if value is not None:
                 value = etree.fromstring(value)
             return value
+
         return process

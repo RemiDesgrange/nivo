@@ -7,10 +7,11 @@ from uuid import UUID
 from sqlalchemy.engine import RowProxy
 
 from nivo_api.cli import init_db
-from nivo_api.cli.nivo_record_helper import create_new_unkown_nivo_sensor_station
+from nivo_api.cli.nivo_record_helper import create_new_unknown_nivo_sensor_station
 from nivo_api.core.db.connection import db_engine, connection_scope
+
 # populate metadata
-from nivo_api.core.db.models.nivo import  metadata
+from nivo_api.core.db.models.nivo import metadata
 
 
 @contextmanager
@@ -20,7 +21,8 @@ def setup_db():
     yield
     metadata.drop_all(db_engine)
 
-class TestInitDb():
+
+class TestInitDb:
     def test_init_db(self):
         metadata.drop_all(db_engine)
         runner = CliRunner()
@@ -28,9 +30,11 @@ class TestInitDb():
         assert result.exit_code == 0
         with connection_scope() as con:
             for table in metadata.sorted_tables:
-                schema = metadata.schema if metadata.schema else 'public'
+                schema = metadata.schema if metadata.schema else "public"
                 table = table.name
-                res = con.execute(text(f'''SELECT to_regclass('{schema}.{table}') as table'''), ).first()
+                res = con.execute(
+                    text(f"""SELECT to_regclass('{schema}.{table}') as table""")
+                ).first()
                 assert res.table == table
 
     def test_init_db_idempotent(self):
@@ -38,9 +42,10 @@ class TestInitDb():
         runner.invoke(init_db)
         runner.invoke(init_db)  # Two call shouln't fail.
 
+
 @setup_db()
 def test_create_new_unkown_nivo_sensor_station():
     with connection_scope() as con:
-        res = create_new_unkown_nivo_sensor_station(123456, con)
+        res = create_new_unknown_nivo_sensor_station(123456, con)
         assert isinstance(res, RowProxy)
         assert isinstance(res.nss_id, UUID)

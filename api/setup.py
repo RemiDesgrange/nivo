@@ -1,17 +1,18 @@
 from setuptools import setup, find_packages
 
-with open('requirements.txt') as f:
-    REQUIREMENTS = f.read().split('\n')
+with open("requirements.txt") as f:
+    REQUIREMENTS = f.read().split("\n")
 
-setup(name='nivo_api',
-      version='0.1',
-      description='API to serve snow opendata from meteofrance',
-      author='Remi Desgrange',
-      author_email='remi+nivo@desgran.ge',
-      url='',
-      packages=find_packages(),
-      install_requires=REQUIREMENTS,
-      entry_points='''
+setup(
+    name="nivo_api",
+    version="0.1",
+    description="API to serve snow opendata from meteofrance",
+    author="Remi Desgrange",
+    author_email="remi+nivo@desgran.ge",
+    url="",
+    packages=find_packages(),
+    install_requires=REQUIREMENTS,
+    entry_points="""
             [console_scripts]
             import_last_nivo_data=nivo_api.cli:import_last_nivo_data
             import_all_nivo_data=nivo_api.cli:import_all_nivo_data
@@ -19,5 +20,5 @@ setup(name='nivo_api',
             import_all_bra=nivo_api.cli:import_all_bra
             import_nivo_sensor_station=nivo_api.cli:import_nivo_sensor_station
             init_db=nivo_api.cli:init_db
-        ''',
-      )
+        """,
+)

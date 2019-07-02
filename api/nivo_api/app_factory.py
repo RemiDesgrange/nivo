@@ -22,8 +22,8 @@ def create_api(app: Flask) -> Api:
 
 
 def load_config(app: Flask) -> None:
-    app.config.from_object('nivo_api.settings.Config')
-    app.config.from_envvar('CONFIG_FILE', silent=True)
+    app.config.from_object("nivo_api.settings.Config")
+    app.config.from_envvar("CONFIG_FILE", silent=True)
 
 
 def setup_logging(app: Flask) -> None:
@@ -44,4 +44,3 @@ def init_app() -> Flask:
     load_config(app)
     setup_logging(app)
     return api.app
-

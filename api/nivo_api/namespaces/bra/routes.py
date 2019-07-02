@@ -1,3 +1,3 @@
 from flask_restplus import Namespace
 
-bra_api = Namespace('bra_api')
+bra_api = Namespace("bra_api")
