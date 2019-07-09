@@ -55,7 +55,9 @@ class TestGetRiskEntity:
         with connection_scope() as con:
             with pytest.raises(ValueError) as e:
                 _get_risk_entity("1", con)
-            assert e.value.args[0] == "Risk could not be found for level 1 found in bra."
+            assert (
+                e.value.args[0] == "Risk could not be found for level 1 found in bra."
+            )
 
     @setup_db()
     def test_get_risk_entity_exist(self):
@@ -80,20 +82,20 @@ class TestGetRiskEntity:
             assert isinstance(x, Generator)
             res = next(x)
             assert {
-                       "rf_bra_record": bra_id,
-                       "rf_date": datetime(
-                           year=2019, month=1, day=3, hour=0, minute=0, second=0
-                       ),
-                       "rf_evolution": "STABLE",
-                   } == res
+                "rf_bra_record": bra_id,
+                "rf_date": datetime(
+                    year=2019, month=1, day=3, hour=0, minute=0, second=0
+                ),
+                "rf_evolution": "STABLE",
+            } == res
             res = next(x)
             assert {
-                       "rf_bra_record": bra_id,
-                       "rf_date": datetime(
-                           year=2019, month=1, day=4, hour=0, minute=0, second=0
-                       ),
-                       "rf_evolution": "STABLE",
-                   } == res
+                "rf_bra_record": bra_id,
+                "rf_date": datetime(
+                    year=2019, month=1, day=4, hour=0, minute=0, second=0
+                ),
+                "rf_evolution": "STABLE",
+            } == res
             with pytest.raises(StopIteration):
                 next(x)
 
@@ -102,7 +104,9 @@ class TestProcessXML:
     @setup_db()
     def test_process_xml_yield(self):
         # TODO this test need more test data
-        with open(os.path.join(CURRENT_DIR, 'BRA.CHABLAIS.20190101142328.xml'), 'rb') as xmlfile:
+        with open(
+            os.path.join(CURRENT_DIR, "BRA.CHABLAIS.20190101142328.xml"), "rb"
+        ) as xmlfile:
             with connection_scope() as c:
                 xml = ET.parse(xmlfile)
                 p = process_xml(c, xml)

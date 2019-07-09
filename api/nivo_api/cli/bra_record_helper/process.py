@@ -36,6 +36,7 @@ def _get_risk_entity(risk: str, con: Connection) -> Optional[UUID]:
     else:
         return None
 
+
 def _get_massif_entity(massif: str, con: Connection) -> UUID:
     res = con.execute(
         select([Massif.c.bm_id]).where(Massif.c.bm_name == massif)
@@ -75,7 +76,6 @@ def _get_fresh_snow_record(bra_xml: _Element, bra_id):
                 "bsfr_massif_snowfall": record.get("SS241"),
                 "bfsr_second_massif_snowfall": record.get("SS242"),
             }
-
 
 
 def _get_weather_forcast(bra_xml: _Element, bra_id: UUID):

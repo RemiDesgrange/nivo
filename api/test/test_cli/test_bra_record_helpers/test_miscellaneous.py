@@ -3,22 +3,24 @@ import os
 from datetime import datetime
 
 from geoalchemy2 import WKBElement
+from geoalchemy2.shape import to_shape
 from lxml import etree
 import pytest
 import responses
 from freezegun import freeze_time
-
+from unittest.mock import patch, mock_open
 
 from nivo_api.cli.bra_record_helper.miscellaneous import (
     get_last_bra_date,
     get_bra_xml,
-    fetch_department_geom_from_opendata
+    fetch_department_geom_from_opendata,
+    get_massif_geom,
 )
 
 from nivo_api.settings import Config
 
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 class TestFetchDepartementGeojsonFromOpenData:
@@ -48,7 +50,7 @@ class TestFetchDepartementGeojsonFromOpenData:
             fetch_department_geom_from_opendata("Haute-Savoie", "10")
         assert (
             str(e.value)
-            == "Something went wrong with department geometry fetching from the internet"
+            == "Something went wrong with department geometry fetching from the internet, status: 404"
         )
 
 
@@ -92,7 +94,6 @@ class TestGetBraDate:
         assert str(e.value) == "JSON provided is malformed. Cannot parse"
 
 
-
 class TestGetBraXml:
     @responses.activate
     def test_get_bra_xml_fail(self):
@@ -106,7 +107,7 @@ class TestGetBraXml:
             get_bra_xml("CHABLAIS", datetime.strptime("20190101142328", "%Y%m%d%H%M%S"))
         assert (
             str(e.value)
-            == "The bra for the massif CHABLAIS at day 2019-01-01 14:23:28 doesn't exist"
+            == "The bra for the massif CHABLAIS at day 2019-01-01 14:23:28 doesn't exist, status: 302"
         )
 
     @responses.activate
@@ -124,4 +125,102 @@ class TestGetBraXml:
             res = get_bra_xml(
                 "CHABLAIS", datetime.strptime("20190101142328", "%Y%m%d%H%M%S")
             )
-        assert isinstance(res, etree._Element)
+        assert isinstance(res, etree._ElementTree)
+
+
+class TestGetMassifGeom:
+    def test_unknown_massif(self):
+        with pytest.raises(ValueError) as e:
+            get_massif_geom("xyz")
+        assert e.type is ValueError
+        assert str(e.value) == "Massif xyz geometry cannot be found."
+
+    def test_known_massif(self):
+        massif = get_massif_geom("CHABLAIS")
+        assert isinstance(massif, WKBElement)
+
+    def test_case_sensivity(self):
+        massif = get_massif_geom("ChAblAis")
+        assert isinstance(massif, WKBElement)
+
+    def test_geometry_returned(self):
+        data = """
+        {
+            "features": [
+                {
+                    "geometry": {
+                        "coordinates": [
+                            [
+                                [1,1],[1,2],[2,2],[2,1]
+                            ]
+                        ],
+                        "type": "Polygon"
+                    },
+                    "properties": {
+                        "id": "OPP150",
+                        "label": "Renoso",
+                        "slug": "renoso"
+                    },
+                    "type": "Feature"
+                }
+            ],
+            "type": "FeatureCollection"
+        }
+        """
+        with patch("builtins.open", mock_open(read_data=data)):
+            ret = get_massif_geom("ReNoSo")
+            assert (
+                to_shape(ret).wkt()
+                == "POLYGON ((1.0000000000000000 1.0000000000000000, 1.0000000000000000 2.0000000000000000, 2.0000000000000000 2.0000000000000000, 2.0000000000000000 1.0000000000000000, 1.0000000000000000 1.0000000000000000))"
+            )
+
+    def test_massif_have_same_name(self):
+        data = """
+        {
+            "features": [
+                {
+                    "geometry": {
+                        "coordinates": [
+                            [
+                                [1,1],[1,2],[2,2],[2,1]
+                            ]
+                        ],
+                        "type": "Polygon"
+                    },
+                    "properties": {
+                        "id": "OPP150",
+                        "label": "Renoso",
+                        "slug": "renoso"
+                    },
+                    "type": "Feature"
+                },
+                {
+                    "geometry": {
+                        "coordinates": [
+                            [
+                                [2,2],[2,3],[3,3],[3,2]
+                            ]
+                        ],
+                        "type": "Polygon"
+                    },
+                    "properties": {
+                        "id": "OPP150",
+                        "label": "Renoso",
+                        "slug": "renoso"
+                    },
+                    "type": "Feature"
+                }
+            ],
+            "type": "FeatureCollection"
+        }
+        """
+        with patch("builtins.open", mock_open(read_data=data)):
+            ret = get_massif_geom("ReNoSo")
+            assert (
+                to_shape(ret).wkt()
+                == "POLYGON ((1.0000000000000000 1.0000000000000000, 1.0000000000000000 2.0000000000000000, 2.0000000000000000 2.0000000000000000, 2.0000000000000000 1.0000000000000000, 1.0000000000000000 1.0000000000000000))"
+            )
+
+
+class TestFetchDepartmentGeomFromOpendata:
+    pass

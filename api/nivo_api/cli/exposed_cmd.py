@@ -62,7 +62,7 @@ def import_nivo_sensor_station():
                 )
                 ins = (
                     insert(NivoSensorStation)
-                        .values(
+                    .values(
                         **{
                             "nss_name": feature["properties"]["Nom"],
                             "nss_meteofrance_id": mf_id,
@@ -71,13 +71,13 @@ def import_nivo_sensor_station():
                             ),
                         }
                     )
-                        .on_conflict_do_nothing(index_elements=["nss_name"])
+                    .on_conflict_do_nothing(index_elements=["nss_name"])
                 )
                 con.execute(ins)
         inserted = (
             con.execute(select([func.count(NivoSensorStation.c.nss_id).label("count")]))
-                .first()
-                .count
+            .first()
+            .count
         )
         print(f"{inserted} sensor station imported")
 
@@ -158,12 +158,15 @@ def import_massif():
         for zone in massif_json[:3]:
             for dept in zone["departements"]:
                 for massif in dept["massifs"]:
-                    persist_massif(
-                        con,
-                        massif,
-                        {"name": dept["nom_dept"], "number": dept["num_dept"]},
-                        zone["zone"],
-                    )
+                    try:
+                        persist_massif(
+                            con,
+                            massif,
+                            {"name": dept["nom_dept"], "number": dept["num_dept"]},
+                            zone["zone"],
+                        )
+                    except ValueError:
+                        log.warning(f"Do no import massif: {massif}")
 
 
 @click.command()

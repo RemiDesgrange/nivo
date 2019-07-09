@@ -35,7 +35,7 @@ Zone = AbstractSpatialTable(
     "bra_zone",
     metadata,
     Column("bz_id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
-    Column("bz_name", TEXT, unique=True, nullable=False)
+    Column("bz_name", TEXT, unique=True, nullable=False),
 )
 # Alpine massif, like "Maurienne", "Chablais", "Aspe ossau"
 Massif = AbstractSpatialTable(

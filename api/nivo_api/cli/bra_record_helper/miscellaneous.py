@@ -1,9 +1,11 @@
+import io
 import logging
+import os
 from datetime import datetime, date
 
 from json import JSONDecodeError
 from typing import Dict, Tuple
-
+import importlib.resources
 import geojson
 import requests
 import lxml.etree as ET
@@ -43,7 +45,6 @@ def get_bra_date(bra_date: date) -> Dict[str, datetime]:
 
 def get_last_bra_date() -> Dict[str, datetime]:
     """
-
     :return: a simple dict with the name of the massif as key and the date as value
     """
     today = datetime.now().date()
@@ -53,18 +54,29 @@ def get_last_bra_date() -> Dict[str, datetime]:
 def get_bra_xml(massif: str, bra_date: datetime) -> ET:
     bra_date_str = bra_date.strftime("%Y%m%d%H%M%S")
     url = Config.BRA_BASE_URL + f"/BRA.{massif}.{bra_date_str}.xml"
+    # meteofrance way of saying 404 is by redirecting you (302) to the 404 page, which is served with a 200 status...
+    # so 302 means 404
     r = requests.get(url, allow_redirects=False)
     assert (
         r.status_code == 200
-    ), f"The bra for the massif {massif} at day {bra_date} doesn't exist"
-    return ET.parse(r.content)
+    ), f"The bra for the massif {massif} at day {bra_date} doesn't exist, status: {r.status_code}"
+    # we could pass the url directly. But mocking in test would be more tricky. Using requests lib helps.
+    return ET.parse(io.BytesIO(r.content))
 
 
-def fetch_massif_geom_from_opendata(massif: str) -> WKBElement:
+def get_massif_geom(massif: str) -> WKBElement:
     # go on the meteofrance bra website
     # then get the html "area" element
     # then convert it to GeoJSON
-    raise NotImplemented()
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    gj_file = os.path.join(current_dir, "../data/all_massifs.geojson")
+    with open(gj_file) as fp:
+        gj = geojson.load(fp)
+    for obj in gj.features:
+        if obj.properties["slug"].upper() == massif.upper():
+            return from_shape(shape(obj.geometry), 4326)
+    else:
+        raise ValueError(f"Massif {massif} geometry cannot be found.")
 
 
 def fetch_department_geom_from_opendata(dept: str, dept_nb: str) -> WKBElement:
@@ -74,7 +86,6 @@ def fetch_department_geom_from_opendata(dept: str, dept_nb: str) -> WKBElement:
     )
     assert (
         raw_dept.status_code == 200
-    ), f"Something went wrong with department geometry fetching from the internet, status : {raw_dept.status_code}"
+    ), f"Something went wrong with department geometry fetching from the internet, status: {raw_dept.status_code}"
     gj = geojson.loads(raw_dept.text)
     return from_shape(shape(gj.geometry), 4326)
-
