@@ -154,7 +154,8 @@ def import_all_bra():
 def import_massif():
     massif_json = requests.get(Config.BRA_BASE_URL + "/massifs.json").json()
     with connection_scope() as con:
-        for zone in massif_json:
+        # the 4th element of the massif is useless, and there are no BRA for it.
+        for zone in massif_json[:3]:
             for dept in zone["departements"]:
                 for massif in dept["massifs"]:
                     persist_massif(

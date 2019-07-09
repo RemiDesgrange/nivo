@@ -74,7 +74,7 @@ def fetch_department_geom_from_opendata(dept: str, dept_nb: str) -> WKBElement:
     )
     assert (
         raw_dept.status_code == 200
-    ), "Something went wrong with department geometry fetching from the internet"
+    ), f"Something went wrong with department geometry fetching from the internet, status : {raw_dept.status_code}"
     gj = geojson.loads(raw_dept.text)
     return from_shape(shape(gj.geometry), 4326)
 

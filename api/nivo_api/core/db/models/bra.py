@@ -31,7 +31,6 @@ Department = AbstractSpatialTable(
     Column("the_geom", Geometry("POLYGON", srid=4326), nullable=False),
 )
 # "North Alps", "Souith Alps" etc...
-# Polygon is a union (as of st_union) of departement polygon.
 Zone = AbstractSpatialTable(
     "bra_zone",
     metadata,
@@ -39,7 +38,6 @@ Zone = AbstractSpatialTable(
     Column("bz_name", TEXT, unique=True, nullable=False)
 )
 # Alpine massif, like "Maurienne", "Chablais", "Aspe ossau"
-# TODO find out how to get a polygon of those massif.
 Massif = AbstractSpatialTable(
     "bra_massif",
     metadata,

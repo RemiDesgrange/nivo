@@ -20,7 +20,7 @@ from nivo_api.settings import Config
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-# data quality is not the best stuiff at meteofrance.
+# data quality is not the best stuff at meteofrance.
 SPECIAL_CHAR_TO_SET_TO_NONE = ["mq", "/"]
 
 
