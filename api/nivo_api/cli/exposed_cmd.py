@@ -109,7 +109,6 @@ def import_last_bra():
     # for all the date, get the xml
     # process
     # import
-
     bra_dates = get_last_bra_date()
     with connection_scope() as con:
         for massif, date in bra_dates.items():
@@ -124,7 +123,7 @@ def import_last_bra():
 
 
 @click.command()
-@click.argument("date", type=click.DateTime(format(("%Y-%m-%d",))))
+@click.argument("date", type=click.DateTime(["%Y-%m-%d"]))
 def import_bra(date):
     bra_dates = get_bra_date(date)
     with connection_scope() as con:
@@ -151,18 +150,19 @@ def import_all_bra():
 
 
 @click.command()
-def import_massif():
+def import_massifs():
     massif_json = requests.get(Config.BRA_BASE_URL + "/massifs.json").json()
     with connection_scope() as con:
         # the 4th element of the massif is useless, and there are no BRA for it.
         for zone in massif_json[:3]:
             for dept in zone["departements"]:
                 for massif in dept["massifs"]:
+                    click.echo(f"Importing {massif}")
                     try:
                         persist_massif(
                             con,
                             massif,
-                            {"name": dept["nom_dept"], "number": dept["num_dept"]},
+                            {"name": dept["nom_dep"], "number": dept["num_dep"]},
                             zone["zone"],
                         )
                     except ValueError:
@@ -170,8 +170,13 @@ def import_massif():
 
 
 @click.command()
-def init_db():
+@click.option("--drop", is_flag=True, help="Drop db before creating the schema")
+def init_db(drop):
     # create the table if not exist. Assume the db is already here.
     # the command is idem potent
     logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
-    create_schema_and_table()
+    if drop:
+        click.echo(
+            "/!\ Warning /!\ you specify drop. Your db will be erased before creation"
+        )
+    create_schema_and_table(drop)

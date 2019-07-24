@@ -28,7 +28,7 @@ Department = AbstractSpatialTable(
     Column("bd_name", TEXT, unique=True, nullable=False),
     Column("bd_number", Integer, unique=True),
     Column("bd_zone", UUID(as_uuid=True), ForeignKey("bra_zone.bz_id"), nullable=False),
-    Column("the_geom", Geometry("POLYGON", srid=4326), nullable=False),
+    Column("the_geom", Geometry("MULTIPOLYGON", srid=4326), nullable=False),
 )
 # "North Alps", "Souith Alps" etc...
 Zone = AbstractSpatialTable(

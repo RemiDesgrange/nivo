@@ -33,16 +33,6 @@ class TestGetMassifEntity:
             assert e.value.args[0] == "Cannot found massif CHABLAIS in the db"
             assert e.type is ValueError
 
-    @setup_db()
-    def test_massif(self):
-        with connection_scope() as con:
-            persist_massif(
-                con,
-                "CHABLAIS",
-                {"name": "Haute-savoie", "number": "74"},
-                "Alpes du Nord",
-            )
-
 
 class TestGetRiskEntity:
     def test_get_risk_entity_none(self):

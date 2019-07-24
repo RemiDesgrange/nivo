@@ -5,7 +5,6 @@ from datetime import datetime, date
 
 from json import JSONDecodeError
 from typing import Dict, Tuple
-import importlib.resources
 import geojson
 import requests
 import lxml.etree as ET
@@ -67,7 +66,11 @@ def get_bra_xml(massif: str, bra_date: datetime) -> ET:
 def get_massif_geom(massif: str) -> WKBElement:
     # go on the meteofrance bra website
     # then get the html "area" element
-    # then convert it to GeoJSON
+    # then convert it to fake GeoJSON (wrong coordinates)
+    # then open it in qgis.
+    # rotate -90°
+    # swap X and Y coordinates
+    # use grass v.transform with various x, y scale and rotation to get where you want.
     current_dir = os.path.dirname(os.path.abspath(__file__))
     gj_file = os.path.join(current_dir, "../data/all_massifs.geojson")
     with open(gj_file) as fp:
@@ -80,6 +83,8 @@ def get_massif_geom(massif: str) -> WKBElement:
 
 
 def fetch_department_geom_from_opendata(dept: str, dept_nb: str) -> WKBElement:
+    if _is_it_a_fucking_special_case(dept, dept_nb):
+        return _handle_fucking_special_cases(dept, dept_nb)
     dept = dept.lower()
     raw_dept = requests.get(
         f"https://france-geojson.gregoiredavid.fr/repo/departements/{dept_nb}-{dept}/departement-{dept_nb}-{dept}.geojson"
@@ -87,5 +92,26 @@ def fetch_department_geom_from_opendata(dept: str, dept_nb: str) -> WKBElement:
     assert (
         raw_dept.status_code == 200
     ), f"Something went wrong with department geometry fetching from the internet, status: {raw_dept.status_code}"
+    # OH yes, this website send json with content-type XML...
     gj = geojson.loads(raw_dept.text)
     return from_shape(shape(gj.geometry), 4326)
+
+
+def _is_it_a_fucking_special_case(_: str, dept_nb:str) -> bool:
+    """
+    Meteofrance, as usual, is incapable of any consistency. So we need to deal with corsica and andorre manually.
+    """
+    if dept_nb in ("20", "99"):
+        return True
+    return False
+
+def _handle_fucking_special_cases(dept: str, dept_nb:str) -> WKBElement:
+    if dept_nb == "20":
+        raw_corsica = requests.get("https://france-geojson.gregoiredavid.fr/repo/regions/corse/region-corse.geojson")
+        assert (
+                raw_corsica.status_code == 200
+        ), f"Something went wrong with department geometry fetching from the internet, status: {raw_corsica.status_code}"
+        gj = geojson.loads(raw_corsica.text)
+        return from_shape(shape(gj.geometry), 4326)
+    if dept_nb == "99":
+        raise NotImplemented('You need to do it dude !!')
