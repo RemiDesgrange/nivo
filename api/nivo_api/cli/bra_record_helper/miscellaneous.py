@@ -97,7 +97,7 @@ def fetch_department_geom_from_opendata(dept: str, dept_nb: str) -> WKBElement:
     return from_shape(shape(gj.geometry), 4326)
 
 
-def _is_it_a_fucking_special_case(_: str, dept_nb:str) -> bool:
+def _is_it_a_fucking_special_case(_: str, dept_nb: str) -> bool:
     """
     Meteofrance, as usual, is incapable of any consistency. So we need to deal with corsica and andorre manually.
     """
@@ -105,13 +105,16 @@ def _is_it_a_fucking_special_case(_: str, dept_nb:str) -> bool:
         return True
     return False
 
-def _handle_fucking_special_cases(dept: str, dept_nb:str) -> WKBElement:
+
+def _handle_fucking_special_cases(dept: str, dept_nb: str) -> WKBElement:
     if dept_nb == "20":
-        raw_corsica = requests.get("https://france-geojson.gregoiredavid.fr/repo/regions/corse/region-corse.geojson")
+        raw_corsica = requests.get(
+            "https://france-geojson.gregoiredavid.fr/repo/regions/corse/region-corse.geojson"
+        )
         assert (
-                raw_corsica.status_code == 200
+            raw_corsica.status_code == 200
         ), f"Something went wrong with department geometry fetching from the internet, status: {raw_corsica.status_code}"
         gj = geojson.loads(raw_corsica.text)
         return from_shape(shape(gj.geometry), 4326)
     if dept_nb == "99":
-        raise NotImplemented('You need to do it dude !!')
+        raise NotImplemented("You need to do it dude !!")

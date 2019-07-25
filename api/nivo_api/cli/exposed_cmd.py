@@ -11,7 +11,7 @@ from nivo_api.cli.bra_record_helper.miscellaneous import (
 )
 from nivo_api.cli.bra_record_helper.persist import persist_bra, persist_massif
 from nivo_api.cli.bra_record_helper.process import process_xml
-from nivo_api.cli.database import create_schema_and_table, NivoSensorStation
+from nivo_api.cli.database import create_schema_and_table
 
 import logging
 from sqlalchemy.dialects.postgresql import insert
@@ -24,6 +24,7 @@ from nivo_api.cli.nivo_record_helper import (
     get_all_nivo_date,
 )
 from nivo_api.core.db.connection import connection_scope
+from nivo_api.core.db.models.nivo import NivoSensorStation
 from nivo_api.settings import Config
 
 log = logging.getLogger(__name__)
@@ -123,7 +124,7 @@ def import_last_bra():
 
 
 @click.command()
-@click.argument("date", type=click.DateTime(["%Y-%m-%d"]))
+@click.argument("date", type=click.DateTime(["%Y-%m-%d"]))  # type: ignore
 def import_bra(date):
     bra_dates = get_bra_date(date)
     with connection_scope() as con:

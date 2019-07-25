@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime, date
+from enum import Enum
 
 from json import JSONDecodeError
 from typing import Dict, Tuple, List, Optional
@@ -84,17 +85,14 @@ def _get_weather_forcast(bra_xml: _Element, bra_id: UUID):
 
 
 def _get_risk_forcast(bra_xml: _Element, bra_id: UUID):
-    for forcast in bra_xml.find("//TENDANCES").getchildren():
-        evol = int(forcast.get("VALEUR"))
-        if evol == 0:
-            evol = "STABLE"
-        elif evol == 1:
-            evol = "UP"
-        elif evol == -1:
-            evol = "DOWN"
-        else:
-            raise ValueError("Unknown risk value")
+    class RiskEvolution(Enum):
+        STABLE = 0
+        UP = 0
+        DOWN = -1
 
+    for forcast in bra_xml.find("//TENDANCES").getchildren():
+        evol = RiskEvolution(int(forcast.get("VALEUR")))
+        evol = str(evol).split(".")[-1]
         yield {
             "rf_bra_record": bra_id,
             "rf_date": datetime.strptime(forcast.get("DATE"), "%Y-%m-%dT%H:%M:%S"),

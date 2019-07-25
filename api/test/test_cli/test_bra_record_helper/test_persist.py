@@ -66,6 +66,7 @@ class TestPersistMassif:
             assert id1.bz_id == id2.bz_id
             assert id1.bd_id == id2.bd_id
 
+
 class TestPersistBra:
     def test_persist_bra(self):
         raise NotImplemented()

@@ -165,6 +165,7 @@ def check_last_nivo_doesnt_exist(nivo_date: date) -> bool:
 
 
 def download_nivo(nivo_date: date, is_archive=False) -> "ANivoCsv":
+    nivo_csv: ANivoCsv
     if is_archive:
         nivo_csv = ArchiveNivoCss(nivo_date)
     else:
@@ -186,29 +187,28 @@ def import_nivo(csv_file: ANivoCsv):
 
 
 def get_all_nivo_date() -> List[Dict]:
-    ftp = FTP(Config.METEO_FRANCE_FTP_DOMAIN_NAME)
-    ftp.login()
-    ftp.cwd("FDPMSP/Txt/Nivo/")
-    nivo = ftp.nlst("nivo*.csv")
+    with FTP(Config.METEO_FRANCE_FTP_DOMAIN_NAME) as ftp:
+        ftp.login()
+        ftp.cwd("FDPMSP/Txt/Nivo/")
+        nivo = ftp.nlst("nivo*.csv")
 
-    def parse_filename(filename: str) -> Dict:
-        date_str = re.search("nivo.(.*).csv", filename).group(1)
-        return {
-            "is_archive": False,
-            "nivo_date": datetime.strptime(date_str, "%Y%m%d").date(),
-        }
+        def parse_filename(filename: str) -> Dict:
+            date_str = re.search("nivo.(.*).csv", filename).group(1)
+            return {
+                "is_archive": False,
+                "nivo_date": datetime.strptime(date_str, "%Y%m%d").date(),
+            }
 
-    nivo_list = list(map(parse_filename, nivo))
-    ftp.cwd("Archive")
-    nivo = ftp.nlst("nivo*.csv.gz")
+        nivo_list = list(map(parse_filename, nivo))
+        ftp.cwd("Archive")
+        nivo = ftp.nlst("nivo*.csv.gz")
 
-    def parse_filename_archived(filename: str) -> Dict:
-        date_str = re.search("nivo.(.*).csv.gz", filename).group(1)
-        return {
-            "is_archive": True,
-            "nivo_date": datetime.strptime(date_str, "%Y%m").date(),
-        }
+        def parse_filename_archived(filename: str) -> Dict:
+            date_str = re.search("nivo.(.*).csv.gz", filename).group(1)
+            return {
+                "is_archive": True,
+                "nivo_date": datetime.strptime(date_str, "%Y%m").date(),
+            }
 
-    nivo_list_archived = list(map(parse_filename_archived, nivo))
-    ftp.close()
-    return nivo_list + nivo_list_archived
+        nivo_list_archived = list(map(parse_filename_archived, nivo))
+        return nivo_list + nivo_list_archived

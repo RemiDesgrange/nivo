@@ -6,7 +6,7 @@ There is not limiter, no auth, no restriction whatsoever.
 ## Start with the api
 
 You'll need data from meteo france. Be aware that downloading the whole dataset is quite long, 
-both for nivo data and for BRA. So you grab the last one if you develop (or a particular one).
+both for nivo data and for BRA. So grab the last one if you develop (or a particular one).
 
 
 ### Start the db with docker (+ the app)
@@ -42,3 +42,17 @@ FLASK_APP=nivo_api.app:app flask run
 # OR
 gunicorn nivo_api.app:app
 ``` 
+
+# Test
+
+```bash
+#launch the db. Ex:
+docker-compose up -f docker-compose.dev.yml -f docker-compose.yml -d db
+pytest
+```
+
+# Mypy
+
+```bash
+mypy nivo_api
+```

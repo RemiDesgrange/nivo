@@ -26,7 +26,7 @@ class TestFetchDepartementGeojsonFromOpenData:
     @responses.activate
     def test_exist(self):
         with open(
-                os.path.join(CURRENT_DIR, "departement-74-haute-savoie.geojson")
+            os.path.join(CURRENT_DIR, "departement-74-haute-savoie.geojson")
         ) as dept_json:
             responses.add(
                 responses.GET,
@@ -48,8 +48,8 @@ class TestFetchDepartementGeojsonFromOpenData:
         with pytest.raises(AssertionError) as e:
             fetch_department_geom_from_opendata("Haute-Savoie", "10")
         assert (
-                str(e.value)
-                == "Something went wrong with department geometry fetching from the internet, status: 404"
+            str(e.value)
+            == "Something went wrong with department geometry fetching from the internet, status: 404"
         )
 
 
@@ -105,14 +105,14 @@ class TestGetBraXml:
         with pytest.raises(AssertionError) as e:
             get_bra_xml("CHABLAIS", datetime.strptime("20190101142328", "%Y%m%d%H%M%S"))
         assert (
-                str(e.value)
-                == "The bra for the massif CHABLAIS at day 2019-01-01 14:23:28 doesn't exist, status: 302"
+            str(e.value)
+            == "The bra for the massif CHABLAIS at day 2019-01-01 14:23:28 doesn't exist, status: 302"
         )
 
     @responses.activate
     def test_get_bra_xml_work(self):
         with open(
-                os.path.join(CURRENT_DIR, "BRA.CHABLAIS.20190101142328.xml")
+            os.path.join(CURRENT_DIR, "BRA.CHABLAIS.20190101142328.xml")
         ) as bra_xml:
             responses.add(
                 responses.GET,
@@ -170,7 +170,6 @@ class TestGetMassifGeom:
             ret = get_massif_geom("ReNoSo")
             assert to_shape(ret).wkt == "POLYGON ((1 1, 1 2, 2 2, 2 1, 1 1))"
 
-
     def test_massif_have_same_name(self):
         data = """
         {
@@ -213,8 +212,7 @@ class TestGetMassifGeom:
         """
         with patch("builtins.open", mock_open(read_data=data)):
             ret = get_massif_geom("ReNoSo")
-            assert to_shape(ret).wkt== "POLYGON ((1 1, 1 2, 2 2, 2 1, 1 1))"
-
+            assert to_shape(ret).wkt == "POLYGON ((1 1, 1 2, 2 2, 2 1, 1 1))"
 
 
 class TestFetchDepartmentGeomFromOpendata:
