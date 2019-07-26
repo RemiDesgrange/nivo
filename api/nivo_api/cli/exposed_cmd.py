@@ -47,10 +47,8 @@ def import_last_nivo_data():
 @click.command()
 def import_nivo_sensor_station():
     # this need refactor
-
     res = requests.get(f"{Config.METEO_FRANCE_NIVO_BASE_URL}/postesNivo.json")
     assert res.status_code == 200
-    res.json()
     with connection_scope() as con:
         with con.begin():
             for feature in res.json()["features"]:
@@ -63,7 +61,7 @@ def import_nivo_sensor_station():
                 )
                 ins = (
                     insert(NivoSensorStation)
-                    .values(
+                        .values(
                         **{
                             "nss_name": feature["properties"]["Nom"],
                             "nss_meteofrance_id": mf_id,
@@ -72,15 +70,15 @@ def import_nivo_sensor_station():
                             ),
                         }
                     )
-                    .on_conflict_do_nothing(index_elements=["nss_name"])
+                        .on_conflict_do_nothing(index_elements=["nss_name"])
                 )
                 con.execute(ins)
         inserted = (
             con.execute(select([func.count(NivoSensorStation.c.nss_id).label("count")]))
-            .first()
-            .count
+                .first()
+                .count
         )
-        print(f"{inserted} sensor station imported")
+        click.echo(f"{inserted} sensor station imported")
 
 
 @click.command()
@@ -90,7 +88,6 @@ def import_all_nivo_data():
     # download all file (via http, better)
     # process it
     # import it
-
     all_nivo_date = get_all_nivo_date()
     log.info(f"Need to process {len(all_nivo_date)}")
     for nivo_date in all_nivo_date:
