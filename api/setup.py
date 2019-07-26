@@ -9,18 +9,7 @@ setup(
     description="API to serve snow opendata from meteofrance",
     author="Remi Desgrange",
     author_email="remi+nivo@desgran.ge",
-    url="",
+    url="https://nivo.desgran.ge",
     packages=find_packages(),
     install_requires=REQUIREMENTS,
-    entry_points="""
-            [console_scripts]
-            import_last_nivo_data=nivo_api.cli:import_last_nivo_data
-            import_all_nivo_data=nivo_api.cli:import_all_nivo_data
-            import_last_bra=nivo_api.cli:import_last_bra
-            import_all_bra=nivo_api.cli:import_all_bra
-            import_bra=nivo_api.cli:import_bra
-            import_nivo_sensor_station=nivo_api.cli:import_nivo_sensor_station
-            import_massifs=nivo_api.cli:import_massifs
-            init_db=nivo_api.cli:init_db
-        """,
 )
