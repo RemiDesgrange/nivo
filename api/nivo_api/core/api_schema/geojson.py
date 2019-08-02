@@ -1,3 +1,6 @@
+"""
+Create custom flask restplus schemamodel to return
+"""
 import json
 import os
 from pathlib import Path

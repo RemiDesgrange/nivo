@@ -1,4 +1,5 @@
 import uuid
+from enum import Enum
 
 from geoalchemy2 import Geometry
 from sqlalchemy import (
@@ -66,18 +67,20 @@ Risk = AbstractTable(
     Column("r_description", TEXT),
 )
 
-DangerousSlopes = ENUM(
-    "NE",
-    "E",
-    "SE",
-    "S",
-    "SW",
-    "W",
-    "NW",
-    "N",
-    name="dangerous_slopes_t",
-    metadata=metadata,
-)
+
+class DangerousSlopes(Enum):
+    NE = "NE"
+    E = "E"
+    SE = "SE"
+    S = "S"
+    SW = "SW"
+    W = "W"
+    NW = "NW"
+    N = "N"
+
+
+# actual implemntation in the DB
+_PGDangerousSlopes = ENUM(DangerousSlopes, name="dangerous_slopes_t", metadata=metadata)
 
 BraRecord = AbstractTable(
     "bra_record",
@@ -97,7 +100,7 @@ BraRecord = AbstractTable(
     Column("br_risk2_altitude_limit", TEXT),
     Column("br_risk2_evolution", ForeignKey("bra_risk.r_id")),
     Column("br_risk_comment", TEXT),
-    Column("br_dangerous_slopes", ArrayOfEnum(DangerousSlopes)),
+    Column("br_dangerous_slopes", ArrayOfEnum(_PGDangerousSlopes)),
     Column("br_dangerous_slopes_comment", TEXT),
     Column("br_opinion", TEXT),
     Column("br_snow_quality", TEXT),

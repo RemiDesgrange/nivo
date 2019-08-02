@@ -16,22 +16,23 @@ from nivo_api.cli.bra_record_helper.process import (
     _get_risk_forcast,
     _get_risk_entity,
     _get_massif_entity,
+    _get_dangerous_slopes,
+    _get_bra_snow_records,
+    _get_fresh_snow_record,
 )
-from nivo_api.cli.bra_record_helper.persist import persist_massif
 from nivo_api.core.db.connection import connection_scope
+from nivo_api.core.db.models.bra import DangerousSlopes
 from test.pytest_fixtures import setup_db
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-class TestGetMassifEntity:
-    @setup_db()
-    def test_no_massif(self):
-        with connection_scope() as con:
-            with pytest.raises(ValueError) as e:
-                _get_massif_entity("CHABLAIS", con)
-            assert e.value.args[0] == "Cannot found massif CHABLAIS in the db"
-            assert e.type is ValueError
+@pytest.fixture()
+def bra_xml_parsed() -> ET._Element:
+    with open(
+        os.path.join(CURRENT_DIR, "BRA.CHABLAIS.20190101142328.xml"), "rb"
+    ) as xmlfile:
+        return ET.parse(xmlfile)
 
 
 class TestGetRiskEntity:
@@ -90,21 +91,119 @@ class TestGetRiskEntity:
                 next(x)
 
 
+class TestGetMassifEntity:
+    @setup_db()
+    def test_no_massif(self):
+        with connection_scope() as con:
+            with pytest.raises(ValueError) as e:
+                _get_massif_entity("CHABLAIS", con)
+            assert e.value.args[0] == "Cannot found massif CHABLAIS in the db"
+            assert e.type is ValueError
+
+
+def test_dangerous_slopes_valid(bra_xml_parsed):
+    """
+    Testing wrong XML is useless since it will ne detected before. Also testing for "COMMENT" is useless 'cause of
+    enumeration (we all love enums)
+    """
+
+    ret = _get_dangerous_slopes(bra_xml_parsed)
+    assert isinstance(ret, list)
+    assert len(ret) == 5
+    test_sample = [
+        DangerousSlopes("NE"),
+        DangerousSlopes("E"),
+        DangerousSlopes("W"),
+        DangerousSlopes("NW"),
+        DangerousSlopes("N"),
+    ]
+    for i, ds in enumerate(ret):
+        assert isinstance(ds, DangerousSlopes)
+        assert ds == test_sample[i]
+
+
+def test__get_bra_snow_records(bra_xml_parsed):
+    bra_id = uuid4()
+    res = _get_bra_snow_records(bra_xml_parsed, bra_id)
+    test_data = [
+        {
+            "s_bra_record": bra_id,
+            "s_altitude": 1000,
+            "s_snow_quantity_cm_north": 0,
+            "s_snow_quantity_cm_south": 0,
+        },
+        {
+            "s_bra_record": bra_id,
+            "s_altitude": 1500,
+            "s_snow_quantity_cm_north": 20,
+            "s_snow_quantity_cm_south": 5,
+        },
+        {
+            "s_bra_record": bra_id,
+            "s_altitude": 2000,
+            "s_snow_quantity_cm_north": 70,
+            "s_snow_quantity_cm_south": 50,
+        },
+    ]
+    for i, sr in enumerate(res):
+        assert test_data[i] == sr
+
+
+def test_get_fresh_snow_record(bra_xml_parsed):
+    bra_id = uuid4()
+    res = _get_fresh_snow_record(bra_xml_parsed, bra_id)
+    test_data = [
+        {
+            "bfsr_bra_record": bra_id,
+            "bfsr_date": datetime(2018, 12, 28, 00, 00, 00),
+            "bfsr_altitude": 1800,
+            "bsfr_massif_snowfall": 0,
+            "bfsr_second_massif_snowfall": -1,
+        },
+        {
+            "bfsr_bra_record": bra_id,
+            "bfsr_date": datetime(2018, 12, 29, 00, 00, 00),
+            "bfsr_altitude": 1800,
+            "bsfr_massif_snowfall": 0,
+            "bfsr_second_massif_snowfall": -1,
+        },
+        {
+            "bfsr_bra_record": bra_id,
+            "bfsr_date": datetime(2018, 12, 30, 00, 00, 00),
+            "bfsr_altitude": 1800,
+            "bsfr_massif_snowfall": 0,
+            "bfsr_second_massif_snowfall": -1,
+        },
+        {
+            "bfsr_bra_record": bra_id,
+            "bfsr_date": datetime(2018, 12, 31, 00, 00, 00),
+            "bfsr_altitude": 1800,
+            "bsfr_massif_snowfall": 0,
+            "bfsr_second_massif_snowfall": -1,
+        },
+        {
+            "bfsr_bra_record": bra_id,
+            "bfsr_date": datetime(2019, 1, 1, 00, 00, 00),
+            "bfsr_altitude": 1800,
+            "bsfr_massif_snowfall": 2,
+            "bfsr_second_massif_snowfall": -1,
+        },
+        {
+            "bfsr_bra_record": bra_id,
+            "bfsr_date": datetime(2019, 1, 2, 00, 00, 00),
+            "bfsr_altitude": 1800,
+            "bsfr_massif_snowfall": 3,
+            "bfsr_second_massif_snowfall": -1,
+        },
+    ]
+    for i, fsr in enumerate(res):
+        assert isinstance(fsr, dict)
+        assert fsr == test_data[i]
+
+
 class TestProcessXML:
     @setup_db()
-    def test_process_xml_yield(self):
-        # TODO this test need more test data
-        with open(
-            os.path.join(CURRENT_DIR, "BRA.CHABLAIS.20190101142328.xml"), "rb"
-        ) as xmlfile:
-            with connection_scope() as c:
-                xml = ET.parse(xmlfile)
-                p = process_xml(c, xml)
-                assert next(p)
-                assert next(p)
-                assert next(p)
-                assert next(p)
-                assert next(p)
-                with pytest.raises(StopIteration) as e:
-                    next(p)
-                assert e.type is StopIteration
+    def test_process_xml_yield(self, bra_xml_parsed):
+        with connection_scope() as c:
+            p = process_xml(c, bra_xml_parsed)
+            assert isinstance(p, list)

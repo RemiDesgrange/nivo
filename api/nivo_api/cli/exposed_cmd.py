@@ -61,7 +61,7 @@ def import_nivo_sensor_station():
                 )
                 ins = (
                     insert(NivoSensorStation)
-                        .values(
+                    .values(
                         **{
                             "nss_name": feature["properties"]["Nom"],
                             "nss_meteofrance_id": mf_id,
@@ -70,13 +70,13 @@ def import_nivo_sensor_station():
                             ),
                         }
                     )
-                        .on_conflict_do_nothing(index_elements=["nss_name"])
+                    .on_conflict_do_nothing(index_elements=["nss_name"])
                 )
                 con.execute(ins)
         inserted = (
             con.execute(select([func.count(NivoSensorStation.c.nss_id).label("count")]))
-                .first()
-                .count
+            .first()
+            .count
         )
         click.echo(f"{inserted} sensor station imported")
 
