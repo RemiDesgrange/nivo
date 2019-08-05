@@ -10,12 +10,11 @@ A portal to share and display meteofrance opendata.
 
 The idea of this portal is to share meteo france opendata because :
 
-* We are skier, and checking the meteofrance web site *every* day during winter is a PITA
-* nivo data is not display bit it is still useful
-* having history of the snow is super important.
+*  We are skier, and checking the meteofrance web site *every* day during winter is a PITA
+*  nivo data is not display bit it is still useful
+*  having history of the snow is super important.
 
-We aim to display three type of data
-
+We aim to display three type of data.
 
 ## API
 
@@ -31,7 +30,6 @@ openapi, powered by python(3). Tested on python3.7. Normally should run on pytho
 *  To init the database, you can use the `init_db` cmd that comes if you run `pip install -e .`
 *  Follow README.md in `api` folder for more
 
-
 ## Frontend
 
 We are not web dev, PR appreciated if you are master of the css, lord of the js.
@@ -42,8 +40,7 @@ We are not web dev, PR appreciated if you are master of the css, lord of the js.
 *  `npm i`
 *  `npm run serve`
 
-
-## Prod ?
+## Prod
 
 Docker. But it's quite standard python. So you can run it with anything that can run WSGI server
 (Apache, gunicorn, uwsgi, waitress, etc...).
