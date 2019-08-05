@@ -1,0 +1,23 @@
+language: python
+python:
+  - "3.6"
+  - "3.7"
+install:
+  - pip install -r api/requirements.txt -r api/dev-requirements.txt
+
+
+addons:
+  postgresql: 11
+  apt:
+    packages:
+      - postgresql-11-postgis-2.5
+
+before_script:
+  - psql -c "create database travis_test" -U postgres
+  - psql -U postgres -d travis_test -c "create extension postgis"
+
+env:
+  DB_URL: postgresql:///travis_test
+
+script:
+  - pytest api/test
