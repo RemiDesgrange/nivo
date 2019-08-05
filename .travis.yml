@@ -16,7 +16,7 @@ before_install:
 
 install:
   - pip install -r api/requirements.txt -r api/dev-requirements.txt
-  - cd frontend && npm install
+  - cd frontend && npm install && cd ..
 
 before_script:
   - psql -c "create database travis_test" -U postgres
@@ -27,4 +27,4 @@ env:
 
 script:
   - pytest api/test
-  - cd frontend && npm run test
+  - cd frontend && npm run test && cd ..
