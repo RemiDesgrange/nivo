@@ -19,10 +19,10 @@ docker-compose up -f docker-compose.dev.yml -f docker-compose.yml -d
 
 ### Setup dev env
 
-* Create a venv, via virtualenv or pew or whatever the tool you like
-* `cd api`
-* `pip install -r requirements.txt -r dev-requirements.txt`
-* `pip install -e .` 
+*  Create a venv, via virtualenv or pew or whatever the tool you like
+*  `cd api`
+*  `pip install -r requirements.txt -r dev-requirements.txt`
+*  `pip install -e .` 
 
 ### Import script
 
@@ -43,7 +43,7 @@ FLASK_APP=nivo_api.app:app flask run
 gunicorn nivo_api.app:app
 ``` 
 
-# Test
+## Test
 
 ```bash
 #launch the db. Ex:
@@ -51,7 +51,10 @@ docker-compose up -f docker-compose.dev.yml -f docker-compose.yml -d db
 pytest
 ```
 
-# Mypy
+## Mypy
+
+`Mypy` is a static type checker. It helps you detect inconsistencies in 
+types.
 
 ```bash
 mypy nivo_api

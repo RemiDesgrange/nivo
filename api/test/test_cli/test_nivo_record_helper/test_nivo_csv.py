@@ -1,6 +1,6 @@
 def TestNivoCsv():
-    raise NotImplemented()
+    raise NotImplementedError()
 
 
 def TestArchiveNicoCsv():
-    raise NotImplemented()
+    raise NotImplementedError()

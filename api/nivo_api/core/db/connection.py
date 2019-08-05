@@ -1,5 +1,4 @@
 from contextlib import contextmanager
-from typing import Optional
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.engine import Engine, Connection
 

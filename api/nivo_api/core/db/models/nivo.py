@@ -1,15 +1,7 @@
 import uuid
 
 from geoalchemy2 import Geometry
-from sqlalchemy import (
-    Table,
-    Column,
-    TEXT,
-    Integer,
-    DateTime,
-    Float,
-    ForeignKeyConstraint,
-)
+from sqlalchemy import Column, TEXT, Integer, DateTime, Float, ForeignKeyConstraint
 from sqlalchemy.dialects.postgresql import UUID
 
 from nivo_api.core.db.connection import metadata

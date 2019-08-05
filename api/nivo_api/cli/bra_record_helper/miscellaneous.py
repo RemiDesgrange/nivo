@@ -24,7 +24,8 @@ def get_bra_date(bra_date: date) -> Dict[str, datetime]:
     res = requests.get(
         Config.BRA_BASE_URL + f"/bra.{bra_date_str}.json", allow_redirects=False
     )
-    assert res.status_code == 200, f"Bra list does not exist for {bra_date}"
+    if res.status_code != 200:
+        raise AssertionError(f"Bra list does not exist for {bra_date}")
     try:
         massifs_json = res.json()
 
@@ -111,10 +112,11 @@ def _handle_fucking_special_cases(dept: str, dept_nb: str) -> WKBElement:
         raw_corsica = requests.get(
             "https://france-geojson.gregoiredavid.fr/repo/regions/corse/region-corse.geojson"
         )
-        assert (
-            raw_corsica.status_code == 200
-        ), f"Something went wrong with department geometry fetching from the internet, status: {raw_corsica.status_code}"
+        if raw_corsica.status_code != 200:
+            raise AssertionError(
+                f"Something went wrong with department geometry fetching from the internet, status: {raw_corsica.status_code}"
+            )
         gj = geojson.loads(raw_corsica.text)
         return from_shape(shape(gj.geometry), 4326)
     if dept_nb == "99":
-        raise NotImplemented("You need to do it dude !!")
+        raise NotImplementedError("Need to do it dude...")

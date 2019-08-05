@@ -44,7 +44,7 @@ class AbstractTable(Table):
         if isinstance(res, RowProxy):
             return dict(res)
         else:
-            return list(map(lambda x: dict(x), res))
+            return [dict(x) for x in res]
 
 
 class AbstractSpatialTable(AbstractTable):

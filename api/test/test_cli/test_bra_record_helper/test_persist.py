@@ -69,4 +69,4 @@ class TestPersistMassif:
 
 class TestPersistBra:
     def test_persist_bra(self):
-        raise NotImplemented()
+        raise NotImplementedError()

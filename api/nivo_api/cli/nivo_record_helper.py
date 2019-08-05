@@ -1,4 +1,3 @@
-import gzip
 import io
 import logging
 import re
@@ -41,7 +40,7 @@ class ANivoCsv(ABC):
 
     def fetch_and_parse(self) -> DictReader:
         res = requests.get(self.download_url)
-        assert res.status_code == 200
+        res.raise_for_status()
         self.nivo_csv = DictReader(io.StringIO(res.text), delimiter=";")
         return self.nivo_csv
 

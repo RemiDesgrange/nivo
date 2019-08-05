@@ -48,7 +48,7 @@ def import_last_nivo_data():
 def import_nivo_sensor_station():
     # this need refactor
     res = requests.get(f"{Config.METEO_FRANCE_NIVO_BASE_URL}/postesNivo.json")
-    assert res.status_code == 200
+    res.raise_for_status()
     with connection_scope() as con:
         with con.begin():
             for feature in res.json()["features"]:

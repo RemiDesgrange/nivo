@@ -55,4 +55,4 @@ class OneNivoRecordResource(Resource):
 class NivoRecordDateResource(Resource):
     @nivo_meteo.response(200, "OK")
     def get(self, date_from, date_to):
-        raise NotImplemented()
+        raise NotImplementedError()
