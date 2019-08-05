@@ -3,11 +3,9 @@ dist: bionic
 python:
   - "3.6"
   - "3.7"
+git:
+  depth: 1
 
-services:
-  - postgresql
-addons:
-  postgresql: "11"
 
 before_install:
   - sudo apt-get update
