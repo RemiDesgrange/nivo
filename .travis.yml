@@ -19,8 +19,8 @@ install:
   - cd frontend && npm install && cd ..
 
 before_script:
-  - psql -U postgres -c "CREATE USER travis SUPERUSER"
-  - psql -c "create database travis_test"
+  - psql -U postgres -c "CREATE USER travis"
+  - psql -c "create database travis_test with owner travis" -U postgres
   - psql -d travis_test -c "create extension postgis"
   - psql -d travis_test -c "create extension pgcrypto"
 
