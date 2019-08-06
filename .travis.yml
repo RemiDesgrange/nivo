@@ -1,3 +1,4 @@
+language: python
 dist: bionic
 git:
   depth: 1
