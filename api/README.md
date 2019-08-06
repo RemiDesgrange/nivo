@@ -43,6 +43,8 @@ FLASK_APP=nivo_api.app:app flask run
 gunicorn nivo_api.app:app
 ``` 
 
+Be aware that flask web server is for local dev only, not for production use. Gunicorn is commonly used in production environment, but you can use Waitress, uwsgi, etc...
+
 ## Test
 
 ```bash
@@ -50,6 +52,8 @@ gunicorn nivo_api.app:app
 docker-compose up -f docker-compose.dev.yml -f docker-compose.yml -d db
 pytest
 ```
+
+Tests use [pspec](https://pypi.org/project/pytest-pspec/). So you can see "rspec like" unit test. `pspec` config is in the `setup.cfg` file.
 
 ## Mypy
 
@@ -59,3 +63,5 @@ types.
 ```bash
 mypy nivo_api
 ```
+
+Configuration is also in `setup.cfg` file.

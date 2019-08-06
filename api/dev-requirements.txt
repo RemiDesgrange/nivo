@@ -2,5 +2,6 @@ ipython
 pylint
 black
 pytest
+pytest-pspec
 responses # mock requests
 freezegun
