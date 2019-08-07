@@ -28,6 +28,7 @@ env:
 
 script:
   - pytest api/test
+  - python-codacy-coverage -r coverage.xml
   - cd frontend && npm run test && cd ..
 
 notifications:

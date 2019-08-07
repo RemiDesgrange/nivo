@@ -1,9 +1,8 @@
 import sentry_sdk
 from flask import Flask
-from flask_restplus import Api
+from flask_restplus import Api, Namespace
 from sentry_sdk.integrations.flask import FlaskIntegration
-
-from .namespaces.namespace import get_namespaces
+from werkzeug.utils import find_modules, import_string
 
 
 def create_app() -> Flask:
@@ -12,11 +11,15 @@ def create_app() -> Flask:
 
 
 def create_api(app: Flask) -> Api:
+    # We import dynamically the "namespaces" module, recursively. Because Namespace object are located in submodules.
+    # Then we loop over everything that are in the module, and then we add the Namespace object.
+    # This is super expensive but it only happened at boot time.
     api = Api()
-    # This should be modified
-    namespaces = get_namespaces()
-    for ns in namespaces:
-        api.add_namespace(ns)
+    for ns in find_modules("nivo_api.namespaces", recursive=True):
+        mod = import_string(ns)
+        for _, cls in mod.__dict__.items():
+            if isinstance(cls, Namespace):
+                api.add_namespace(cls)
     api.init_app(app)
     return api
 

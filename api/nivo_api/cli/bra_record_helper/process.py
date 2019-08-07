@@ -93,7 +93,7 @@ def _get_risk_forcast(bra_xml: _Element, bra_id: UUID) -> Generator[Dict, None, 
 
     for forcast in bra_xml.find("//TENDANCES").getchildren():
         evol = RiskEvolution(int(forcast.get("VALEUR")))
-        evol = str(evol).split(".")[-1]
+        evol = str(evol).split(".")[-1] # TODO need to move RiskEvolution Enum to models, since sqlalchemy suport native enum !
         yield {
             "rf_bra_record": bra_id,
             "rf_date": datetime.strptime(forcast.get("DATE"), "%Y-%m-%dT%H:%M:%S"),

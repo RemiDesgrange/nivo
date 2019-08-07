@@ -3,5 +3,7 @@ pylint
 black
 pytest
 pytest-pspec
+pytest-cov
+codacy-coverage # upload coverage to codacy. Not mandatory.
 responses # mock requests
 freezegun
