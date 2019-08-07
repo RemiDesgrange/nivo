@@ -175,6 +175,6 @@ def init_db(drop):
     logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
     if drop:
         click.echo(
-            "/!\ Warning /!\ you specify drop. Your db will be erased before creation"
+            "/!\\ Warning /!\\ you specify drop. Your db will be erased before creation"
         )
     create_schema_and_table(drop)

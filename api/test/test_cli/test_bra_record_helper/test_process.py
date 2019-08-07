@@ -19,9 +19,11 @@ from nivo_api.cli.bra_record_helper.process import (
     _get_dangerous_slopes,
     _get_bra_snow_records,
     _get_fresh_snow_record,
+    _get_weather_forcast_at_altitude,
+    _get_weather_forcast,
 )
 from nivo_api.core.db.connection import connection_scope
-from nivo_api.core.db.models.bra import DangerousSlopes
+from nivo_api.core.db.models.bra import DangerousSlopes, WindDirection
 from test.pytest_fixtures import setup_db
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -36,13 +38,22 @@ def bra_xml_parsed() -> ET._Element:
 
 
 class TestGetRiskEntity:
+    """
+    """
+
     def test_get_risk_entity_none(self):
+        """
+        it should return None if the first argument of the function evaluate to false
+        """
         with connection_scope() as con:
             res = _get_risk_entity("", con)
             assert res == None
 
     @setup_db()
     def test_get_risk_entity_not_exist(self):
+        """
+        it should raise ValueError when entity is not found in db.
+        """
         with connection_scope() as con:
             with pytest.raises(ValueError) as e:
                 _get_risk_entity("1", con)
@@ -52,6 +63,9 @@ class TestGetRiskEntity:
 
     @setup_db()
     def test_get_risk_entity_exist(self):
+        """
+        risk exist and it return his id (of form uuid).
+        """
         with connection_scope() as con:
             risk_id = uuid4()
             con.execute(
@@ -64,31 +78,24 @@ class TestGetRiskEntity:
             assert res == risk_id
 
     def test_get_risk_forcast_work(self):
-        with connection_scope() as con:
-            xml = etree.parse(
-                os.path.join(CURRENT_DIR, "BRA.CHABLAIS.20190101142328.xml")
-            )
-            bra_id = uuid4()
-            x = _get_risk_forcast(xml, bra_id)
-            assert isinstance(x, Generator)
-            res = next(x)
-            assert {
-                "rf_bra_record": bra_id,
-                "rf_date": datetime(
-                    year=2019, month=1, day=3, hour=0, minute=0, second=0
-                ),
-                "rf_evolution": "STABLE",
-            } == res
-            res = next(x)
-            assert {
-                "rf_bra_record": bra_id,
-                "rf_date": datetime(
-                    year=2019, month=1, day=4, hour=0, minute=0, second=0
-                ),
-                "rf_evolution": "STABLE",
-            } == res
-            with pytest.raises(StopIteration):
-                next(x)
+        xml = etree.parse(os.path.join(CURRENT_DIR, "BRA.CHABLAIS.20190101142328.xml"))
+        bra_id = uuid4()
+        x = _get_risk_forcast(xml, bra_id)
+        assert isinstance(x, Generator)
+        res = next(x)
+        assert {
+            "rf_bra_record": bra_id,
+            "rf_date": datetime(year=2019, month=1, day=3, hour=0, minute=0, second=0),
+            "rf_evolution": "STABLE",
+        } == res
+        res = next(x)
+        assert {
+            "rf_bra_record": bra_id,
+            "rf_date": datetime(year=2019, month=1, day=4, hour=0, minute=0, second=0),
+            "rf_evolution": "STABLE",
+        } == res
+        with pytest.raises(StopIteration):
+            next(x)
 
 
 class TestGetMassifEntity:
@@ -101,12 +108,13 @@ class TestGetMassifEntity:
             assert e.type is ValueError
 
 
-def test_dangerous_slopes_valid(bra_xml_parsed):
-    """
-    Testing wrong XML is useless since it will ne detected before. Also testing for "COMMENT" is useless 'cause of
-    enumeration (we all love enums)
-    """
+"""
+Testing wrong XML is useless since it will ne detected before. Also testing for "COMMENT" is useless 'cause of
+enumeration (we all love enums)
+"""
 
+
+def test_dangerous_slopes_valid(bra_xml_parsed):
     ret = _get_dangerous_slopes(bra_xml_parsed)
     assert isinstance(ret, list)
     assert len(ret) == 5
@@ -122,7 +130,7 @@ def test_dangerous_slopes_valid(bra_xml_parsed):
         assert ds == test_sample[i]
 
 
-def test__get_bra_snow_records(bra_xml_parsed):
+def test_get_bra_snow_records(bra_xml_parsed):
     bra_id = uuid4()
     res = _get_bra_snow_records(bra_xml_parsed, bra_id)
     test_data = [
@@ -199,6 +207,36 @@ def test_get_fresh_snow_record(bra_xml_parsed):
     for i, fsr in enumerate(res):
         assert isinstance(fsr, dict)
         assert fsr == test_data[i]
+
+
+class TestGetWeatherForcastAtAltitude:
+    def test_get_weather_forcast_at_altitude_work(self, bra_xml_parsed):
+        wf_id = uuid4()
+        record = bra_xml_parsed.find("//METEO").getchildren()[1]
+        res = _get_weather_forcast_at_altitude(record, wf_id, 2000, 1)
+        assert isinstance(res, dict)
+        assert res["wfaa_wind_altitude"] == 2000
+        assert res["wfaa_wf_id"] == wf_id
+        assert res["wfaa_wind_direction"] == WindDirection.NE
+
+    def test_get_weather_forcast_at_altitude_invalid_index(self, bra_xml_parsed):
+        bra_id = uuid4()
+        record = bra_xml_parsed.find("//METEO").getchildren()[0]
+        with pytest.raises(ValueError) as e:
+            _get_weather_forcast_at_altitude(record, bra_id, 2000, 10)
+        assert str(e.value) == "Cannot found value for index 10"
+
+
+class TestGetWeatherForcast:
+    def test_get_weather_forcast_work(self, bra_xml_parsed):
+        bra_id = uuid4()
+        res = _get_weather_forcast(bra_xml_parsed, bra_id)
+        assert isinstance(res, Generator)
+        for wf in res:
+            assert isinstance(wf, dict)
+            assert wf["wf_bra_record"] == bra_id
+            assert isinstance(wf["wf_expected_date"], datetime)
+            assert len(wf["wf_at_altitude"]) == 2
 
 
 class TestProcessXML:

@@ -1,5 +1,5 @@
 import uuid
-from enum import Enum
+from enum import Enum, IntEnum
 
 from geoalchemy2 import Geometry
 from sqlalchemy import (
@@ -17,11 +17,52 @@ from nivo_api.core.db.connection import metadata
 from nivo_api.core.db.models import AbstractSpatialTable, AbstractTable
 from sqlalchemy.dialects.postgresql import UUID, ENUM
 
-# XML data model : https://donneespubliques.meteofrance.fr/client/document/docbraxml_248.pdf
-
-# french department. The polygon is extract from OSM.
 from nivo_api.core.db.models.helper import ArrayOfEnum, XML
 
+
+# XML data model : https://donneespubliques.meteofrance.fr/client/document/docbraxml_248.pdf
+
+# Abstract Enum. To represent direction. see below.
+class Direction(Enum):
+    NE = "NE"
+    E = "E"
+    SE = "SE"
+    S = "S"
+    SW = "SW"
+    W = "W"
+    NW = "NW"
+    N = "N"
+
+
+# impl for dangerous slopes direction. Cannot subclass Enum
+DangerousSlopes = Direction
+
+# impl for wind direction. Cannot subclass Enum
+WindDirection = Direction
+
+
+class WeatherType(IntEnum):
+    SUN_OR_CLEAR_NIGHT = 1
+    OVERCAST_SUN_OR_OVERCAST_SKY = 2
+    SUN_OR_CLOUDY = 3
+    THINNING_SKY = 4
+    VERY_CLOUDY_SHORT_THINNING = 5
+    CLOUDY = 6
+    SUN_WITH_RAIN = 7
+    CLOUDY_WITH_RAIN = 8
+    CLOUDY_WITH_MODERATE_TO_HEAVY_RAIN = 9
+    CLOUDY_WITH_SNOWFALL = 10
+    SUN_WITH_SOME_SNOWFALL = 11
+    MODERATE_TO_HEAVY_SNOWFALL = 12
+    ISOLATED_THUNDER = 13
+    THUNDER = 14
+    FOG = 15
+    FREEZING_FOG = 16
+    FREEZING = 17
+    SEA_OF_CLOUDS = 18
+
+
+# french department. The polygon is extracted from OSM.
 Department = AbstractSpatialTable(
     "bra_department",
     metadata,
@@ -66,18 +107,6 @@ Risk = AbstractTable(
     ),
     Column("r_description", TEXT),
 )
-
-
-class DangerousSlopes(Enum):
-    NE = "NE"
-    E = "E"
-    SE = "SE"
-    S = "S"
-    SW = "SW"
-    W = "W"
-    NW = "NW"
-    N = "N"
-
 
 # actual implemntation in the DB
 _PGDangerousSlopes = ENUM(DangerousSlopes, name="dangerous_slopes_t", metadata=metadata)
@@ -152,6 +181,9 @@ BraFreshSnowRecord = AbstractTable(
     # we use NULL as a "non existance of value" here.
     Column("bfsr_second_massif_snowfall", Integer),
 )
+
+_PGWeatherType = ENUM(WeatherType, name="weather_type_t", metadata=metadata)
+
 WeatherForcast = AbstractTable(
     "bra_weather_forcast",
     metadata,
@@ -163,21 +195,43 @@ WeatherForcast = AbstractTable(
         nullable=False,
     ),
     Column("wf_expected_date", DateTime, nullable=False),
+    # Maybe an ENUM or a table
+    Column("wf_weather_type", _PGWeatherType, nullable=False),
+    Column("wf_sea_of_clouds", Integer, nullable=False),
     Column(
-        "wf_wind_altitude",
+        "wf_rain_snow_limit",
         Integer,
-        CheckConstraint("wf_wind_altitude>0"),
+        CheckConstraint("wf_rain_snow_limit>0"),
         nullable=False,
     ),
-    # Maybe an ENUM or a table
-    Column("wf_weather_type", Integer, nullable=False),
-    Column("wf_sea_of_clouds", Integer),
-    Column("wf_rain_snow_limit", Integer, CheckConstraint("wf_rain_snow_limit>0")),
-    Column("wf_iso0", Integer, CheckConstraint("wf_iso0>0")),
-    Column("wf_iso_minus_10", Integer, CheckConstraint("wf_iso_minus_10>0")),
-    Column("wf_wind_direction", TEXT, nullable=False),
+    Column("wf_iso0", Integer, CheckConstraint("wf_iso0>0"), nullable=False),
     Column(
-        "wf_wind_force", Integer, CheckConstraint("wf_wind_force>0"), nullable=False
+        "wf_iso_minus_10", Integer, CheckConstraint("wf_iso_minus_10>0"), nullable=False
+    ),
+)
+
+_PGWindDirection = ENUM(WindDirection, name="wind_direction_t", metadata=metadata)
+
+WeatherForcastAtAltitude = AbstractTable(
+    "bra_weather_forcast_at_altitude",
+    metadata,
+    Column("wf_id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
+    Column(
+        "wfaa_wf_id",
+        UUID(as_uuid=True),
+        ForeignKey("bra_weather_forcast.wf_id"),
+        nullable=False,
+    ),
+    Column(
+        "wfaa_wind_altitude",
+        Integer,
+        CheckConstraint("wfaa_wind_altitude>0"),
+        nullable=False,
+    ),
+    # this should be a enum, maybe.
+    Column("wfaa_wind_direction", _PGWindDirection, nullable=False),
+    Column(
+        "wfaa_wind_force", Integer, CheckConstraint("wfaa_wind_force>0"), nullable=False
     ),
 )
 

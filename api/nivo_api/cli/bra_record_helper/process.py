@@ -1,3 +1,6 @@
+"""
+Process xml pieces by pieces to dict ready to be inserted in DB.
+"""
 import logging
 from datetime import datetime
 from enum import Enum
@@ -18,6 +21,8 @@ from nivo_api.core.db.models.bra import (
     BraFreshSnowRecord,
     WeatherForcast,
     RiskForcast,
+    WindDirection,
+    WeatherType,
 )
 
 log = logging.getLogger(__name__)
@@ -45,7 +50,7 @@ def _get_massif_entity(massif: str, con: Connection) -> UUID:
         raise ValueError(f"Cannot found massif {massif} in the db")
 
 
-def _get_dangerous_slopes(xml: _Element) -> List["DangerousSlopes"]:
+def _get_dangerous_slopes(xml: _Element) -> List[DangerousSlopes]:
     dangerous_slopes_list = list()
     for k, v in xml.find("//PENTE").items():
         if v == "true" and k != "COMMENTAIRE":
@@ -78,11 +83,45 @@ def _get_fresh_snow_record(bra_xml: _Element, bra_id) -> Generator[Dict, None, N
             }
 
 
+def _get_weather_forcast_at_altitude(
+    bra_xml: _Element, wf_id: UUID, altitude: int, alt_index: int
+) -> Dict:
+    wind_dir = bra_xml.get(f"DD{alt_index}")
+    win_force = bra_xml.get(f"FF{alt_index}")
+    if not wind_dir:
+        raise ValueError(f"Cannot found value for index {alt_index}")
+    return {
+        "wfaa_wf_id": wf_id,
+        "wfaa_wind_altitude": altitude,
+        "wfaa_wind_direction": WindDirection(wind_dir),
+        "wfaa_wind_force": int(win_force),
+    }
+
+
 def _get_weather_forcast(
     bra_xml: _Element, bra_id: UUID
 ) -> Generator[Dict, None, None]:
-    # quite complex
-    yield {}
+
+    wf_id = uuid4()
+    for record in bra_xml.find("//METEO").getchildren():
+        altitudes = [int(v) for _, v in bra_xml.find("//METEO").attrib.items()]
+        if record.tag == "ECHEANCE":
+            yield {
+                "wf_id": wf_id,
+                "wf_bra_record": bra_id,
+                "wf_expected_date": datetime.strptime(
+                    record.get("DATE"), "%Y-%m-%dT%H:%M:%S"
+                ),
+                "wf_weather_type": WeatherType(int(record.get("TEMPSSENSIBLE"))),
+                "wf_sea_of_clouds": int(record.get("MERNUAGES")),
+                "wf_rain_snow_limit": int(record.get("PLUIENEIGE")),
+                "wf_iso0": int(record.get("ISO0")),
+                "wf_iso_minus_10": int(record.get("ISO-10")),
+                "wf_at_altitude": [
+                    _get_weather_forcast_at_altitude(record, wf_id, alt, i)
+                    for i, alt in enumerate(altitudes, 1)
+                ],
+            }
 
 
 def _get_risk_forcast(bra_xml: _Element, bra_id: UUID) -> Generator[Dict, None, None]:
@@ -93,7 +132,9 @@ def _get_risk_forcast(bra_xml: _Element, bra_id: UUID) -> Generator[Dict, None, 
 
     for forcast in bra_xml.find("//TENDANCES").getchildren():
         evol = RiskEvolution(int(forcast.get("VALEUR")))
-        evol = str(evol).split(".")[-1] # TODO need to move RiskEvolution Enum to models, since sqlalchemy suport native enum !
+        evol = str(evol).split(".")[
+            -1
+        ]  # TODO need to move RiskEvolution Enum to models, since sqlalchemy suport native enum !
         yield {
             "rf_bra_record": bra_id,
             "rf_date": datetime.strptime(forcast.get("DATE"), "%Y-%m-%dT%H:%M:%S"),
