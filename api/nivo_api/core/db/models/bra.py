@@ -66,6 +66,7 @@ class RiskEvolution(IntEnum):
     STABLE = 0
     UP = 0
     DOWN = -1
+    UNKNOWN = -2
 
 
 # french department. The polygon is extracted from OSM.
