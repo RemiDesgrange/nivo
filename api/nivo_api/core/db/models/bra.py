@@ -62,6 +62,12 @@ class WeatherType(IntEnum):
     SEA_OF_CLOUDS = 18
 
 
+class RiskEvolution(IntEnum):
+    STABLE = 0
+    UP = 0
+    DOWN = -1
+
+
 # french department. The polygon is extracted from OSM.
 Department = AbstractSpatialTable(
     "bra_department",
@@ -99,13 +105,14 @@ Risk = AbstractTable(
     metadata,
     Column("r_id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
     Column(
-        "r_number",
-        Integer,
-        CheckConstraint("r_number>0 AND r_number<5"),
-        unique=True,
+        "r_record_id",
+        UUID(as_uuid=True),
+        ForeignKey("bra_record.br_id"),
         nullable=False,
     ),
-    Column("r_description", TEXT),
+    Column("r_altitude_limit", TEXT),
+    Column("r_risk", Integer, CheckConstraint("r_risk>0 AND r_risk<5")),
+    Column("r_evolution", Integer, CheckConstraint("r_evolution>0 AND r_evolution<5")),
 )
 
 # actual implemntation in the DB
@@ -121,13 +128,12 @@ BraRecord = AbstractTable(
     Column("br_production_date", DateTime, nullable=False),
     Column("br_expiration_date", DateTime, nullable=False),
     Column("br_is_amended", Boolean),
-    Column("br_max_risk", ForeignKey("bra_risk.r_id")),
-    Column("br_risk1", ForeignKey("bra_risk.r_id")),
-    Column("br_risk1_altitude_limit", TEXT),
-    Column("br_risk1_evolution", ForeignKey("bra_risk.r_id")),
-    Column("br_risk2", ForeignKey("bra_risk.r_id")),
-    Column("br_risk2_altitude_limit", TEXT),
-    Column("br_risk2_evolution", ForeignKey("bra_risk.r_id")),
+    Column(
+        "br_max_risk",
+        Integer,
+        CheckConstraint("br_max_risk>0 AND br_max_risk<5"),
+        nullable=False,
+    ),
     Column("br_risk_comment", TEXT),
     Column("br_dangerous_slopes", ArrayOfEnum(_PGDangerousSlopes)),
     Column("br_dangerous_slopes_comment", TEXT),
@@ -235,7 +241,7 @@ WeatherForcastAtAltitude = AbstractTable(
     ),
 )
 
-RiskEvolution = ENUM("UP", "DOWN", "STABLE", name="risk_evolution_t", metadata=metadata)
+_PGRiskEvolution = ENUM(RiskEvolution, name="risk_evolution_t", metadata=metadata)
 
 RiskForcast = AbstractTable(
     "bra_risk_forcast",
@@ -243,5 +249,5 @@ RiskForcast = AbstractTable(
     Column("rf_id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
     Column("rf_bra_record", UUID(as_uuid=True), ForeignKey("bra_record.br_id")),
     Column("rf_date", Date, nullable=False),
-    Column("rf_evolution", RiskEvolution),
+    Column("rf_evolution", _PGRiskEvolution),
 )

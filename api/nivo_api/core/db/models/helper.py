@@ -1,4 +1,3 @@
-# https://docs.sqlalchemy.org/en/13/dialects/postgresql.html#using-enum-with-array
 import re
 from xml import etree
 
@@ -8,6 +7,7 @@ from sqlalchemy.dialects.postgresql import ARRAY
 
 
 class ArrayOfEnum(TypeDecorator):
+    # https://docs.sqlalchemy.org/en/13/dialects/postgresql.html#using-enum-with-array
     impl = ARRAY
 
     def bind_expression(self, bindvalue):

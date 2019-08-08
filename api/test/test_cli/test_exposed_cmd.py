@@ -38,9 +38,14 @@ class TestInitDb:
                 assert res.table == table
 
     def test_init_db_idempotent(self):
+        """
+        Running db creation twice should be ok (idempotent call)
+        """
         runner = CliRunner()
-        runner.invoke(init_db)
-        runner.invoke(init_db)  # Two call shouln't fail.
+        r = runner.invoke(init_db)
+        assert r.exit_code == 0
+        r = runner.invoke(init_db)  # Two call shouln't fail.
+        assert r.exit_code == 0
 
 
 @setup_db()

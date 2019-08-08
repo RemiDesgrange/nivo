@@ -1,5 +1,5 @@
 import logging
-from typing import Generator, Dict
+from typing import Generator, Dict, List
 from uuid import UUID
 
 from sqlalchemy import select, func
@@ -15,16 +15,12 @@ from nivo_api.core.db.models.bra import Massif, Department, Zone
 log = logging.getLogger(__name__)
 
 
-def _get_entity(bra_generator: Generator) -> Generator:
-    x = next(bra_generator)
-    if isinstance(x, Generator):
-        x = _get_entity(x)
-    return x
-
-
-def persist_bra(con: Connection, bra_generator: Generator):
-    for entity in _get_entity(bra_generator):
-        pass  # TODO
+def persist_bra(con: Connection, bra: List[Dict]):
+    for entities in bra:
+        with con.begin():
+            for e, data in entities.items():
+                ins = insert(e).values(**data)
+                con.execute(ins)
 
 
 def persist_zone(con: Connection, zone: str) -> UUID:

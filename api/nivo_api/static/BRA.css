@@ -1,0 +1,1369 @@
+ 
+ #BRA {
+          margin:auto;
+          width: 830px;
+          padding:5px 5px 5px 5px;
+          font-family: arial, verdana, sans-serif;
+          font-size: 1em;
+          }
+
+  #BRA h1 {
+	      margin-top: 20px;
+		  margin-bottom: 5px;
+		  font-size: 1.8em;
+		  color: rgb(5, 72, 140);
+		  text-align: center;
+		  font-weight: bold; 
+		  }
+#BRA h4
+			{
+			
+			margin-top: 0px;
+			margin-bottom: 5px;
+			font-size: 1.1em;
+			color: rgb(5, 72, 140);
+			text-align: center;
+			font-weight: bold;
+
+}
+
+#EchelleRisque {
+          margin:auto;
+          width: 850px;
+          padding:5px 5px 5px 5px;
+          font-family: arial, verdana, sans-serif;
+          font-size: 1em;
+          }
+#EchelleRisque h1 {
+	      margin-top: 20px;
+		  margin-bottom: 5px;
+		  font-size: 1.8em;
+		  color: rgb(5, 72, 140);
+		  text-align: center;
+		  font-weight: bold; 
+		  }
+#EchelleRisque h4
+			{
+			
+			margin-top: 0px;
+			margin-bottom: 5px;
+			font-size: 1.1em;
+			color: rgb(5, 72, 140);
+			text-align: center;
+			font-weight: bold;
+}
+#EchelleRisque table
+{
+	border-style:solid;
+	border-color:Gray;
+	border-width:2px;
+	border-spacing:0px;
+	margin-top:20px;
+}
+
+#EchelleRisque td, #EchelleRisque th
+{
+	border-style:solid;
+	border-color:Gray;
+	border-width:1px;
+	padding:5px 5px 5px 5px;
+	vertical-align:top;
+}
+ #EchelleRisque th img
+ {
+	padding :5px 0px 2px 0px;
+ }
+#EchelleRisque thead
+{
+	height:50px;
+	vertical-align:middle;
+	font-weight:bold;
+	text-align:center;
+}
+#EchelleRisque thead td
+{
+	vertical-align:middle;
+}
+ #BRA .baliseAmendement
+			{
+			margin-top: 10px;
+			margin-bottom: 5px;
+			font-size: 1.4em;
+			color: rgb(5, 72, 140);
+			text-align: center;
+			font-weight: bold;
+}
+
+ #BRA h2 {
+          background-image: url(../Images/titre3.png);
+          background-repeat: no-repeat;
+          margin-bottom: 10px;
+          padding-left: 30px;
+          padding-top: 3px;
+          text-align:left;
+          color : white;
+          height:22px;
+		  background-color : rgb(5, 72, 140);
+		  font-size: 1.0em;
+          }	 
+#BRA h3
+          {
+		  margin-top : 5px;
+		  margin-bottom: 5px;
+          }
+#BRA pre 
+          {
+		 font-family: arial, verdana, sans-serif;
+          font-size: 0.95em;
+          margin-top: 0px;
+          margin-right: 0;
+          margin-bottom: 10px;
+          margin-left: 0;
+          white-space: pre-wrap; /* css-3 */
+          white-space: -moz-pre-wrap !important; /* Mozilla, since 1999 */
+          white-space: -pre-wrap; /* Opera 4-6 */
+          white-space: -o-pre-wrap; /* Opera 7 */
+          word-wrap: break-word; /* Internet Explorer 5.5+ */
+          width: 99%; /* remove horizontal scroll-bar when viewing in IE7 */
+          }
+ #BRA table {
+          padding-top: 0px;
+          border-collapse:collapse;
+          table-layout :fixed;
+          width:100%;
+          font-size: 0.9em;
+          margin:auto;
+          }
+#BRA .Risque .cartouche
+{
+	padding-left: 3px;
+	padding-right:3px;
+	border-top: black thin solid;
+	border-right: black thin solid;
+	border-bottom: black thin solid;
+	border-left: black thin solid;
+}
+#BRA .Logo_MF
+{
+	display:table-cell;
+	float:left;
+	width:90px;
+}
+#BRA .BRAentete
+{ 
+	display:table-cell;
+	width:700px;
+}
+#BRA .Risque
+{
+	width:100%;
+	display:table;
+	height:130px;
+}
+
+#BRA .Risque p
+{
+	margin-bottom:0px;
+}
+
+#BRA .legende
+{
+	font-size:0.8em;
+	margin-top:2px;
+}
+
+#BRA .Risque .avis
+{
+	color: Black;
+	text-align: center;
+	font-weight: bold;
+	margin-top: 0px;
+}
+
+#BRA .Risque .vigilanceOrange
+{
+	color: #ff6633;
+	text-align:center;
+	font-weight:bold;
+	margin-bottom:-13px;
+	margin-top: 0px;
+}
+#BRA .Risque .vigilanceRouge
+{
+	color:Red;
+	text-align:center;
+	font-weight:bold;
+	margin-bottom:-13px;
+	margin-top: 0px;
+	
+}
+#BRA .tableauMeteo tr
+{
+	height:25px;
+}
+#BRA .tableauMeteo td
+{   border-top: darkgray 1px solid;
+	border-bottom: darkgray 1px solid;
+}
+
+#BRA .tableauMeteo
+{	
+	width:100%;
+	text-align:center;
+	vertical-align:middle;
+}
+#BRA .tableauMeteo .temps
+{
+	border-top-style: none;
+	border-bottom-style: none; 
+	vertical-align:top;
+	width:120px;
+}
+#BRA .risqueMaxi
+{
+	display:block; height:88px; 
+	vertical-align:middle; 
+	text-align:right;
+	width:140px;
+	float:right;
+	background-color:white;
+}
+
+
+#BRA .BRAtendance
+{
+	margin-top:20px;
+}
+#BRA .BRAtendance li
+{ 
+	height:35px;
+	list-style-type: none; 
+	display:inline-block;
+	width:170px;
+	margin-left:100px;
+ }
+
+#BRA .BRAtendance img
+{
+	float:right;
+	margin-top:-10px;
+}
+
+
+#BRA 
+{
+         margin:auto;
+         width: 800px;
+        
+}
+#BRA .basdepage
+{
+	 font-weight:normal;
+	 font-size:0.85em;
+	 font-style:italic;
+}
+
+#BRA .Risque .figurineRisque
+{
+	display:block;
+	float:left;
+	width:350px;
+}
+
+  #BRA .Risque .cartouche
+{
+	display:block;
+	width:400px;
+	height:132px;
+	float:right;
+	vertical-align: middle;
+	font-size: 1.1em;
+}
+
+#BRA .row
+{
+	width:100%;
+	display:inline-block;
+}
+#BRA .col1 img
+{
+	width:355px;
+	height:auto;
+}	
+#BRA .row .col2
+{
+	display:block;
+	float:right;
+	width:420px;
+}
+#BRA .row .col2:first-child
+{
+	display:block;
+	float:none;
+	width:100%;
+	max-width:450px;
+	margin:auto;
+}
+
+#BRA .row .col1
+{
+	display:block;
+	float:left;
+	width: 355px;
+}
+
+#BRA .row .col1 span
+{
+	margin-top:-15px;
+	display:block;
+}
+/* ----------------------BSH --------------------*/
+#BSH
+{
+	margin:auto;
+	width:660px;
+}
+#BSH_graph 
+{
+	display:inline-block;
+	width:100%;
+}
+#BSH_graph div
+{
+	
+	padding:5px 0px 0px 0px;
+}
+#BSH_graph div.BSHdate
+{
+	display:inline-block;
+	width:630px;
+	height:32px;
+	line-height:32px;
+	vertical-align:middle;
+	margin:-3px 0 0 30px;
+	font-size:0.75em;
+	font-weight:bold;
+	background-color:rgb(64,64,64);
+	border-left:1px solid black;
+	padding:0;
+}
+#BSH_graph div.BSHdate div
+{
+	display:block;
+	padding:0;
+	float:left;
+	width:89px;
+	max-width:89px;
+	color:White;
+	border-right:1px solid black;
+	margin:0 0 0 0;
+	text-align:center;
+}
+
+#BSH_graph div.BSHdate1
+{
+	padding:0;
+	margin:-3px 0 0 30px;
+	display:inline-block;
+	width:630px;
+	height:20px;
+	line-height:20px;
+	vertical-align:middle;
+	text-align:center;
+	font-size:0.7em;
+	font-weight:bold;
+	background-color:rgb(128,128,128);
+	color:White;
+	border-left:1px solid black;
+}
+#BSH_graph div.BSHdate1 div
+{
+	display:block;
+	padding:0;
+	margin:0;
+	float:left;
+	width:29px;
+	max-width:29px;
+	color:White;
+	border-right:1px solid black;
+}
+
+#BSH_graph div.BSHtempssensible
+{
+	display:inline-block;
+	width:630px;
+	height:32px;
+	line-height:32px;
+	vertical-align:middle;
+	margin:0 0 0 30px;
+}
+#BSH_graph div.BSHtempssensible div
+{
+	display:block;
+	width:30px;
+	padding:0;
+	margin:0;
+	float:left;
+}
+#BSH_graph div.BSHrisque
+{
+	display:inline-block;
+	width:630px;
+	height:50px;
+	line-height:50px;
+	vertical-align:middle;
+	margin:0 0 0 30px;
+	
+}
+#BSH_graph div.BSHrisque div
+{
+	display:block;
+	text-align:center;
+	width:88px;
+	padding:0;
+	float:left;
+	margin:0 1px 0 1px;
+	background-color:White;
+}
+
+#BSH_graph .BSHtitreRisque
+{
+	margin:5px 0 0 40px;
+	padding:0 0 0 3px;
+	display:inline-block;
+	width:115px;
+	height:16px;
+	line-height:16px;
+	vertical-align:middle;
+	text-align:left;
+	font-size:0.7em;
+	font-weight:bold;
+	border:1px solid black;
+	background-color:White;
+}
+#BSHenneigements ul
+{	
+	width:100%;
+	margin:5px 0 0 30px;
+	padding:0;
+	display:inline-block;
+}
+#BSHenneigements ul li
+{
+	list-style:none;
+    display:block;
+    height:16px;
+    line-height:16px;
+    text-align:center;
+    vertical-align:middle;
+    width:70px;
+    font-size:0.7em;
+    font-weight:bold;
+    border-radius:4px 4px 0 0;
+    background-color:#464c54;
+    color:White; 
+    margin:0;   
+    border:1px solid black;  
+    float:left;
+}
+
+#BSHenneigements ul li a 
+{text-decoration:none;
+   border:none;
+   color:White; 
+}
+ 
+#BSHenneigements ul li:hover 
+{
+    background-color:#2f343a;
+    border-color:#2f343a;
+}
+ 
+#BSHenneigements ul li.active 
+{
+    background-color:#ffffff;
+    border-bottom: 1px solid #ffffff;
+}  
+#BSHenneigements ul li.active a 
+{
+	color:Black;
+}  
+#BSHenneigements_graph_alt1, #BSHenneigements_graph_alt3, #BSHenneigements_graph_nord,#BSHenneigements_graph_sud,#BSHenneigements_graph_limite
+{
+	display:none;
+}
+
+/* BSH ----------------    tableau -------------------------*/
+#BSH_tableau
+{	
+	margin:10px auto 0 auto;
+	display:none;
+	width:100%;
+}
+#BSH_tableau .BSH_tableau_meteo,#BSH_tableau .BSH_tableau_neige
+{
+	width:320px;
+	margin:auto;
+}
+
+#BSH_tableau div.BSHdate
+{
+	padding:0 2px 0 2px;
+	margin:0;
+	display:inline-block;
+	width:36px;
+	text-align:center;
+	vertical-align:bottom;
+	font-size:0.75em;
+	font-weight:bold;
+	background-color:rgb(64,64,64);
+	color:White;
+	border-top:1px solid black;
+	float:left;
+}
+#BSH_tableau div.BSHdate div
+{	
+	height:48px;
+	display:block;
+	vertical-align:middle;
+	padding:25px 0 25px 0;
+	float:left;
+	color:White;
+	border-bottom:1px solid rgb(150,150,150);
+	margin: 0 0 0 0;
+}
+
+
+#BSH_tableau .BSH_tableau_donnee
+{
+	display:block;
+	float:left;
+	width:280px;
+	font-size:0.7em;
+}
+#BSH_tableau div.BSH_tableau_titre_meteo
+{
+	display:inline-block;
+	float:left;
+	width:249px;
+	height:36px;
+	line-height:36px;
+	vertical-align:middle;
+    border-top:solid 1px rgb(150,150,150);
+	border-bottom:solid 1px rgb(150,150,150);
+	border-left:solid 1px rgb(150,150,150);
+	font-size:0.7em;
+	margin-left:70px;
+	background-color:rgb(180,180,180);
+}
+
+#BSH_tableau div.BSH_tableau_jour_meteo, 
+#BSH_tableau div.BSH_tableau_nuit_meteo
+{
+	display:inline-block;
+	float:left;
+	width:280px;
+	height:32px;
+	min-height:32px;
+	line-height:32px;
+	vertical-align:middle;
+	border-bottom:solid 1px rgb(150,150,150);
+}
+ #BSH_tableau div.BSH_tableau_nuit_meteo
+ {
+	background-color:rgb(230,230,230);
+ }
+
+#BSH_tableau div.BSH_tableau_jour_meteo div,
+#BSH_tableau div.BSH_tableau_nuit_meteo div,
+#BSH_tableau div.BSH_tableau_titre_meteo div
+{
+	display:block;
+	float:left;
+	border-right:solid 1px rgb(150,150,150);
+}
+#BSH_tableau div.BSHdate1
+{
+	width:30px;
+	text-align:center;
+	font-weight:bold;
+	background-color:rgb(128,128,128);
+	color:White;
+}
+#BSH_tableau div.BSH_ww,
+#BSH_tableau div.BSH_iso-lpn 
+{
+	width:36px;
+	text-align:center;
+}
+
+#BSH_tableau div.BSH_vent 
+{
+	width:58px;
+	text-align:right;
+	padding:0 5px 0 5px;
+}
+#BSH_tableau div.BSH_tableau_titre_meteo div.BSH_vent 
+{
+	width:64px;
+	text-align:right;
+	padding:0 2px 0 2px;
+}
+
+
+#BSH_tableau ul.BSH_iso_legende
+{
+	display:inline-block;
+	margin:10px auto 10px auto;
+	width:100%;
+	text-decoration:none;
+	font-size:0.7em;
+	list-style:none;
+	vertical-align:middle;
+	
+}
+#BSH_tableau ul.BSH_iso_legende li
+{
+	display:block;
+	height:28px;
+	max-height:28px;
+	float:left;
+	width:220px;
+	line-height:28px;
+	vertical-align:middle;
+}
+#BSH_tableau ul.BSH_iso_legende li img
+{
+		float:left;
+		margin-right:7px;
+		width:32px;
+		height:32px;
+}
+
+#BSH_tableau div.BSH_tableau_neige div.BSHdate div
+{	
+	height:52px;
+	padding:3px 0 0 0;
+	display:block;
+	float:left;
+	
+	color:White;
+	border-bottom:1px solid rgb(150,150,150);
+	margin: 0 0 0 0;
+}
+#BSH_tableau div.BSH_tableau_neige div div
+{
+	border-bottom:1px solid rgb(150,150,150);
+	height:55px;
+	vertical-align:middle;
+
+}
+
+#BSH_tableau div.BSH_tableau_neige div.BSH_tableau_neige_col
+{
+	width:65px;
+	text-align:left;
+	padding-left:4px;
+	height:391px;
+	display:block;
+	float:left;
+	border-right:1px solid rgb(150,150,150);
+}
+#BSH_tableau div.BSH_tableau_neige div.BSH_tableau_titre_neige
+{
+	display:inline-block;
+	float:left;
+	width:280px;
+	height:36px;
+	vertical-align:middle;
+    border-top:solid 1px rgb(150,150,150);
+	border-bottom:solid 1px rgb(150,150,150);
+	border-left:solid 1px rgb(150,150,150);
+	font-size:0.7em;
+	text-align:center;
+	margin-left:39px;
+	background-color:rgb(200,200,200)
+}
+#BSH_tableau div.BSH_tableau_titre_neige div
+{
+	display:block;
+	float:left;
+	width:69px;
+	border-right:1px solid rgb(150,150,150);
+	max-height:36px;
+	
+}
+@media screen and (max-width:839px) and (min-width:726px){
+#BRA {
+     margin:auto;
+     width: 99%;
+     }
+ 
+#BRA .Risque 
+{
+	width:100%;
+	display:inline-block;
+	max-height:134px;
+}
+#BRA .Risque .figurineRisque
+{
+	display:block;
+	width:345px;
+	height:134px;
+	float:left;
+}
+ #BRA .Risque .cartouche
+{
+	display:block;
+	height:132px;
+	vertical-align: top;
+	font-size: 1em;
+	float:right;
+	width:340px;
+	
+}
+#BRA .Risque .cartouche p
+{
+	line-height:19px;
+	padding-top:5px;
+}
+
+#BRA .row,#BRA .Risque 
+{
+	width:100%;
+	display:table;
+}
+
+#BRA .row .col2
+{
+	display:table-cell;
+	padding-left:20px;
+	float:none;
+	width:auto;
+}
+#BRA .tableauMeteo
+{
+	font-size:0.8em;	
+}
+
+#BRA .row .col1
+{
+	display:table-cell;
+	width:320px;
+	float:none;
+}
+
+#BRA .col1 img
+{
+	width:320px;
+	height:250px;
+}	 
+
+}
+ 
+ @media screen and (max-width:725px) and (min-width:671px){
+#BRA {
+     margin:auto;
+     width: 99%;
+     }
+ 
+#BRA .Risque 
+{
+	width:100%;
+	display:inline-block;
+	max-height:117px;
+}
+#BRA .Risque .figurineRisque
+{
+	display:block;
+	width:300px;
+	height:117px;
+	float:left;
+}
+#BRA .Risque .figurineRisque img
+{
+	
+	width:300px;
+	height:auto;
+	
+}
+ #BRA .Risque .cartouche
+{
+	display:block;
+	height:115px;
+	vertical-align: top;
+	font-size: 0.9em;
+	float:right;
+	width:320px;
+}
+#BRA .Risque .cartouche p
+{
+	line-height:19px;
+	
+}
+
+#BRA .row,#BRA .Risque 
+{
+	width:100%;
+	display:table;
+}
+
+#BRA .row .col2
+{
+	display:table-cell;
+	padding-left:10px;
+	float:none;
+	width:auto;
+}
+#BRA .tableauMeteo
+{
+	font-size:0.75em;	
+}
+
+#BRA .row .col1
+{
+	display:table-cell;
+	width:290px;
+	float:none;
+}
+
+#BRA .col1 img
+{
+	width:290px;
+	height:250px;
+}	 
+#BRA pre
+{
+	font-size:0.85em;
+}
+}
+ 
+ @media screen and (max-width:670px)and (min-width:451px)
+ {
+#BRA {
+      margin:auto;
+      width: 99%;
+          }
+  #BSH        
+  {
+	width:320px;
+          }
+			
+ #BRA h2
+     {
+		height:auto;
+		line-height:22px;
+     }  
+#BRA  .Logo_MF
+{
+	width:63px;
+}
+#BRA .Logo_MF a img
+{
+	width:60px;
+	margin-bottom:-15px;
+}
+
+#BRA .Risque
+{
+	width:100%;
+	display:inline-block;
+    margin:auto;
+    height:270px;
+
+}
+
+#BRA .Risque .figurineRisque
+{
+	display:block;
+	width:345px;
+	margin: 0 auto;
+	float:none;
+}
+
+  #BRA .Risque .cartouche
+{
+	display:block;
+	width:337px;
+	vertical-align: middle;
+	font-size: 1em;
+	height:130px;
+	margin: 0 auto;
+	float:none;
+}
+ #BRA .Risque .cartouche p
+{
+	line-height:19px;
+	padding-top:5px;
+}
+
+ #BRA .row
+{
+	width:100%;
+	display:inline-block;
+    margin:auto;
+}
+
+#BRA .row .col1,#BRA .row .col2
+{
+	display:block;
+	width:100%;
+    margin: 0 auto;
+    float:none;
+
+}
+#BRA .row .col1 img
+{
+	height:auto;
+	width:340px;
+	margin:auto;
+	display:block;
+}	 
+ 
+#BRA .tableauMeteo
+{	margin: 0 auto;
+	width:100%;
+	max-width:450px;
+}
+
+#BRA .tableauMeteo .temps
+{
+	width:100px;
+}
+
+#BRA .BRAtendance li
+{ 
+	height:45px;
+	list-style-type: none; 
+	display:block;
+	width:170px;
+	margin-left:50px;
+ }
+
+#BSH_tableau
+{
+	display:inline-block;
+}
+#BSH_graph
+{
+	display:none;
+}
+}
+@media screen and (min-width:371px)and (max-width:450px)
+ {
+#BRA {
+          margin:auto;
+          width:100%;
+          padding:0px 0px 0px 0px;
+          }
+#BSH
+{
+	width:100%
+}
+#BRA h2
+     {
+		height:auto;
+		line-height:22px;
+     }  
+#BRA  .Logo_MF
+{
+	display:block;
+	width:63px;
+}
+#BRA .BRAentete
+{
+	display:block;
+	width:100%;
+}
+#BRA .Logo_MF a img
+{
+	width:60px;
+	margin-bottom:-15px;
+}
+#BRA .Risque
+{
+	display:inline-block;
+    margin:auto;
+    height:272px;
+}
+
+#BRA .Risque .figurineRisque 
+{
+	display:block;
+	width:345px;
+	float:none;
+	margin: 0 auto;
+	height:134px;
+}
+
+#BRA .Risque .cartouche
+{
+	display:block;
+	width:337px;
+	vertical-align: middle;
+	font-size: 1em;
+	height:134px;
+	float:none;
+	margin: 0 auto;
+}
+#BRA .Risque .cartouche p
+{
+	line-height:19px;
+	padding-top:5px;
+}
+
+ 
+ #BRA .row
+{
+	width:100%;
+	display:inline-block;
+    margin:auto;
+}
+#BRA .row .col1,#BRA .row .col2
+{
+	display:block;
+	width:100%;
+    margin: 0 auto;
+    float:none;
+}
+#BRA .col1 img
+{
+	display:block;
+	width:340px;
+	margin: 0 auto;
+}
+
+#BRA .tableauMeteo
+{	margin: 0 auto;
+	width:100%;
+	font-size:0.8em;
+}
+
+#BRA .tableauMeteo .temps
+{
+	width:90px;
+}
+#BRA .BRAtendance li
+{ 
+	height:45px;
+	list-style-type: none; 
+	display:block;
+	width:170px;
+	margin-left:20px;
+ }
+ 
+ #BSH_tableau
+{
+	display:inline-block;
+}
+#BSH_graph
+{
+	display:none;
+}
+}
+
+ @media screen and (min-width:340px) and (max-width:370px)
+ {
+#BRA {
+          margin:auto;
+          width:340px;
+          padding:0px 0px 0px 0px;
+          font-size: 0.9em;
+          }
+#BSH
+{
+	width:100%;
+	font-size: 1.1em;
+}
+#BRA h2
+     {
+		height:auto;
+		line-height:22px;
+     } 
+     #BRA  .Logo_MF
+{
+	display:inline-block;
+	width:63px;
+}
+#BRA .BRAentete
+{
+	display:inline-block;
+	width:100%;
+}    
+#BRA .Logo_MF a img
+{
+	width:60px;
+	margin-bottom:-15px;
+}          
+
+#BRA .risqueMaxi
+{
+	display:block; height:84px; 
+	vertical-align:middle; 
+	text-align:right;
+	width:110px;
+	float:right;
+	background-color:white;
+}
+#BRA .risqueMaxi img
+{
+	width:100px;
+	height:auto;
+}
+#BRA .Risque .figurineRisque img
+{
+	display:block;
+	width:320px;
+	margin:auto;
+}
+
+#BRA .Risque
+{
+	display:inline-block;
+    margin:auto;
+	height:270px;
+}
+
+#BRA .Risque .figurineRisque 
+{
+	display:block;
+	width:320px;
+	float:none;
+	margin: 0 auto;
+	height:134px;
+
+}
+
+#BRA .Risque .cartouche
+{
+	display:block;
+	width:312px;
+	vertical-align: middle;
+	font-size: 1em;
+	height:130px;
+	float:none;
+	margin: 0 auto;
+}
+#BRA .Risque .cartouche p
+{
+	line-height:19px;
+	padding-top:5px;
+}
+#BRA .row
+{
+	width:100%;
+	display:inline-block;
+    margin:auto;
+}
+#BRA .row .col1,#BRA .row .col2
+{
+	display:block;
+	width:100%;
+    margin: 0 auto;
+    float:none;
+}
+#BRA .row .col1 img
+{
+	height:auto;
+	width:320px;
+	margin:auto;
+	display:block;
+}	 
+
+#BRA .tableauMeteo
+{	margin: 0 auto;
+	width:100%;
+	font-size:0.8em;
+}
+#BRA .tableauMeteo .temps
+{
+	width:90px;
+}
+#BRA .BRAtendance li
+{ 
+	height:45px;
+	list-style-type: none; 
+	display:block;
+	width:170px;
+	margin-left:20px;
+ }
+#BSH_tableau
+{
+	display:inline-block;
+}
+#BSH_graph
+{
+	display:none;
+}
+#BSH_tableau .BSH_tableau_donnee
+{
+	font-size:0.75em;
+}
+}
+ 
+@media screen and (max-width:339px)
+ {
+#BRA {
+          margin-left:-2px;
+          width:310px;
+          padding:0px 0px 0px 0px;
+          font-size: 0.8em;
+          }
+#BSH
+{
+	width:100%;
+}
+#BRA h2
+     {
+		height:auto;
+		line-height:20px;
+		 font-size: 0.9em;
+     }  
+ #BRA  .Logo_MF
+{
+	display:inline-block;
+	width:63px;
+}
+#BRA .BRAentete
+{
+	display:inline-block;
+	width:100%;
+}       
+#BRA .Logo_MF a img
+{
+	width:60px;
+	margin-bottom:-15px;
+}          
+#BRA .Risque
+{
+	display:inline-block;
+    margin:auto;
+	height:235px;
+}
+
+#BRA .Risque div
+{
+	margin: 0 auto;
+}
+#BRA .Risque .figurineRisque
+{
+	display:block;
+	width:310px;
+	float:none;
+}
+#BRA .Risque .figurineRisque img
+{
+	height:auto;
+	width:310px;
+}
+
+#BRA .Risque .cartouche
+{
+	display:block;
+	width:302px;
+	vertical-align: middle;
+	font-size: 1em;
+	height:105px;
+}
+#BRA .Risque .cartouche p
+{
+	line-height:16px;
+	padding-top:3px;
+}
+
+#BRA .risqueMaxi
+{
+	display:block; 
+	height:75px; 
+	vertical-align:middle; 
+	text-align:right;
+	width:100px;
+	float:right;
+	background-color:white;
+}
+
+#BRA .risqueMaxi img
+{
+	width:90px;
+	height:auto;
+}
+
+#BRA .row
+{
+	width:100%;
+	display:inline-block;
+    margin:auto;
+}
+#BRA .row .col1,#BRA .row .col2
+{
+	display:block;
+	width:100%;
+    margin: 0 auto;
+    float:none;
+}
+#BRA .row .col1 img
+{
+	height:auto;
+	width:310px;
+	margin:auto;
+	display:block;
+}	 
+
+
+#BRA .tableauMeteo
+{	margin: 0 auto;
+	width:100%;
+	font-size:0.75em;
+}
+#BRA .tableauMeteo .temps
+{
+	width:80px;
+}
+#BRA .tableauMeteo .temps img
+{
+	width:70px;
+	height:auto;
+}
+#BRA .BRAtendance li
+{ 
+	height:45px;
+	list-style-type: none; 
+	display:block;
+	width:160px;
+	margin-left:00px;
+ }
+#BSH_tableau
+{
+	display:inline-block;
+}
+#BSH_graph
+{
+	display:none;
+}
+#BSH_tableau div.BSHdate
+{
+	width:30px;
+}
+#BSH_tableau div.BSH_tableau_titre_meteo
+{
+	margin-left:64px;
+}
+#BSH_tableau div.BSH_tableau_neige div.BSH_tableau_titre_neige
+{
+	margin-left:33px;	
+	height:25px;
+
+}
+#BSH_tableau div.BSH_tableau_titre_neige div
+{
+	max-height:25px;
+}
+#BSH_tableau .BSH_tableau_donnee
+{
+	font-size:0.85em;
+}
+#BSH_tableau ul.BSH_iso_legende
+{
+	font-size:0.85em;
+}
+}

@@ -57,21 +57,25 @@ def get_bra_xml(massif: str, bra_date: datetime) -> ET:
     # meteofrance way of saying 404 is by redirecting you (302) to the 404 page, which is served with a 200 status...
     # so 302 means 404
     r = requests.get(url, allow_redirects=False)
-    assert (
-        r.status_code == 200
-    ), f"The bra for the massif {massif} at day {bra_date} doesn't exist, status: {r.status_code}"
+    if r.status_code != 200:
+        raise AssertionError(
+            f"The bra for the massif {massif} at day {bra_date} doesn't exist, status: {r.status_code}"
+        )
     # we could pass the url directly. But mocking in test would be more tricky. Using requests lib helps.
     return ET.parse(io.BytesIO(r.content))
 
 
 def get_massif_geom(massif: str) -> WKBElement:
-    # go on the meteofrance bra website
-    # then get the html "area" element
-    # then convert it to fake GeoJSON (wrong coordinates)
-    # then open it in qgis.
-    # rotate -90°
-    # swap X and Y coordinates
-    # use grass v.transform with various x, y scale and rotation to get where you want.
+    """process to get the massifs geometries:
+      * go on the meteofrance bra website
+      * then get the html "area" element
+     * then convert it to fake GeoJSON (wrong coordinates)
+     * then open it in qgis.
+     * Select *all* the geom of the layer.
+     * rotate -90°
+     * swap X and Y coordinates (with plugin)
+     * use grass v.transform with various x, y scale and rotation until you get what you want.
+    """
     current_dir = os.path.dirname(os.path.abspath(__file__))
     gj_file = os.path.join(current_dir, "../data/all_massifs.geojson")
     with open(gj_file) as fp:
@@ -100,7 +104,7 @@ def fetch_department_geom_from_opendata(dept: str, dept_nb: str) -> WKBElement:
 
 def _is_it_a_fucking_special_case(_: str, dept_nb: str) -> bool:
     """
-    Meteofrance, as usual, is incapable of any consistency. So we need to deal with corsica and andorre manually.
+    No consistency in corsica and andorre. So we need to deal with Corsica and Andorre manually.
     """
     if dept_nb in ("20", "99"):
         return True
