@@ -7,7 +7,7 @@ from uuid import UUID
 from flask import Response, send_file
 from flask_restplus import Namespace, Resource, abort
 from flask_restplus._http import HTTPStatus
-from lxml.etree import _Element
+from lxml.etree import _Element, LxmlError
 import lxml.etree as ET
 from sqlalchemy import select
 
@@ -77,7 +77,7 @@ class GenerateBRAResource(Resource):
             xslt = ET.parse(os.path.join(cur_dir, "../../static/bra.xslt"))
             transform = ET.XSLT(xslt)
             return str(transform(bra))
-        except:
+        except LxmlError:
             bra_api.abort(
                 HTTPStatus.INTERNAL_SERVER_ERROR,
                 "Something went wrong in BRA generation 😭",
