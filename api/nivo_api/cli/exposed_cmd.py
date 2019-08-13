@@ -19,7 +19,7 @@ from sqlalchemy.dialects.postgresql import insert
 from nivo_api.cli.nivo_record_helper import (
     import_nivo,
     download_nivo,
-    check_last_nivo_doesnt_exist,
+    check_nivo_doesnt_exist,
     get_last_nivo_date,
     get_all_nivo_date,
 )
@@ -39,9 +39,27 @@ def import_last_nivo_data():
     # import it.
 
     last_nivo = get_last_nivo_date()
-    if check_last_nivo_doesnt_exist(last_nivo):
+    if check_nivo_doesnt_exist(last_nivo):
         downloaded_nivo = download_nivo(last_nivo)
         import_nivo(downloaded_nivo)
+
+
+@click.command()
+def import_all_nivo_data():
+    # setup
+    # go through the meteofrance ftp
+    # download all file (via http, better)
+    # process it
+    # import it
+    all_nivo_date = get_all_nivo_date()
+    log.info(f"Need to process {len(all_nivo_date)}")
+    for nivo_date in all_nivo_date:
+        if check_nivo_doesnt_exist(nivo_date["nivo_date"]):
+            try:
+                downloaded_nivo = download_nivo(**nivo_date)
+                import_nivo(downloaded_nivo)
+            except Exception as e:
+                click.echo("Something bad append : ", e)
 
 
 @click.command()
@@ -79,24 +97,6 @@ def import_nivo_sensor_station():
             .count
         )
         click.echo(f"{inserted} sensor station imported")
-
-
-@click.command()
-def import_all_nivo_data():
-    # setup
-    # go through the meteofrance ftp
-    # download all file (via http, better)
-    # process it
-    # import it
-    all_nivo_date = get_all_nivo_date()
-    log.info(f"Need to process {len(all_nivo_date)}")
-    for nivo_date in all_nivo_date:
-        if check_last_nivo_doesnt_exist(nivo_date["nivo_date"]):
-            try:
-                downloaded_nivo = download_nivo(**nivo_date)
-                import_nivo(downloaded_nivo)
-            except Exception as e:
-                print("Something append : ", e)
 
 
 @click.command()

@@ -6,10 +6,7 @@ from sqlalchemy import select, func
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.engine import Connection
 
-from nivo_api.cli.bra_record_helper.miscellaneous import (
-    get_massif_geom,
-    fetch_department_geom_from_opendata,
-)
+from nivo_api.cli.bra_record_helper.miscellaneous import get_massif_geom
 from nivo_api.core.db.models.bra import Massif, Department, Zone
 
 log = logging.getLogger(__name__)
@@ -32,11 +29,8 @@ def persist_zone(con: Connection, zone: str) -> UUID:
 
 
 def persist_department(con: Connection, name: str, number: str, zone: str) -> UUID:
-    geom = fetch_department_geom_from_opendata(name, number)
     zone_id = persist_zone(con, zone)
-    ins = insert(Department).values(
-        bd_name=name, bd_number=number, bd_zone=zone_id, the_geom=func.ST_Multi(geom)
-    )
+    ins = insert(Department).values(bd_name=name, bd_number=number, bd_zone=zone_id)
     ins = ins.on_conflict_do_nothing(index_elements=["bd_name"])
     con.execute(ins)
     res = select([Department.c.bd_id]).where(Department.c.bd_name == name)

@@ -10,7 +10,7 @@ import pytest
 from nivo_api.cli.bra_record_helper.process import (
     process_xml,
     _get_risk_forcast,
-    _get_massif_entity,
+    _get_massif_id,
     _get_dangerous_slopes,
     _get_bra_snow_records,
     _get_fresh_snow_record,
@@ -28,7 +28,7 @@ CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 @pytest.fixture()
 def bra_xml_parsed() -> ET._Element:
     with open(
-        os.path.join(CURRENT_DIR, "BRA.CHABLAIS.20190101142328.xml"), "rb"
+        os.path.join(CURRENT_DIR, "test_data/BRA.CHABLAIS.20190101142328.xml"), "rb"
     ) as xmlfile:
         return ET.parse(xmlfile)
 
@@ -81,7 +81,7 @@ class TestGetMassifEntity:
     def test_no_massif(self):
         with connection_scope() as con:
             with pytest.raises(ValueError) as e:
-                _get_massif_entity("CHABLAIS", con)
+                _get_massif_id("CHABLAIS", con)
             assert e.value.args[0] == "Cannot found massif CHABLAIS in the db"
             assert e.type is ValueError
 

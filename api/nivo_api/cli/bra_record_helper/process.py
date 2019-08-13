@@ -40,6 +40,10 @@ def _transform_or_none(data: Any, t: Any) -> Optional[Any]:
 
 
 def _get_risk(bra_xml, bra_id) -> Generator[Dict, None, None]:
+    """
+    It could exist 2 risk, one belong a certain altitude, and one upper. If altitude is set, then below this altitude
+    you have a risk and above you have another risk.
+    """
     if bra_xml.tag != "RISQUE" and not isinstance(bra_xml, _Element):
         raise ValueError(
             f"Need to pass RISQUE xml element to this function found : {bra_xml.tag}"
@@ -59,7 +63,7 @@ def _get_risk(bra_xml, bra_id) -> Generator[Dict, None, None]:
         }
 
 
-def _get_massif_entity(massif: str, con: Connection) -> UUID:
+def _get_massif_id(massif: str, con: Connection) -> UUID:
     res = con.execute(
         select([Massif.c.bm_id]).where(Massif.c.bm_name == massif)
     ).first()
@@ -166,7 +170,7 @@ def process_xml(con: Connection, bra_xml: ET._Element) -> List[Dict]:
         {
             BraRecord: {
                 "br_id": bra_id,
-                "br_massif": _get_massif_entity(
+                "br_massif": _get_massif_id(
                     bra_xml.find("//BULLETINS_NEIGE_AVALANCHE").get("MASSIF"), con
                 ),
                 "br_production_date": bra_xml.find("//BULLETINS_NEIGE_AVALANCHE").get(
