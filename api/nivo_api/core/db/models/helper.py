@@ -1,7 +1,10 @@
 import re
-from xml import etree
+from typing import Optional, Union
+
+from lxml import etree
 
 import sqlalchemy as sa
+from lxml.etree import _Element
 from sqlalchemy import TypeDecorator
 from sqlalchemy.dialects.postgresql import ARRAY
 
@@ -34,19 +37,20 @@ class XML(sa.types.UserDefinedType):
         return "XML"
 
     def bind_processor(self, dialect):
-        def process(value):
+        def process(value: Optional[Union[str, _Element]]) -> Optional[str]:
             if value is not None:
                 if isinstance(value, str):
                     return value
                 else:
-                    return etree.tostring(value)
+                    # you thought "tostring" would return a string ? AHAHAH how fool are you.
+                    return etree.tostring(value, encoding="utf-8").decode("utf-8")
             else:
                 return None
 
         return process
 
     def result_processor(self, dialect, coltype):
-        def process(value):
+        def process(value) -> Optional[_Element]:
             if value is not None:
                 value = etree.fromstring(value)
             return value

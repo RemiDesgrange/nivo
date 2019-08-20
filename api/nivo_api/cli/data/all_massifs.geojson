@@ -1,12 +1,6 @@
 {
     "type": "FeatureCollection",
     "name": "all_massifs",
-    "crs": {
-        "type": "name",
-        "properties": {
-            "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
-        }
-    },
     "features": [
         {
             "type": "Feature",
@@ -220,7 +214,7 @@
             "properties": {
                 "cat": 1,
                 "id": "OPP18",
-                "label": "D\u00e9voluy",
+                "label": "Devoluy",
                 "slug": "devoluy"
             }
         },
@@ -1512,8 +1506,8 @@
             "properties": {
                 "cat": 6,
                 "id": "OPP20",
-                "label": "Embrunnais-Parpaillon",
-                "slug": "embrunnais-parpaillon"
+                "label": "Embrunais-Parpaillon",
+                "slug": "embrunais-parpaillon"
             }
         },
         {
@@ -4828,8 +4822,8 @@
             "properties": {
                 "cat": 2,
                 "id": "OPP05",
-                "label": "Beaufortin",
-                "slug": "beaufortin"
+                "label": "Beaufortain",
+                "slug": "beaufortain"
             }
         },
         {
@@ -8020,8 +8014,8 @@
             "properties": {
                 "cat": 2,
                 "id": "OPP41",
-                "label": "Renoso",
-                "slug": "renoso"
+                "label": "Renoso-Incudine",
+                "slug": "renoso-incudine"
             }
         },
         {

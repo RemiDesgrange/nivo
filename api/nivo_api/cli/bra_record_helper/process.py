@@ -2,7 +2,9 @@
 Process xml pieces by pieces to dict ready to be inserted in DB.
 """
 import logging
+from abc import ABC
 from datetime import datetime
+from distutils.util import strtobool
 from enum import Enum
 from typing import Dict, List, Optional, Generator, Any
 from uuid import UUID, uuid4
@@ -39,7 +41,34 @@ def _transform_or_none(data: Any, t: Any) -> Optional[Any]:
     return None
 
 
-def _get_risk(bra_xml, bra_id) -> Generator[Dict, None, None]:
+def _get_bra_record(bra_xml: _Element, bra_id: UUID, con: Connection) -> Dict:
+    return {
+        "br_id": bra_id,
+        "br_massif": _get_massif_id(
+            bra_xml.find("//BULLETINS_NEIGE_AVALANCHE").get("MASSIF"), con
+        ),
+        "br_production_date": bra_xml.find("//BULLETINS_NEIGE_AVALANCHE").get(
+            "DATEDIFFUSION"
+        ),
+        "br_expiration_date": bra_xml.find("//DateValidite").text,
+        "br_is_amended": strtobool(
+            bra_xml.find("//BULLETINS_NEIGE_AVALANCHE").get("AMENDEMENT")
+        ),
+        "br_max_risk": bra_xml.find("//RISQUE").get("RISQUEMAXI"),
+        "br_risk_comment": bra_xml.find("//RISQUE").get("COMMENTAIRE"),
+        "br_dangerous_slopes": _get_dangerous_slopes(bra_xml),
+        "br_dangerous_slopes_comment": bra_xml.find("//PENTE").get("COMMENTAIRE"),
+        "br_opinion": bra_xml.find("//AVIS").text,
+        "br_snow_quality": bra_xml.find("//QUALITE/TEXTE").text,
+        "br_snow_stability": bra_xml.find("//STABILITE/TEXTE").text,
+        "br_last_snowfall_date": None,  # TODO !
+        "br_snowlimit_south": bra_xml.find("//ENNEIGEMENT").get("LimiteSud"),
+        "br_snowlimit_north": bra_xml.find("//ENNEIGEMENT").get("LimiteNord"),
+        "br_raw_xml": bra_xml,
+    }
+
+
+def _get_risk(bra_xml: _Element, bra_id: UUID) -> Generator[Dict, None, None]:
     """
     It could exist 2 risk, one belong a certain altitude, and one upper. If altitude is set, then below this altitude
     you have a risk and above you have another risk.
@@ -106,49 +135,60 @@ def _get_fresh_snow_record(bra_xml: _Element, bra_id) -> Generator[Dict, None, N
             }
 
 
-def _get_weather_forcast_at_altitude(
-    bra_xml: _Element, wf_id: UUID
-) -> Generator[Dict, None, None]:
+def _get_weather_forcast_at_altitude(bra_xml: _Element, wf_id: UUID) -> List:
     """
     for exach altitude of the forcast return the wind direction and force
     """
     altitudes = [int(v) for _, v in bra_xml.find("//METEO").attrib.items()]
+    wfaa_final = list()
     for record in bra_xml.find("//METEO").getchildren():
         if record.tag == "ECHEANCE":
             for alt_index, alt in enumerate(altitudes, 1):
                 wind_dir = record.get(f"DD{alt_index}")
-                win_force = record.get(f"FF{alt_index}")
-                if not wind_dir:
-                    raise ValueError(f"Cannot found value for index {alt_index}")
-                yield {
-                    "wfaa_wf_id": wf_id,
-                    "wfaa_wind_altitude": alt,
-                    "wfaa_wind_direction": WindDirection(wind_dir),
-                    "wfaa_wind_force": int(win_force),
-                }
+                wind_force = record.get(f"FF{alt_index}")
+                if wind_dir:  # sometime wind_dir is empty ¯\_(ツ)_/¯
+                    wfaa_final.append(
+                        {
+                            "wfaa_wf_id": wf_id,
+                            "wfaa_wind_altitude": alt,
+                            "wfaa_wind_direction": WindDirection(wind_dir),
+                            "wfaa_wind_force": int(wind_force),
+                        }
+                    )
+    return wfaa_final
 
 
-def _get_weather_forcast(
-    bra_xml: _Element, bra_id: UUID, wf_id: UUID
-) -> Generator[Dict, None, None]:
+def _get_weather_forcast(bra_xml: _Element, bra_id: UUID) -> Dict:
+    weather_forcasts = list()
+    weather_forcasts_at_altitude = list()
     for record in bra_xml.find("//METEO").getchildren():
         if record.tag == "ECHEANCE":
-            yield {
-                "wf_id": wf_id,
-                "wf_bra_record": bra_id,
-                "wf_expected_date": datetime.strptime(
-                    record.get("DATE"), "%Y-%m-%dT%H:%M:%S"
-                ),
-                "wf_weather_type": WeatherType(int(record.get("TEMPSSENSIBLE"))),
-                "wf_sea_of_clouds": int(record.get("MERNUAGES")),
-                "wf_rain_snow_limit": int(record.get("PLUIENEIGE")),
-                "wf_iso0": int(record.get("ISO0")),
-                "wf_iso_minus_10": int(record.get("ISO-10")),
-            }
+            wf_id = uuid4()
+            weather_forcasts.append(
+                {
+                    "wf_id": wf_id,
+                    "wf_bra_record": bra_id,
+                    "wf_expected_date": datetime.strptime(
+                        record.get("DATE"), "%Y-%m-%dT%H:%M:%S"
+                    ),
+                    "wf_weather_type": WeatherType(int(record.get("TEMPSSENSIBLE"))),
+                    "wf_sea_of_clouds": int(record.get("MERNUAGES")),
+                    "wf_rain_snow_limit": int(record.get("PLUIENEIGE")),
+                    "wf_iso0": int(record.get("ISO0")),
+                    "wf_iso_minus_10": int(record.get("ISO-10")),
+                }
+            )
+            weather_forcasts_at_altitude += _get_weather_forcast_at_altitude(
+                bra_xml, wf_id
+            )
+
+    return {
+        "weather_forcast": weather_forcasts,
+        "weather_forcast_at_altitude": weather_forcasts_at_altitude,
+    }
 
 
 def _get_risk_forcast(bra_xml: _Element, bra_id: UUID) -> Generator[Dict, None, None]:
-
     for forcast in bra_xml.find("//TENDANCES").getchildren():
         evol = RiskEvolution(int(forcast.get("VALEUR")))
         evol = str(evol).split(".")[
@@ -164,40 +204,13 @@ def _get_risk_forcast(bra_xml: _Element, bra_id: UUID) -> Generator[Dict, None, 
 def process_xml(con: Connection, bra_xml: ET._Element) -> List[Dict]:
     # split the XML in multiple entity object before merging them.
     bra_id = uuid4()
-    # weather forcast id
-    wf_id = uuid4()
+    weather_forcasts = _get_weather_forcast(bra_xml, bra_id)
     return [
-        {
-            BraRecord: {
-                "br_id": bra_id,
-                "br_massif": _get_massif_id(
-                    bra_xml.find("//BULLETINS_NEIGE_AVALANCHE").get("MASSIF"), con
-                ),
-                "br_production_date": bra_xml.find("//BULLETINS_NEIGE_AVALANCHE").get(
-                    "DATEDIFFUSION"
-                ),
-                "br_expiration_date": bra_xml.find("//DateValidite").text,
-                "br_is_amended": bra_xml.find("//BULLETINS_NEIGE_AVALANCHE").get(
-                    "AMENDEMENT"
-                ),
-                "br_max_risk": bra_xml.find("//RISQUE").get("RISQUEMAXI"),
-                "br_risk_comment": bra_xml.find("//RISQUE").get("COMMENTAIRE"),
-                "br_dangerous_slopes": _get_dangerous_slopes(bra_xml),
-                "br_dangerous_slopes_comment": bra_xml.find("//PENTE").get(
-                    "COMMENTAIRE"
-                ),
-                "br_opinion": bra_xml.find(""),
-                "br_snow_quality": bra_xml.find("//QUALITE/TEXTE").text,
-                "br_snow_stability": bra_xml.find("//STABILITE/TEXTE").text,
-                "br_last_snowfall_date": "",
-                "br_snowlimit_south": bra_xml.find("//ENNEIGEMENT").get("LimiteSud"),
-                "br_snowlimit_north": bra_xml.find("//ENNEIGEMENT").get("LimiteNord"),
-            }
-        },
+        {BraRecord: _get_bra_record(bra_xml, bra_id, con)},
         {Risk: _get_risk(bra_xml.find("//RISQUE"), bra_id)},
         {BraSnowRecord: _get_bra_snow_records(bra_xml, bra_id)},
         {BraFreshSnowRecord: _get_fresh_snow_record(bra_xml, bra_id)},
-        {WeatherForcast: _get_weather_forcast(bra_xml, bra_id, wf_id)},
-        {WeatherForcastAtAltitude: _get_weather_forcast_at_altitude(bra_xml, wf_id)},
+        {WeatherForcast: weather_forcasts["weather_forcast"]},
+        {WeatherForcastAtAltitude: weather_forcasts["weather_forcast_at_altitude"]},
         {RiskForcast: _get_risk_forcast(bra_xml, bra_id)},
     ]

@@ -1,5 +1,5 @@
 import logging
-from typing import Generator, Dict, List
+from typing import Generator, Dict, List, Union
 from uuid import UUID
 
 from sqlalchemy import select, func
@@ -13,11 +13,15 @@ log = logging.getLogger(__name__)
 
 
 def persist_bra(con: Connection, bra: List[Dict]):
-    for entities in bra:
-        with con.begin():
+    with con.begin():
+        for entities in bra:
             for e, data in entities.items():
-                ins = insert(e).values(**data)
-                con.execute(ins)
+                # https://docs.sqlalchemy.org/en/13/core/tutorial.html#executing-multiple-statements
+                if isinstance(data, Generator):
+                    # execute is not capable of understanding a generator. But it understand list.
+                    # behind the scene, the DBAPI `executemany` is called.
+                    data = list(data)
+                con.execute(insert(e), data)
 
 
 def persist_zone(con: Connection, zone: str) -> UUID:

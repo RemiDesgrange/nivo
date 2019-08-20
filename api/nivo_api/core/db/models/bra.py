@@ -32,6 +32,7 @@ class Direction(Enum):
     W = "W"
     NW = "NW"
     N = "N"
+    ALL = "_"
 
 
 # impl for dangerous slopes direction. Cannot subclass Enum
@@ -141,8 +142,8 @@ BraRecord = AbstractTable(
     Column("br_snow_quality", TEXT),
     Column("br_snow_stability", TEXT),
     Column("br_last_snowfall_date", Date),
-    Column("br_snowlimit_south", Integer, CheckConstraint("br_snowlimit_south>0")),
-    Column("br_snowlimit_north", Integer, CheckConstraint("br_snowlimit_north>0")),
+    Column("br_snowlimit_south", Integer, CheckConstraint("br_snowlimit_south>=0")),
+    Column("br_snowlimit_north", Integer, CheckConstraint("br_snowlimit_north>=0")),
     Column("br_raw_xml", XML, nullable=False),
 )
 
@@ -160,13 +161,13 @@ BraSnowRecord = AbstractTable(
     Column(
         "s_snow_quantity_cm_north",
         Integer,
-        CheckConstraint("s_snow_quantity_cm_north>0"),
+        CheckConstraint("s_snow_quantity_cm_north>=0"),
         nullable=False,
     ),
     Column(
         "s_snow_quantity_cm_south",
         Integer,
-        CheckConstraint("s_snow_quantity_cm_south>0"),
+        CheckConstraint("s_snow_quantity_cm_south>=0"),
         nullable=False,
     ),
 )
@@ -207,7 +208,7 @@ WeatherForcast = AbstractTable(
     Column(
         "wf_rain_snow_limit",
         Integer,
-        CheckConstraint("wf_rain_snow_limit>0"),
+        CheckConstraint("wf_rain_snow_limit>=0 OR wf_rain_snow_limit=-1"),
         nullable=False,
     ),
     Column("wf_iso0", Integer, CheckConstraint("wf_iso0>0"), nullable=False),
@@ -237,7 +238,10 @@ WeatherForcastAtAltitude = AbstractTable(
     # this should be a enum, maybe.
     Column("wfaa_wind_direction", _PGWindDirection, nullable=False),
     Column(
-        "wfaa_wind_force", Integer, CheckConstraint("wfaa_wind_force>0"), nullable=False
+        "wfaa_wind_force",
+        Integer,
+        CheckConstraint("wfaa_wind_force>=0"),
+        nullable=False,
     ),
 )
 

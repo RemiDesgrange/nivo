@@ -2,6 +2,7 @@ import json
 
 import click
 import requests
+import sentry_sdk
 from sqlalchemy import func, select
 
 from nivo_api.cli.bra_record_helper.miscellaneous import (
@@ -14,6 +15,7 @@ from nivo_api.cli.bra_record_helper.process import process_xml
 from nivo_api.cli.database import create_schema_and_table
 
 import logging
+import logging.config
 from sqlalchemy.dialects.postgresql import insert
 
 from nivo_api.cli.nivo_record_helper import (
@@ -37,7 +39,6 @@ def import_last_nivo_data():
     # get last nivo data if needed
     # process it
     # import it.
-
     last_nivo = get_last_nivo_date()
     if check_nivo_doesnt_exist(last_nivo):
         downloaded_nivo = download_nivo(last_nivo)
@@ -130,7 +131,9 @@ def import_bra(date):
                 xml = get_bra_xml(massif, date)
                 processed_bra = process_xml(con, xml)
                 persist_bra(con, processed_bra)
+                click.echo(f"Persist {massif.capitalize()}")
             except Exception as e:
+                log.debug(e)
                 log.critical(
                     f"an error occured when processing massif {massif} for date {date}"
                 )

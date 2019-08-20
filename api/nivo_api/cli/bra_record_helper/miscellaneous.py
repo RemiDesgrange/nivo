@@ -81,7 +81,7 @@ def get_massif_geom(massif: str) -> WKBElement:
     with open(gj_file) as fp:
         gj = geojson.load(fp)
     for obj in gj.features:
-        if obj.properties["slug"].upper() == massif.upper():
+        if obj.properties["label"].upper() == massif.upper():
             return from_shape(shape(obj.geometry), 4326)
     else:
         raise ValueError(f"Massif {massif} geometry cannot be found.")
