@@ -93,8 +93,10 @@ def _get_risk(bra_xml: _Element, bra_id: UUID) -> Generator[Dict, None, None]:
 
 
 def _get_massif_id(massif: str, con: Connection) -> UUID:
+    # this is a special case with Orlu StBarthelemy massif bra. The amount of special case code is acceptable for me
+    massif_cleaned = massif.replace(" ", "_")
     res = con.execute(
-        select([Massif.c.bm_id]).where(Massif.c.bm_name == massif)
+        select([Massif.c.bm_id]).where(Massif.c.bm_name == massif_cleaned)
     ).first()
     if res:
         return res.bm_id

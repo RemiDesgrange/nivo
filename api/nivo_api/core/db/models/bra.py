@@ -132,7 +132,7 @@ BraRecord = AbstractTable(
     Column(
         "br_max_risk",
         Integer,
-        CheckConstraint("br_max_risk>0 AND br_max_risk<5"),
+        CheckConstraint("br_max_risk>0 AND br_max_risk<=5"),
         nullable=False,
     ),
     Column("br_risk_comment", TEXT),
@@ -142,8 +142,8 @@ BraRecord = AbstractTable(
     Column("br_snow_quality", TEXT),
     Column("br_snow_stability", TEXT),
     Column("br_last_snowfall_date", Date),
-    Column("br_snowlimit_south", Integer, CheckConstraint("br_snowlimit_south>=0")),
-    Column("br_snowlimit_north", Integer, CheckConstraint("br_snowlimit_north>=0")),
+    Column("br_snowlimit_south", Integer, CheckConstraint("br_snowlimit_south>=-1")),
+    Column("br_snowlimit_north", Integer, CheckConstraint("br_snowlimit_north>=-1")),
     Column("br_raw_xml", XML, nullable=False),
 )
 

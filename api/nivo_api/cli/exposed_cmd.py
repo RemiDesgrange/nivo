@@ -1,4 +1,6 @@
 import json
+from contextlib import contextmanager
+from datetime import datetime
 
 import click
 import requests
@@ -9,6 +11,7 @@ from nivo_api.cli.bra_record_helper.miscellaneous import (
     get_last_bra_date,
     get_bra_xml,
     get_bra_date,
+    check_bra_record_exist,
 )
 from nivo_api.cli.bra_record_helper.persist import persist_bra, persist_massif
 from nivo_api.cli.bra_record_helper.process import process_xml
@@ -30,6 +33,17 @@ from nivo_api.core.db.models.nivo import NivoSensorStation
 from nivo_api.settings import Config
 
 log = logging.getLogger(__name__)
+
+
+@contextmanager
+def time_elapsed():
+    """
+    Utility to see the time a command took
+    """
+    t1 = datetime.now()
+    yield
+    t2 = datetime.now() - t1
+    click.echo(f"The command took {t2.seconds}s to execute ")
 
 
 @click.command()
@@ -123,15 +137,17 @@ def import_last_bra():
 
 @click.command()
 @click.argument("date", type=click.DateTime(["%Y-%m-%d"]))  # type: ignore
+@time_elapsed()
 def import_bra(date):
     bra_dates = get_bra_date(date)
     with connection_scope() as con:
         for massif, date in bra_dates.items():
             try:
-                xml = get_bra_xml(massif, date)
-                processed_bra = process_xml(con, xml)
-                persist_bra(con, processed_bra)
-                click.echo(f"Persist {massif.capitalize()}")
+                if not check_bra_record_exist(con, massif, date):
+                    xml = get_bra_xml(massif, date)
+                    processed_bra = process_xml(con, xml)
+                    persist_bra(con, processed_bra)
+                    click.echo(f"Persist {massif.capitalize()}")
             except Exception as e:
                 log.debug(e)
                 log.critical(
@@ -155,7 +171,7 @@ def import_massifs():
     massif_json = requests.get(Config.BRA_BASE_URL + "/massifs.json").json()
     with connection_scope() as con:
         # the 4th element of the massif is useless, and there are no BRA for it.
-        for zone in massif_json[:3]:
+        for zone in massif_json[:4]:
             for dept in zone["departements"]:
                 for massif in dept["massifs"]:
                     click.echo(f"Importing {massif}")

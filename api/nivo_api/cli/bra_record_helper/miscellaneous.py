@@ -11,6 +11,10 @@ import lxml.etree as ET
 from geoalchemy2 import WKBElement
 from geoalchemy2.shape import from_shape
 from shapely.geometry import shape
+from sqlalchemy import select, and_, exists
+from sqlalchemy.engine import Connection
+
+from nivo_api.core.db.models.bra import BraRecord, Massif
 from nivo_api.settings import Config
 
 log = logging.getLogger(__name__)
@@ -28,9 +32,17 @@ def get_bra_date(bra_date: date) -> Dict[str, datetime]:
         raise AssertionError(f"Bra list does not exist for {bra_date}")
     try:
         massifs_json = res.json()
+        # special case. haut-var/haut-verdn as a character missmatch between bra.<date>.json and the bra xml file.
+        def cleanup_json(massif: Dict):
+            if massif["massif"] == "HAUT-VAR_HAUT-VERDON":
+                massif["massif"] = massif["massif"].replace("_", "/")
+            return massif
+
+        massifs_json = [cleanup_json(m) for m in massifs_json]
 
         def merge_massifs(massif: Dict) -> Tuple[str, datetime]:
             name = massif["massif"]
+            # "heures" element is a list with multiple element. what interest use is the last element (last published bra)
             bra_date = datetime.strptime(massif["heures"].pop(), "%Y%m%d%H%M%S")
             return (name, bra_date)
 
@@ -85,3 +97,14 @@ def get_massif_geom(massif: str) -> WKBElement:
             return from_shape(shape(obj.geometry), 4326)
     else:
         raise ValueError(f"Massif {massif} geometry cannot be found.")
+
+
+def check_bra_record_exist(con: Connection, massif: str, bra_date: datetime) -> bool:
+    s = (
+        select([BraRecord])
+        .select_from(BraRecord.join(Massif, Massif.c.bm_id == BraRecord.c.br_massif))
+        .where(
+            and_(Massif.c.bm_name == massif, BraRecord.c.br_production_date == bra_date)
+        )
+    )
+    return con.execute(select([exists(s)])).first()[0]

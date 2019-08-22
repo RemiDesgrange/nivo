@@ -1,6 +1,7 @@
 import json
 import os
 from datetime import datetime
+from uuid import uuid4
 
 from geoalchemy2 import WKBElement
 from geoalchemy2.shape import to_shape
@@ -10,15 +11,22 @@ import responses
 from freezegun import freeze_time
 from unittest.mock import patch, mock_open
 
+from sqlalchemy.engine import Connection
+
 from nivo_api.cli.bra_record_helper.miscellaneous import (
     get_last_bra_date,
     get_bra_xml,
     get_massif_geom,
+    check_bra_record_exist,
 )
+from nivo_api.core.db.connection import connection_scope
+from nivo_api.core.db.models.bra import Zone, Department, Massif, BraRecord
 
 from nivo_api.settings import Config
+from test.pytest_fixtures import setup_db
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+
 
 # make it so it doesn't exist
 # bra are served from december to april/may
@@ -185,3 +193,50 @@ class TestGetMassifGeom:
 
 class TestFetchDepartmentGeomFromOpendata:
     pass
+
+
+class TestCheckBraRecordExist:
+    def load_data(self, con: Connection, bra_date: datetime) -> None:
+        zone_id = con.execute(
+            Zone.insert().values(bz_name="test").returning(Zone.c.bz_id)
+        ).first()[0]
+        dept_id = con.execute(
+            Department.insert()
+            .values(bd_name="test", bd_zone=zone_id)
+            .returning(Department.c.bd_id)
+        ).first()[0]
+        massif_id = con.execute(
+            Massif.insert()
+            .values(
+                bm_name="test",
+                bm_department=dept_id,
+                the_geom="SRID=4326;POLYGON((1 1, 1 2, 2 2, 2 1, 1 1))",
+            )
+            .returning(Massif.c.bm_id)
+        ).first()[0]
+        con.execute(
+            BraRecord.insert().values(
+                br_massif=massif_id,
+                br_production_date=bra_date,
+                br_expiration_date=bra_date,
+                br_max_risk=2,
+                br_raw_xml="<test></test>",
+            )
+        )
+
+    @setup_db()
+    def test_empty_db(self):
+        """
+        an empty db should return false
+        """
+        with connection_scope() as con:
+            r = check_bra_record_exist(con, "CHABLAIS", datetime.now())
+        assert r is False
+
+    @setup_db()
+    @freeze_time("2019-01-01")
+    def test_already_exist_record(self):
+        with connection_scope() as con:
+            self.load_data(con, datetime.now())
+            r = check_bra_record_exist(con, "test", datetime.now())
+        assert r is True
