@@ -14,7 +14,7 @@ from shapely.geometry import shape
 from sqlalchemy import select, and_, exists
 from sqlalchemy.engine import Connection
 
-from nivo_api.core.db.models.bra import BraRecord, Massif
+from nivo_api.core.db.models.sql.bra import BraRecordTable, MassifTable
 from nivo_api.settings import Config
 
 log = logging.getLogger(__name__)
@@ -101,10 +101,17 @@ def get_massif_geom(massif: str) -> WKBElement:
 
 def check_bra_record_exist(con: Connection, massif: str, bra_date: datetime) -> bool:
     s = (
-        select([BraRecord])
-        .select_from(BraRecord.join(Massif, Massif.c.bm_id == BraRecord.c.br_massif))
+        select([BraRecordTable])
+        .select_from(
+            BraRecordTable.join(
+                MassifTable, MassifTable.c.m_id == BraRecordTable.c.br_massif
+            )
+        )
         .where(
-            and_(Massif.c.bm_name == massif, BraRecord.c.br_production_date == bra_date)
+            and_(
+                MassifTable.c.m_name == massif,
+                BraRecordTable.c.br_production_date == bra_date,
+            )
         )
     )
     return con.execute(select([exists(s)])).first()[0]

@@ -11,7 +11,7 @@ from nivo_api.cli.nivo_record_helper import create_new_unknown_nivo_sensor_stati
 from nivo_api.core.db.connection import db_engine, connection_scope
 
 # populate metadata
-from nivo_api.core.db.models.nivo import metadata
+from nivo_api.core.db.models.sql.nivo import metadata
 
 
 @contextmanager

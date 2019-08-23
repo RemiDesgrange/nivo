@@ -17,7 +17,7 @@ from nivo_api.core.db.connection import metadata
 from nivo_api.core.db.models import AbstractSpatialTable, AbstractTable
 from sqlalchemy.dialects.postgresql import UUID, ENUM
 
-from nivo_api.core.db.models.helper import ArrayOfEnum, XML
+from nivo_api.core.db.models.sql.helper import ArrayOfEnum, XML
 
 
 # XML data model : https://donneespubliques.meteofrance.fr/client/document/docbraxml_248.pdf
@@ -71,60 +71,64 @@ class RiskEvolution(IntEnum):
 
 
 # french department. The polygon is extracted from OSM.
-Department = AbstractSpatialTable(
-    "bra_department",
+DepartmentTable = AbstractSpatialTable(
+    "department",
     metadata,
-    Column("bd_id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
-    Column("bd_name", TEXT, unique=True, nullable=False),
-    Column("bd_number", Integer, unique=True),
-    Column("bd_zone", UUID(as_uuid=True), ForeignKey("bra_zone.bz_id"), nullable=False),
+    Column("d_id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
+    Column("d_name", TEXT, unique=True, nullable=False),
+    Column("d_number", Integer, unique=True),
+    Column("d_zone", UUID(as_uuid=True), ForeignKey("bra.zone.z_id"), nullable=False),
+    schema="bra",
 )
 # "North Alps", "Souith Alps" etc...
-Zone = AbstractSpatialTable(
-    "bra_zone",
+ZoneTable = AbstractSpatialTable(
+    "zone",
     metadata,
-    Column("bz_id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
-    Column("bz_name", TEXT, unique=True, nullable=False),
+    Column("z_id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
+    Column("z_name", TEXT, unique=True, nullable=False),
+    schema="bra",
 )
 # Alpine massif, like "Maurienne", "Chablais", "Aspe ossau"
-Massif = AbstractSpatialTable(
-    "bra_massif",
+MassifTable = AbstractSpatialTable(
+    "massif",
     metadata,
-    Column("bm_id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
-    Column("bm_name", TEXT, unique=True, nullable=False),
+    Column("m_id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
+    Column("m_name", TEXT, unique=True, nullable=False),
     Column(
-        "bm_department",
+        "m_department",
         UUID(as_uuid=True),
-        ForeignKey("bra_department.bd_id"),
+        ForeignKey("bra.department.d_id"),
         nullable=False,
     ),
     Column("the_geom", Geometry("POLYGON", srid=4326), nullable=False),
+    schema="bra",
 )
 
-Risk = AbstractTable(
-    "bra_risk",
+RiskTable = AbstractTable(
+    "risk",
     metadata,
     Column("r_id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
     Column(
         "r_record_id",
         UUID(as_uuid=True),
-        ForeignKey("bra_record.br_id"),
+        ForeignKey("bra.record.br_id"),
         nullable=False,
     ),
     Column("r_altitude_limit", TEXT),
     Column("r_risk", Integer, CheckConstraint("r_risk>0 AND r_risk<5")),
     Column("r_evolution", Integer, CheckConstraint("r_evolution>0 AND r_evolution<5")),
+    schema="bra",
 )
 
 # actual implemntation in the DB
-_PGDangerousSlopes = ENUM(DangerousSlopes, name="dangerous_slopes_t", metadata=metadata)
+_PGDangerousSlopes = ENUM(DangerousSlopes, name="dangerous_slopes_t", metadata=metadata, schema="bra")
 
-BraRecord = AbstractTable(
-    "bra_record",
+BraRecordTable = AbstractTable(
+    "record",
     metadata,
     Column("br_id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
     Column(
-        "br_massif", UUID(as_uuid=True), ForeignKey("bra_massif.bm_id"), nullable=False
+        "br_massif", UUID(as_uuid=True), ForeignKey("bra.massif.m_id"), nullable=False
     ),
     Column("br_production_date", DateTime, nullable=False),
     Column("br_expiration_date", DateTime, nullable=False),
@@ -145,16 +149,17 @@ BraRecord = AbstractTable(
     Column("br_snowlimit_south", Integer, CheckConstraint("br_snowlimit_south>=-1")),
     Column("br_snowlimit_north", Integer, CheckConstraint("br_snowlimit_north>=-1")),
     Column("br_raw_xml", XML, nullable=False),
+    schema="bra",
 )
 
-BraSnowRecord = AbstractTable(
-    "bra_snow_record",
+SnowRecordTable = AbstractTable(
+    "snow_record",
     metadata,
     Column("s_id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
     Column(
         "s_bra_record",
         UUID(as_uuid=True),
-        ForeignKey("bra_record.br_id"),
+        ForeignKey("bra.record.br_id"),
         nullable=False,
     ),
     Column("s_altitude", Integer, CheckConstraint("s_altitude>0"), nullable=False),
@@ -170,35 +175,37 @@ BraSnowRecord = AbstractTable(
         CheckConstraint("s_snow_quantity_cm_south>=0"),
         nullable=False,
     ),
+    schema="bra",
 )
-BraFreshSnowRecord = AbstractTable(
-    "bra_fresh_snow_record",
+FreshSnowRecordTable = AbstractTable(
+    "fresh_snow_record",
     metadata,
-    Column("bfsr_id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
+    Column("fsr_id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
     Column(
-        "bfsr_bra_record",
+        "fsr_bra_record",
         UUID(as_uuid=True),
-        ForeignKey("bra_record.br_id"),
+        ForeignKey("bra.record.br_id"),
         nullable=False,
     ),
-    Column("bfsr_date", DateTime, nullable=False),
-    Column("bfsr_altitude", Integer, CheckConstraint("bfsr_altitude>0")),
-    Column("bsfr_massif_snowfall", Integer, nullable=False),
+    Column("fsr_date", DateTime, nullable=False),
+    Column("fsr_altitude", Integer, CheckConstraint("fsr_altitude>0")),
+    Column("sfr_massif_snowfall", Integer, nullable=False),
     # in meteofrance data, if no submassif, then this value takes "-1". This is bullshit.
     # we use NULL as a "non existance of value" here.
-    Column("bfsr_second_massif_snowfall", Integer),
+    Column("fsr_second_massif_snowfall", Integer),
+    schema="bra",
 )
 
-_PGWeatherType = ENUM(WeatherType, name="weather_type_t", metadata=metadata)
+_PGWeatherType = ENUM(WeatherType, name="weather_type_t", metadata=metadata, schema="bra")
 
-WeatherForcast = AbstractTable(
-    "bra_weather_forcast",
+WeatherForcastTable = AbstractTable(
+    "weather_forcast",
     metadata,
     Column("wf_id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
     Column(
         "wf_bra_record",
         UUID(as_uuid=True),
-        ForeignKey("bra_record.br_id"),
+        ForeignKey("bra.record.br_id"),
         nullable=False,
     ),
     Column("wf_expected_date", DateTime, nullable=False),
@@ -215,18 +222,21 @@ WeatherForcast = AbstractTable(
     Column(
         "wf_iso_minus_10", Integer, CheckConstraint("wf_iso_minus_10>0"), nullable=False
     ),
+    schema="bra",
 )
 
-_PGWindDirection = ENUM(WindDirection, name="wind_direction_t", metadata=metadata)
+_PGWindDirection = ENUM(
+    WindDirection, name="wind_direction_t", metadata=metadata, schema="bra"
+)
 
-WeatherForcastAtAltitude = AbstractTable(
-    "bra_weather_forcast_at_altitude",
+WeatherForcastAtAltitudeTable = AbstractTable(
+    "weather_forcast_at_altitude",
     metadata,
-    Column("wf_id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
+    Column("wfaa_id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
     Column(
         "wfaa_wf_id",
         UUID(as_uuid=True),
-        ForeignKey("bra_weather_forcast.wf_id"),
+        ForeignKey("bra.weather_forcast.wf_id"),
         nullable=False,
     ),
     Column(
@@ -243,15 +253,19 @@ WeatherForcastAtAltitude = AbstractTable(
         CheckConstraint("wfaa_wind_force>=0"),
         nullable=False,
     ),
+    schema="bra",
 )
 
-_PGRiskEvolution = ENUM(RiskEvolution, name="risk_evolution_t", metadata=metadata)
+_PGRiskEvolution = ENUM(
+    RiskEvolution, name="risk_evolution_t", metadata=metadata, schema="bra"
+)
 
-RiskForcast = AbstractTable(
-    "bra_risk_forcast",
+RiskForcastTable = AbstractTable(
+    "risk_forcast",
     metadata,
     Column("rf_id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
-    Column("rf_bra_record", UUID(as_uuid=True), ForeignKey("bra_record.br_id")),
+    Column("rf_bra_record", UUID(as_uuid=True), ForeignKey("bra.record.br_id")),
     Column("rf_date", Date, nullable=False),
     Column("rf_evolution", _PGRiskEvolution),
+    schema="bra",
 )

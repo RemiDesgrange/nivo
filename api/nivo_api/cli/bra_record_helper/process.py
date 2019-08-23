@@ -2,10 +2,8 @@
 Process xml pieces by pieces to dict ready to be inserted in DB.
 """
 import logging
-from abc import ABC
 from datetime import datetime
 from distutils.util import strtobool
-from enum import Enum
 from typing import Dict, List, Optional, Generator, Any
 from uuid import UUID, uuid4
 
@@ -14,19 +12,19 @@ from lxml.etree import _Element
 from sqlalchemy import select
 from sqlalchemy.engine import Connection
 
-from nivo_api.core.db.models.bra import (
-    Risk,
-    Massif,
+from nivo_api.core.db.models.sql.bra import (
+    RiskTable,
+    MassifTable,
     DangerousSlopes,
-    BraRecord,
-    BraSnowRecord,
-    BraFreshSnowRecord,
-    WeatherForcast,
-    RiskForcast,
+    BraRecordTable,
+    SnowRecordTable,
+    FreshSnowRecordTable,
+    WeatherForcastTable,
+    RiskForcastTable,
     WindDirection,
     WeatherType,
     RiskEvolution,
-    WeatherForcastAtAltitude,
+    WeatherForcastAtAltitudeTable,
 )
 
 log = logging.getLogger(__name__)
@@ -96,7 +94,7 @@ def _get_massif_id(massif: str, con: Connection) -> UUID:
     # this is a special case with Orlu StBarthelemy massif bra. The amount of special case code is acceptable for me
     massif_cleaned = massif.replace(" ", "_")
     res = con.execute(
-        select([Massif.c.bm_id]).where(Massif.c.bm_name == massif_cleaned)
+        select([MassifTable.c.m_id]).where(MassifTable.c.m_name == massif_cleaned)
     ).first()
     if res:
         return res.bm_id
@@ -129,11 +127,11 @@ def _get_fresh_snow_record(bra_xml: _Element, bra_id) -> Generator[Dict, None, N
     for record in bra_xml.find("//NEIGEFRAICHE").getchildren():
         if record.tag == "NEIGE24H":
             yield {
-                "bfsr_bra_record": bra_id,
-                "bfsr_date": datetime.strptime(record.get("DATE"), "%Y-%m-%dT%H:%M:%S"),
-                "bfsr_altitude": int(bra_xml.find("//NEIGEFRAICHE").get("ALTITUDESS")),
-                "bsfr_massif_snowfall": int(record.get("SS241")),
-                "bfsr_second_massif_snowfall": int(record.get("SS242")),
+                "fsr_bra_record": bra_id,
+                "fsr_date": datetime.strptime(record.get("DATE"), "%Y-%m-%dT%H:%M:%S"),
+                "fsr_altitude": int(bra_xml.find("//NEIGEFRAICHE").get("ALTITUDESS")),
+                "sfr_massif_snowfall": int(record.get("SS241")),
+                "fsr_second_massif_snowfall": int(record.get("SS242")),
             }
 
 
@@ -208,11 +206,15 @@ def process_xml(con: Connection, bra_xml: ET._Element) -> List[Dict]:
     bra_id = uuid4()
     weather_forcasts = _get_weather_forcast(bra_xml, bra_id)
     return [
-        {BraRecord: _get_bra_record(bra_xml, bra_id, con)},
-        {Risk: _get_risk(bra_xml.find("//RISQUE"), bra_id)},
-        {BraSnowRecord: _get_bra_snow_records(bra_xml, bra_id)},
-        {BraFreshSnowRecord: _get_fresh_snow_record(bra_xml, bra_id)},
-        {WeatherForcast: weather_forcasts["weather_forcast"]},
-        {WeatherForcastAtAltitude: weather_forcasts["weather_forcast_at_altitude"]},
-        {RiskForcast: _get_risk_forcast(bra_xml, bra_id)},
+        {BraRecordTable: _get_bra_record(bra_xml, bra_id, con)},
+        {RiskTable: _get_risk(bra_xml.find("//RISQUE"), bra_id)},
+        {SnowRecordTable: _get_bra_snow_records(bra_xml, bra_id)},
+        {FreshSnowRecordTable: _get_fresh_snow_record(bra_xml, bra_id)},
+        {WeatherForcastTable: weather_forcasts["weather_forcast"]},
+        {
+            WeatherForcastAtAltitudeTable: weather_forcasts[
+                "weather_forcast_at_altitude"
+            ]
+        },
+        {RiskForcastTable: _get_risk_forcast(bra_xml, bra_id)},
     ]

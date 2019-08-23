@@ -1,7 +1,6 @@
 import json
 import os
 from datetime import datetime
-from uuid import uuid4
 
 from geoalchemy2 import WKBElement
 from geoalchemy2.shape import to_shape
@@ -20,7 +19,12 @@ from nivo_api.cli.bra_record_helper.miscellaneous import (
     check_bra_record_exist,
 )
 from nivo_api.core.db.connection import connection_scope
-from nivo_api.core.db.models.bra import Zone, Department, Massif, BraRecord
+from nivo_api.core.db.models.sql.bra import (
+    ZoneTable,
+    DepartmentTable,
+    MassifTable,
+    BraRecordTable,
+)
 
 from nivo_api.settings import Config
 from test.pytest_fixtures import setup_db
@@ -198,24 +202,24 @@ class TestFetchDepartmentGeomFromOpendata:
 class TestCheckBraRecordExist:
     def load_data(self, con: Connection, bra_date: datetime) -> None:
         zone_id = con.execute(
-            Zone.insert().values(bz_name="test").returning(Zone.c.bz_id)
+            ZoneTable.insert().values(z_name="test").returning(ZoneTable.c.z_id)
         ).first()[0]
         dept_id = con.execute(
-            Department.insert()
-            .values(bd_name="test", bd_zone=zone_id)
-            .returning(Department.c.bd_id)
+            DepartmentTable.insert()
+            .values(d_name="test", d_zone=zone_id)
+            .returning(DepartmentTable.c.d_id)
         ).first()[0]
         massif_id = con.execute(
-            Massif.insert()
+            MassifTable.insert()
             .values(
-                bm_name="test",
-                bm_department=dept_id,
+                m_name="test",
+                m_department=dept_id,
                 the_geom="SRID=4326;POLYGON((1 1, 1 2, 2 2, 2 1, 1 1))",
             )
-            .returning(Massif.c.bm_id)
+            .returning(MassifTable.c.m_id)
         ).first()[0]
         con.execute(
-            BraRecord.insert().values(
+            BraRecordTable.insert().values(
                 br_massif=massif_id,
                 br_production_date=bra_date,
                 br_expiration_date=bra_date,

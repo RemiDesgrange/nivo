@@ -5,7 +5,7 @@ from sqlalchemy import select, bindparam
 
 from nivo_api.cli.bra_record_helper.persist import persist_zone, persist_massif
 from nivo_api.core.db.connection import connection_scope
-from nivo_api.core.db.models.bra import Zone, Department, Massif
+from nivo_api.core.db.models.sql.bra import ZoneTable, DepartmentTable, MassifTable
 from test.pytest_fixtures import setup_db
 
 
@@ -57,14 +57,14 @@ class TestPersistMassif:
             assert isinstance(r1, UUID)
             assert isinstance(r2, UUID)
             req = (
-                select([Zone.c.bz_id, Department.c.bd_id])
-                .select_from(Zone.join(Department).join(Massif))
-                .where(Massif.c.bm_id == bindparam("massif"))
+                select([ZoneTable.c.z_id, DepartmentTable.c.d_id])
+                .select_from(ZoneTable.join(DepartmentTable).join(MassifTable))
+                .where(MassifTable.c.m_id == bindparam("massif"))
             )
             id1 = con.execute(req, massif=r1).first()
             id2 = con.execute(req, massif=r2).first()
-            assert id1.bz_id == id2.bz_id
-            assert id1.bd_id == id2.bd_id
+            assert id1.z_id == id2.z_id
+            assert id1.d_id == id2.d_id
 
 
 class TestPersistBra:

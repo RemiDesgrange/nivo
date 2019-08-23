@@ -9,7 +9,6 @@ import pytest
 
 from nivo_api.cli.bra_record_helper.process import (
     process_xml,
-    _get_risk_forcast,
     _get_massif_id,
     _get_dangerous_slopes,
     _get_bra_snow_records,
@@ -19,7 +18,7 @@ from nivo_api.cli.bra_record_helper.process import (
     _get_risk,
 )
 from nivo_api.core.db.connection import connection_scope
-from nivo_api.core.db.models.bra import DangerousSlopes, WindDirection
+from nivo_api.core.db.models.sql.bra import DangerousSlopes, WindDirection
 from test.pytest_fixtures import setup_db
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))

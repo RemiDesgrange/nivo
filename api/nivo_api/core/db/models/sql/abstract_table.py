@@ -2,6 +2,7 @@ from typing import List, Union, Dict
 from uuid import UUID
 
 from geoalchemy2 import Geometry
+from geojson import FeatureCollection, Feature
 from sqlalchemy import Table, select, Column, func, JSON
 from sqlalchemy.engine import RowProxy, Connection
 
@@ -68,7 +69,9 @@ class AbstractSpatialTable(AbstractTable):
                 cols.append(c)
         return cols
 
-    def get_geojson(self, con: Connection, entity_id: UUID = None) -> Dict:
+    def get_geojson(
+        self, con: Connection, entity_id: UUID = None
+    ) -> Union[Feature, FeatureCollection]:
         fields = self._replace_geom_column()
         res = self.get(con, entity_id, fields)
         return to_geojson(res)

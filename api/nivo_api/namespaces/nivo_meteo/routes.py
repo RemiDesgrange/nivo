@@ -5,7 +5,7 @@ from flask_restplus import Namespace, Resource
 
 from nivo_api.core.api_schema.geojson import Feature, FeatureCollection
 from nivo_api.core.db.connection import connection_scope
-from nivo_api.core.db.models.nivo import NivoSensorStation, NivoRecord
+from nivo_api.core.db.models.sql.nivo import SensorStationTable, NivoRecordTable
 
 nivo_meteo = Namespace("nivo-meteo", path="/nivo")
 nivo_meteo.add_model("Feature", Feature)
@@ -17,7 +17,7 @@ class NivoSensorStationResource(Resource):
     @nivo_meteo.response(200, "OK", FeatureCollection)
     def get(self):
         with connection_scope() as con:
-            res = NivoSensorStation.get_geojson(con)
+            res = SensorStationTable.get_geojson(con)
         return jsonify(res)
 
 
@@ -27,7 +27,7 @@ class OneNivoSensorStationResource(Resource):
     @nivo_meteo.response(404, "Not Found")
     def get(self, station_id: UUID):
         with connection_scope() as con:
-            res = NivoSensorStation.get_geojson(con, station_id)
+            res = SensorStationTable.get_geojson(con, station_id)
         return jsonify(res)
 
 
@@ -37,7 +37,7 @@ class NivoRecordResource(Resource):
     def get(self):
         # TODO need limits
         with connection_scope() as con:
-            res = NivoRecord.get_json(con)
+            res = NivoRecordTable.get_json(con)
         return jsonify(res)
 
 
@@ -47,7 +47,7 @@ class OneNivoRecordResource(Resource):
     @nivo_meteo.response(404, "Not Found")
     def get(self, record_id: UUID):
         with connection_scope() as con:
-            res = NivoRecord.get_json(con, record_id)
+            res = NivoRecordTable.get_json(con, record_id)
         return jsonify(res)
 
 

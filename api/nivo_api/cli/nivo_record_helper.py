@@ -13,7 +13,7 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.engine import Connection, RowProxy
 
 from nivo_api.core.db.connection import connection_scope
-from nivo_api.core.db.models.nivo import NivoRecord, NivoSensorStation
+from nivo_api.core.db.models.sql.nivo import NivoRecordTable, SensorStationTable
 from nivo_api.settings import Config
 
 logger = logging.getLogger(__name__)
@@ -88,8 +88,8 @@ class ANivoCsv(ABC):
             You have to know that some station have no id (yes...)
             """
             nivo_sensor = int(line["nr_nivo_sensor"])
-            s = select([NivoSensorStation.c.nss_id]).where(
-                NivoSensorStation.c.nss_meteofrance_id == nivo_sensor
+            s = select([SensorStationTable.c.nss_id]).where(
+                SensorStationTable.c.nss_meteofrance_id == nivo_sensor
             )
             res = con.execute(s).first()
             if res is None:
@@ -132,13 +132,13 @@ def create_new_unknown_nivo_sensor_station(
     nivo_id: int, connection: Connection
 ) -> RowProxy:
     ins = (
-        insert(NivoSensorStation)
+        insert(SensorStationTable)
         .values(
             nss_name=f"UNKNOWN_{nivo_id}",
             nss_meteofrance_id=nivo_id,
             the_geom="SRID=4326;POINT(0 0 0)",
         )
-        .returning(NivoSensorStation.c.nss_id)
+        .returning(SensorStationTable.c.nss_id)
     )
     return connection.execute(ins).first()
 
@@ -154,8 +154,8 @@ def get_last_nivo_date() -> date:
 
 def check_nivo_doesnt_exist(nivo_date: date) -> bool:
     with connection_scope() as con:
-        s = exists([NivoRecord.c.nr_date]).where(
-            cast(NivoRecord.c.nr_date, Date) == nivo_date
+        s = exists([NivoRecordTable.c.nr_date]).where(
+            cast(NivoRecordTable.c.nr_date, Date) == nivo_date
         )
         s = select([s.label("exists")])
         does_nivo_already_exist = con.execute(s).first().exists
@@ -181,7 +181,7 @@ def import_nivo(csv_file: ANivoCsv):
     csv_file.find_and_replace_foreign_key_value()
     with connection_scope() as con:
         with con.begin():
-            ins = insert(NivoRecord).values(
+            ins = insert(NivoRecordTable).values(
                 csv_file.cleaned_csv
             )  # .on_conflict_do_nothing(index_elements=['nss_name'])
             con.execute(ins)

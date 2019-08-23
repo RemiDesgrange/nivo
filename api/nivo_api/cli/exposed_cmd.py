@@ -4,7 +4,6 @@ from datetime import datetime
 
 import click
 import requests
-import sentry_sdk
 from sqlalchemy import func, select
 
 from nivo_api.cli.bra_record_helper.miscellaneous import (
@@ -29,7 +28,7 @@ from nivo_api.cli.nivo_record_helper import (
     get_all_nivo_date,
 )
 from nivo_api.core.db.connection import connection_scope
-from nivo_api.core.db.models.nivo import NivoSensorStation
+from nivo_api.core.db.models.sql.nivo import SensorStationTable
 from nivo_api.settings import Config
 
 log = logging.getLogger(__name__)
@@ -93,7 +92,7 @@ def import_nivo_sensor_station():
                     else None
                 )
                 ins = (
-                    insert(NivoSensorStation)
+                    insert(SensorStationTable)
                     .values(
                         **{
                             "nss_name": feature["properties"]["Nom"],
@@ -107,7 +106,9 @@ def import_nivo_sensor_station():
                 )
                 con.execute(ins)
         inserted = (
-            con.execute(select([func.count(NivoSensorStation.c.nss_id).label("count")]))
+            con.execute(
+                select([func.count(SensorStationTable.c.nss_id).label("count")])
+            )
             .first()
             .count
         )

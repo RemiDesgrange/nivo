@@ -1,5 +1,5 @@
 import os
-from datetime import date, datetime
+from datetime import date
 from uuid import uuid4, UUID
 
 import pytest
@@ -14,7 +14,7 @@ from nivo_api.cli.nivo_record_helper import (
     create_new_unknown_nivo_sensor_station,
 )
 from nivo_api.core.db.connection import connection_scope
-from nivo_api.core.db.models.nivo import NivoSensorStation, NivoRecord
+from nivo_api.core.db.models.sql.nivo import SensorStationTable, NivoRecordTable
 from nivo_api.settings import Config
 from test.pytest_fixtures import setup_db
 
@@ -73,7 +73,7 @@ class TestCheckNivoDoesntExist:
         with connection_scope() as con:
             nss_id = uuid4()
             con.execute(
-                NivoSensorStation.insert().values(
+                SensorStationTable.insert().values(
                     {
                         "nss_id": nss_id,
                         "nss_name": "test",
@@ -83,7 +83,7 @@ class TestCheckNivoDoesntExist:
                 )
             )
             con.execute(
-                NivoRecord.insert().values(
+                NivoRecordTable.insert().values(
                     {"nr_date": date(2019, 1, 1), "nr_nivo_sensor": nss_id}
                 )
             )
