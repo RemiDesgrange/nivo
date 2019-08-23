@@ -97,7 +97,7 @@ def _get_massif_id(massif: str, con: Connection) -> UUID:
         select([MassifTable.c.m_id]).where(MassifTable.c.m_name == massif_cleaned)
     ).first()
     if res:
-        return res.bm_id
+        return res.m_id
     else:
         raise ValueError(f"Cannot found massif {massif} in the db")
 

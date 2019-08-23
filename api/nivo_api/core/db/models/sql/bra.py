@@ -121,7 +121,9 @@ RiskTable = AbstractTable(
 )
 
 # actual implemntation in the DB
-_PGDangerousSlopes = ENUM(DangerousSlopes, name="dangerous_slopes_t", metadata=metadata, schema="bra")
+_PGDangerousSlopes = ENUM(
+    DangerousSlopes, name="dangerous_slopes_t", metadata=metadata, schema="bra"
+)
 
 BraRecordTable = AbstractTable(
     "record",
@@ -196,7 +198,9 @@ FreshSnowRecordTable = AbstractTable(
     schema="bra",
 )
 
-_PGWeatherType = ENUM(WeatherType, name="weather_type_t", metadata=metadata, schema="bra")
+_PGWeatherType = ENUM(
+    WeatherType, name="weather_type_t", metadata=metadata, schema="bra"
+)
 
 WeatherForcastTable = AbstractTable(
     "weather_forcast",

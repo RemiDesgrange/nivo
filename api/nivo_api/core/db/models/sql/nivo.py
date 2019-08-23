@@ -71,7 +71,12 @@ NivoRecordTable = AbstractTable(
     Column("nr_grain_diametr", Integer),
     Column("nr_homogeneite", Integer),
     Column("nr_m_vol_neige", Float),
-    Column("nr_nivo_sensor", UUID(as_uuid=True), ForeignKey("nivo.sensor_stations.nss_id"), nullable=False),
+    Column(
+        "nr_nivo_sensor",
+        UUID(as_uuid=True),
+        ForeignKey("nivo.sensor_stations.nss_id"),
+        nullable=False,
+    ),
     schema="nivo",
 )
 

@@ -10,3 +10,4 @@ gunicorn>19,<20
 lxml>=4.4,<4.5
 geojson>=2.5,<2.6
 shapely[vectorized]>=1.6,<1.7
+beautifulsoup4>=4.8,<4.9
