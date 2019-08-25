@@ -4,6 +4,7 @@ from flask_restplus import Api, Namespace
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 from werkzeug.utils import find_modules, import_string
+from flask_cors import CORS
 
 from nivo_api.core.helpers import UUIDEncoder
 
@@ -47,6 +48,7 @@ def init_sentry():
 def init_app() -> Flask:
     init_sentry()
     app = create_app()
+    CORS(app)
     api = create_api(app)
     load_config(app)
     setup_logging(app)

@@ -16,4 +16,4 @@ RUN pip install --user .
 
 ENV LOG_LEVEL=WARNING
 
-CMD ["gunicorn", "-w 4", "-b 0.0.0.0:8080", "nivo_api.app:app"]
+CMD ["gunicorn", "-w 4", "-b 0.0.0.0:8000", "nivo_api.app:app"]
