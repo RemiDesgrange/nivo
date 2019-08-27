@@ -3,7 +3,7 @@ services:
   app:
     build: .
     ports:
-      - 8000:8000
+      - 9000:9000
     environment:
       DB_URL: postgresql://nivo:nivo@db/nivo
       ENV: PROD

@@ -15,5 +15,7 @@ COPY . /app/
 RUN pip install --user .
 
 ENV LOG_LEVEL=WARNING
+ENV ENV=PROD
+ENV DB_URL=postgresql://nivo:nivo@db:5432/nivo
 
-CMD ["gunicorn", "-w 4", "-b 0.0.0.0:8000", "nivo_api.app:app"]
+CMD ["gunicorn", "-w 4", "-b 0.0.0.0:9000", "nivo_api.app:app"]

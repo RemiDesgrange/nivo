@@ -7,7 +7,13 @@
           <bra-data />
         </div>
         <div class="col-6">
-          <ign-map />
+          <div class="col">
+            <ign-map />
+          </div>
+          <div class="w-100"></div>
+          <div class="col">
+            NivoseData
+          </div>
         </div>
       </div>
     </div>
@@ -15,16 +21,16 @@
 </template>
 
 <script>
-import IgnMap from "./components/IgnMap";
-import Navbar from "./components/Navbar";
-import BraData from "./components/BraData";
+import IgnMap from './components/IgnMap'
+import Navbar from './components/Navbar'
+import BraData from './components/BraData'
 
 export default {
-  name: "app",
+  name: 'app',
   components: {
     Navbar,
     IgnMap,
     BraData
   }
-};
+}
 </script>
