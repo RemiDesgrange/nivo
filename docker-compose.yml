@@ -6,11 +6,12 @@ services:
     environment:
       DB_URL: postgresql://nivo:${POSTGRES_PASSWORD:-nivo}@db/nivo
       ENV: PROD
+      SENTRY_DSN: ${SENTRY_DSN:-}
     depends_on:
       - db
     labels:
       - "traefik.enable=true"
-      - "traefik.frontend.rule=Host:nivo.desgran.ge,Path:/api"
+      - "traefik.frontend.rule=Host:api.nivo.desgran.ge"
   db:
     image: mdillon/postgis:11
     environment: 
@@ -22,17 +23,16 @@ services:
       context: frontend
     environment:
       NODE_ENV: production
+      VUE_APP_BASE_URL: api.nivo.desgran.ge
+      SENTRY_DSN: ${SENTRY_DSN:-}
     depends_on:
       - api
-    ports:
-      - 3000
     labels:
       - "traefik.enable=true"
       - "traefik.frontend.rule=Host:nivo.desgran.ge"
   proxy:
     image: traefik
     ports:
-      - "80:80"
-      - "443:443"
+      - "8080:80"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock

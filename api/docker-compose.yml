@@ -16,4 +16,9 @@ services:
       POSTGRES_PASSWORD: nivo
       POSTGRES_USER: nivo
       POSTGRES_DB: nivo
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+
+volumes:
+  postgresql_data:
 

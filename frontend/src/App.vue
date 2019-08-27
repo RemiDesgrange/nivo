@@ -12,7 +12,7 @@
           </div>
           <div class="w-100"></div>
           <div class="col">
-            NivoseData
+            <nivo-data />
           </div>
         </div>
       </div>
@@ -24,13 +24,15 @@
 import IgnMap from './components/IgnMap'
 import Navbar from './components/Navbar'
 import BraData from './components/BraData'
+import NivoData from './components/NivoData'
 
 export default {
   name: 'app',
   components: {
     Navbar,
     IgnMap,
-    BraData
+    BraData,
+    NivoData
   }
 }
 </script>

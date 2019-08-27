@@ -35,7 +35,7 @@
     </vl-layer-tile>
     <!-- Massif -->
     <vl-layer-vector render-mode="image" ref="massifLayer">
-      <vl-source-vector :url="massifs">
+      <vl-source-vector :url="massifs" v-if="massifs">
       </vl-source-vector>
       <vl-style-box>
         <vl-style-stroke color="rgba(120,200,200,1)"></vl-style-stroke>
@@ -56,10 +56,10 @@
 
     <!-- nivo station -->
     <vl-layer-vector render-mode="image" ref="nivoLayer">
-      <vl-source-vector :url="nivoStation">
+      <vl-source-vector :url="nivoStation" v-if="nivoStation">
       </vl-source-vector>
     </vl-layer-vector>
-    <vl-interaction-select :features.sync="selectedNivoFeature" :layers="nivoLayer"/>
+    <vl-interaction-select :features.sync="selectedNivoFeature" :layer="nivoLayer"/>
     <vl-overlay
       v-for="feature in selectedNivoFeature"
       :key="feature.properties.id"
@@ -115,12 +115,12 @@ export default {
       format: 'image/jpeg',
       styleName: 'normal',
       slopesLayerName: 'GEOGRAPHICALGRIDSYSTEMS.SLOPES.MOUNTAIN',
-      massifs: 'http://localhost:9000/bra/massifs',
+      massifs: `http://localhost:9000/bra/massifs`,
       nivoStation: 'http://localhost:9000/nivo/stations',
-      massifLayer: null,
-      nivoLayer: null,
-      selectedMassifFeature: null,
-      selectedNivoFeature: null
+      selectedMassifFeature: [],
+      selectedNivoFeature: [],
+      massifLayer: [],
+      nivoLayer: []
     }
   },
   methods: {
@@ -133,8 +133,8 @@ export default {
     }
   },
   mounted() {
-    this.massifLayer = [this.$refs.massifLayer]
-    this.nivoLayer = [this.$refs.nivoLayer]
+    this.massifLayer.push(this.$refs.massifLayer)
+    this.nivoLayer.push(this.$refs.nivoLayer)
   }
 }
 </script>

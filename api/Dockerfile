@@ -18,4 +18,6 @@ ENV LOG_LEVEL=WARNING
 ENV ENV=PROD
 ENV DB_URL=postgresql://nivo:nivo@db:5432/nivo
 
+
+ENTRYPOINT ["docker/docker-entrypoint.sh"]
 CMD ["gunicorn", "-w 4", "-b 0.0.0.0:9000", "nivo_api.app:app"]
