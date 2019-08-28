@@ -4,7 +4,7 @@
 
 A portal to share and display meteofrance opendata.
 
-[![Build Status](https://travis-ci.org/RemiDesgrange/nivo.svg?branch=master)](https://travis-ci.org/RemiDesgrange/nivo)
+[![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2FRemiDesgrange%2Fnivo%2Fbadge&style=flat)](https://actions-badge.atrox.dev/RemiDesgrange/nivo/goto)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/0d05d913551f4ecab75cc042cdb4ae9f)](https://www.codacy.com/app/RemiDesgrange/nivo)
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/0d05d913551f4ecab75cc042cdb4ae9f)](https://www.codacy.com/app/RemiDesgrange/nivo)
 [![Requirements Status](https://requires.io/github/RemiDesgrange/nivo/requirements.svg?branch=master)](https://requires.io/github/RemiDesgrange/nivo/requirements/?branch=master)
