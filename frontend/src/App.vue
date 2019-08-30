@@ -3,10 +3,10 @@
     <navbar />
     <div class="container-fluid">
       <div class="row">
-        <div class="col-6">
+        <div class="col-lg-6 col-md-12 col-sm-12">
           <bra-data />
         </div>
-        <div class="col-6">
+        <div class="col-lg-6 col-md-12 col-sm-12">
           <div class="col">
             <ign-map />
           </div>

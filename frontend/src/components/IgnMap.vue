@@ -34,42 +34,48 @@
       ></vl-source-wmts>
     </vl-layer-tile>
     <!-- Massif -->
-    <vl-layer-vector render-mode="image" ref="massifLayer">
-      <vl-source-vector :url="massifs" v-if="massifs">
-      </vl-source-vector>
+    <vl-layer-vector render-mode="image" id="massifLayer">
+      <vl-source-vector :url="massifs" v-if="massifs"> </vl-source-vector>
       <vl-style-box>
         <vl-style-stroke color="rgba(120,200,200,1)"></vl-style-stroke>
         <vl-style-fill color="rgba(200,255,255,0.8)"></vl-style-fill>
       </vl-style-box>
     </vl-layer-vector>
-    <vl-interaction-select :features.sync="selectedMassifFeature" :layers="massifLayer"/>
     <vl-overlay
       v-for="feature in selectedMassifFeature"
-      :key="feature.properties.id"
-      :id="'popup-' + feature.properties.id"
+      :key="feature.id"
+      :id="'popup-massif' + feature.id"
       :position="findPointOnSurface(feature)"
     >
-      <div>
-        propr massif {{ feature.properties.name }}
-      </div>
+      <b-card :title="feature.properties.name">
+        <b-card-text>
+          maybe some BRA infos ??
+        </b-card-text>
+      </b-card>
     </vl-overlay>
 
     <!-- nivo station -->
-    <vl-layer-vector render-mode="image" ref="nivoLayer">
+    <vl-layer-vector render-mode="image" id="nivoStationLayer">
       <vl-source-vector :url="nivoStation" v-if="nivoStation">
       </vl-source-vector>
     </vl-layer-vector>
-    <vl-interaction-select :features.sync="selectedNivoFeature" :layer="nivoLayer"/>
+
     <vl-overlay
       v-for="feature in selectedNivoFeature"
-      :key="feature.properties.id"
-      :id="'popup-' + feature.properties.id"
+      :key="feature.id"
+      :id="'popup-nivo' + feature.id"
       :position="findPointOnSurface(feature)"
     >
-      <div>
-        propr nivo {{ feature.properties.nss_name }}
-      </div>
+      <b-card :title="feature.properties.nss_name">
+        <b-card-text>
+          ..
+        </b-card-text>
+      </b-card>
     </vl-overlay>
+    <!-- get all selection event. This up to us to handle everything and dispatch -->
+    <vl-interaction-select
+      :features.sync="selectedFeatures"
+    ></vl-interaction-select>
   </vl-map>
 </template>
 
@@ -85,11 +91,12 @@ import {
   FillStyle,
   StrokeStyle,
   Overlay,
-  SelectInteraction
+  SelectInteraction,
+  StyleFunc
 } from 'vuelayers'
 import ZoomSlider from 'ol/control/ZoomSlider'
 import 'vuelayers/lib/style.css'
-import pointOnFeature from '@turf/point-on-feature'
+import { pointOnFeature } from '@turf/turf'
 
 Vue.use(Map)
 Vue.use(TileLayer)
@@ -101,6 +108,7 @@ Vue.use(FillStyle)
 Vue.use(StrokeStyle)
 Vue.use(Overlay)
 Vue.use(SelectInteraction)
+Vue.use(StyleFunc)
 
 export default {
   data() {
@@ -117,10 +125,9 @@ export default {
       slopesLayerName: 'GEOGRAPHICALGRIDSYSTEMS.SLOPES.MOUNTAIN',
       massifs: `http://localhost:9000/bra/massifs`,
       nivoStation: 'http://localhost:9000/nivo/stations',
+      selectedFeatures: [],
       selectedMassifFeature: [],
-      selectedNivoFeature: [],
-      massifLayer: [],
-      nivoLayer: []
+      selectedNivoFeature: []
     }
   },
   methods: {
@@ -128,13 +135,19 @@ export default {
       this.$refs.map.$map.getControls().extend([new ZoomSlider()])
     },
     findPointOnSurface(feature) {
-      const point = pointOnFeature(feature)
+      const point = pointOnFeature(feature.geometry)
       return point.geometry.coordinates
     }
   },
-  mounted() {
-    this.massifLayer.push(this.$refs.massifLayer)
-    this.nivoLayer.push(this.$refs.nivoLayer)
+  watch: {
+    selectedFeatures(val) {
+      this.selectedNivoFeature = val.filter(
+        geojson => geojson.properties.nss_id || ''
+      )
+      this.selectedMassifFeature = val.filter(
+        geojson => geojson.properties.department || ''
+      )
+    }
   }
 }
 </script>
@@ -142,5 +155,8 @@ export default {
 <style>
 #map {
   width: 100%;
+}
+.captialize-text {
+  text-transform: capitalize;
 }
 </style>

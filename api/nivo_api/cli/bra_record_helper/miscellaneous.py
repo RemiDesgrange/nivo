@@ -10,6 +10,7 @@ import requests
 import lxml.etree as ET
 from geoalchemy2 import WKBElement
 from geoalchemy2.shape import from_shape
+from pkg_resources import resource_stream
 from shapely.geometry import shape
 from sqlalchemy import select, and_, exists
 from sqlalchemy.engine import Connection
@@ -88,9 +89,7 @@ def get_massif_geom(massif: str) -> WKBElement:
      * swap X and Y coordinates (with plugin)
      * use grass v.transform with various x, y scale and rotation until you get what you want.
     """
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    gj_file = os.path.join(current_dir, "../data/all_massifs.geojson")
-    with open(gj_file) as fp:
+    with resource_stream('nivo_api', 'cli/data/all_massifs.geojson') as fp:
         gj = geojson.load(fp)
     for obj in gj.features:
         if obj.properties["label"].upper() == massif.upper():

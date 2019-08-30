@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DIR=/app/docker/docker-entrypoint.d
+DIR=/app/docker/docker-entrypoint.d/
 
 if [[ -d "$DIR" ]]
 then

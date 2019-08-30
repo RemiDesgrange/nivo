@@ -1,5 +1,3 @@
-import logging
-
 from nivo_api.core.db.connection import db_engine
 from nivo_api.core.db.models.sql.bra import *
 

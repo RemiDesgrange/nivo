@@ -25,6 +25,7 @@
     <div class="row">
       <div class="col">
         <b-embed
+          id="bra-iframe"
           type="iframe"
           src="http://localhost:9000/bra/html/chablais/2019-01-01"
           aspect="1by1"
@@ -46,9 +47,8 @@ export default {
 </script>
 
 <style>
-/* #bra-iframe {
-  width: 49%;
-  height: 100%;
-  position: fixed;
-} */
+#bra-iframe {
+  width: 100%;
+  position: absolute;
+}
 </style>
