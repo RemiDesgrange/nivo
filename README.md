@@ -26,6 +26,8 @@ openapi, powered by python(3). Tested on python3.7 and 3.6.
 
 ### Dev
 
+See [README.md](api) in api folder
+
 *  Clone
 *  `cd api`
 *  Make a virtualenv (`pew`, `mkvirtualenv` or `virtualenv .venv && .venv/bin/activate`
@@ -33,13 +35,21 @@ openapi, powered by python(3). Tested on python3.7 and 3.6.
 *  Run `python app.py` it listen on `http://localhost:5000`
 *  You can `pip install -e .` if you want to use cli directly.
 *  To init the database, you can use the `init_db` cmd that comes if you run `pip install -e .`
-*  Follow README.md in `api` folder for more
+
+If you just want to run it for frontend dev :
+```
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+```
+
+in the `api/` folder
 
 ## Frontend
 
 We are not web dev, PR appreciated if you are master of the css, lord of the js.
 
 ### Dev
+
+See [README.md](frontend) in frontend folder
 
 *  `cd frontend`
 *  `npm i`
