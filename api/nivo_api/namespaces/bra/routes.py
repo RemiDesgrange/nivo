@@ -9,7 +9,7 @@ from flask_restplus import Namespace, Resource, fields
 from flask_restplus._http import HTTPStatus
 from lxml.etree import _Element, LxmlError
 import lxml.etree as ET
-from sqlalchemy import select, cast, Date
+from sqlalchemy import select, cast, Date, and_, func
 from sqlalchemy.orm import subqueryload
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -18,8 +18,9 @@ from nivo_api.core.api_schema.geojson import (
     FeatureCollection as FeatureCollectionSchema,
 )
 from nivo_api.core.db.connection import connection_scope, session_scope
+from nivo_api.core.db.helpers import to_json
 from nivo_api.core.db.models.orm.bra import Massif, Department, Zone, BraRecord
-from nivo_api.core.db.models.sql.bra import BraRecordTable
+from nivo_api.core.db.models.sql.bra import BraRecordTable, MassifTable
 from nivo_api.namespaces.utils import UUIDField, GeometryField
 from geojson import FeatureCollection, Feature
 
@@ -67,9 +68,18 @@ department_model = bra_api.model(
     },
 )
 
+bra_model = bra_api.model('BraModel', {
+        "id": UUIDField(attribute="br_id"),
+        "production_date": fields.DateTime(attribute="br_production_date"),
+        "max_risk": fields.Integer(attribute="br_max_risk"),
+        "risk_comment": fields.String("br_risk_comment"),
+        "dangerous_slopes": fields.List(fields.String, attribute='br_dangerous_slopes'),
+        "dangerous_slopes_comment": fields.String("br_dangerous_slopes_comment")
+})
+
 
 @bra_api.route("/html/<uuid:id>")
-class GenerateBRAResource(Resource):
+class GenerateBraHtmlResource(Resource):
     @bra_api.produces("text/html")
     @bra_api.response(HTTPStatus.BAD_REQUEST, "UUID is invalid.")
     @bra_api.response(
@@ -121,7 +131,7 @@ class GenerateBRAResource(Resource):
 
 
 @bra_api.route("/html/<string:massif>/<string:date>")
-class GenerateBRAByDateResource(Resource):
+class GenerateBraHmlByDateResource(Resource):
     @bra_api.produces("text/html")
     @bra_api.response(
         HTTPStatus.BAD_REQUEST, "If date cannot be parsed or massif is invalid."
@@ -181,6 +191,17 @@ class GenerateBRAByDateResource(Resource):
             link["href"] = f"/bra/static/{link['href']}"
         return str(soup)
 
+@bra_api.route('/<uuid:massif_id>/last')
+class LastBraResource(Resource):
+    @bra_api.marshal_with(bra_model)
+    def get(self, massif_id: UUID) -> Dict:
+        with connection_scope() as con:
+            s = (select(BraRecordTable.c)
+                 .where(BraRecordTable.c.br_massif==massif_id)
+                 .order_by(BraRecordTable.c.br_production_date).limit(1)
+            )
+            res = con.execute(s).first()
+            return to_json(res)
 
 @bra_api.route("/zone")
 @bra_api.route("/zone/<uuid:zone_id>")

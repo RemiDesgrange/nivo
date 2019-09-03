@@ -1,17 +1,16 @@
-FROM node:10-alpine as builder
+FROM node:slim
+
+ENV NODE_ENV=build
+WORKDIR /app
+RUN chown node:node /app
 
 USER node
-
-COPY --chown=node:node package.json package-lock.json /app/
-WORKDIR /app
+COPY package.json package-lock.json ./
 RUN npm install
-COPY . /app
+
+ENV NODE_ENV=production
+ENV HOST 0.0.0.0
+COPY . .
 RUN npm run build
-
-
-FROM nginx:1.17
-
-COPY --from=build --chown=www-data /app/dist /usr/share/nginx/html
-
-
-
+EXPOSE 3000
+CMD ["npm", "run", "start"]

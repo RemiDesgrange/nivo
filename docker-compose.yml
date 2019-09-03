@@ -11,28 +11,40 @@ services:
       - db
     labels:
       - "traefik.enable=true"
-      - "traefik.frontend.rule=Host:api.nivo.desgran.ge"
+      - "traefik.frontend.rule=Host:api.nivo.example.com"
   db:
     image: mdillon/postgis:11
-    environment: 
+    environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nivo}
       POSTGRES_USER: nivo
       POSTGRES_DB: nivo
+    labels:
+      - "traefik.enable=false"
   front:
     build:
       context: frontend
     environment:
       NODE_ENV: production
-      VUE_APP_BASE_URL: api.nivo.desgran.ge
+      API_HOST: api
+      API_PREFIX: http
+      API_URL_BROWSER: http://api.nivo.example.com
       SENTRY_DSN: ${SENTRY_DSN:-}
     depends_on:
       - api
     labels:
       - "traefik.enable=true"
-      - "traefik.frontend.rule=Host:nivo.desgran.ge"
+      - "traefik.frontend.rule=Host:nivo.example.com"
   proxy:
     image: traefik
+    command:
+      - "--api"
+      - "--entrypoints=Name:http Address::80"
+      - "--defaultentrypoints=http"
+      - "--docker"
+      - "--docker.domain=example.com"
+      - "--docker.watch"
     ports:
-      - "8080:80"
+      - "8080:8080"
+      - "80:80"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
