@@ -58,6 +58,10 @@
           :features="nivoseStations.features"
         >
         </vl-source-vector>
+        <vl-style-circle :radius="5">
+          <vl-style-stroke color="rgba(255,255,0,0.4)"></vl-style-stroke>
+          <vl-style-fill color="#ff0"></vl-style-fill>
+        </vl-style-circle>
       </vl-layer-vector>
 
       <vl-overlay
@@ -82,7 +86,7 @@
 
 <script>
 import 'vuelayers/lib/style.css'
-import { pointOnFeature } from '@turf/turf'
+import { pointOnFeature, booleanPointInPolygon } from '@turf/turf'
 import { mapState } from 'vuex'
 
 export default {
@@ -100,7 +104,7 @@ export default {
       selectedFeatures: [],
       selectedMassifFeature: [],
       selectedNivoFeature: [],
-      displayNivose: false
+      displayNivose: true
     }
   },
   computed: mapState(['massifs', 'nivoseStations']),
@@ -108,7 +112,12 @@ export default {
     selectedFeatures(val) {
       this.selectedFeatures = val
       if (val[0]) {
+        // FIXME this is ugly.
         this.$store.dispatch('fetchLastBraById', val[0].properties.id)
+        console.log(val[0].geometry)
+        this.findNivoStationInExtent(val[0].geometry).forEach((id) => {
+          this.$store.dispatch('fetchLastNivoseById', id)
+        })
       }
     }
   },
@@ -116,6 +125,18 @@ export default {
     findPointOnSurface(feature) {
       const point = pointOnFeature(feature.geometry)
       return point.geometry.coordinates
+    },
+    zoomToExtent(e) {
+      console.log(e)
+    },
+    findNivoStationInExtent(geometry) {
+      if (this.nivoseStations) {
+        return this.nivoseStations.features
+          .filter((f) => {
+            booleanPointInPolygon(f, geometry)
+          })
+          .map((f) => f.properties.id)
+      }
     }
   }
 }

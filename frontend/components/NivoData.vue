@@ -1,6 +1,13 @@
 <template>
   <div>
-    <highcharts :options="chartOptions"></highcharts>
+    <div v-if="nivoseDataLoading">
+      <div class="text-center">
+        <b-spinner type="grow" label="Spinning"></b-spinner>
+      </div>
+    </div>
+    <div v-if="nivoseData">
+      <highcharts :options="chartOptions"></highcharts>
+    </div>
   </div>
 </template>
 
@@ -20,6 +27,6 @@ export default {
       records: []
     }
   },
-  computed: mapState(['nivoseData'])
+  computed: mapState(['nivoseData', 'nivoseDataLoading'])
 }
 </script>

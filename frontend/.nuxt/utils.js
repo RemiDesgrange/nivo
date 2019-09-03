@@ -138,7 +138,7 @@ export async function setContext(app, context) {
       payload: context.payload,
       error: context.error,
       base: '/',
-      env: {"baseUrl":"undefined://undefined","baseMapUrl":"https://wxs.ign.fr/an7nvfzojv5wa96dsga5nk8w/geoportail/wmts"}
+      env: {"baseUrl":"http://localhost:9000","baseMapUrl":"https://wxs.ign.fr/an7nvfzojv5wa96dsga5nk8w/geoportail/wmts"}
     }
     // Only set once
     if (context.req) {

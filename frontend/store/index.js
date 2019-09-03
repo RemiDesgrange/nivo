@@ -59,44 +59,53 @@ export const mutations = {
 }
 
 export const actions = {
-  // this special actions is executed when server starts
-  async nuxtServerInit({ dispatch }) {
-    await dispatch('fetchMassifs')
-    await dispatch('fetchNivoseStation')
-  },
   async fetchMassifs({ commit }) {
     commit(types.MASSIFS_LOADING)
-    const res = await this.$axios.get(`${process.env.baseUrl}/bra/massifs`)
-    commit(types.MASSIFS_LOADED, res.data)
+    try {
+      const res = await this.$axios.get(`${process.env.baseUrl}/bra/massifs`)
+      commit(types.MASSIFS_LOADED, res.data)
+    } catch (e) {
+      commit(types.SET_ERROR, e)
+    } finally {
+      commit(types.MASSIFS_LOADING)
+    }
   },
-  fetchLastBraById({ commit }, massifId) {
+  async fetchLastBraById({ commit }, massifId) {
     commit(types.BRA_LOADING)
-    this.$axios
-      .get(`${process.env.baseUrl}/bra/${massifId}/last`)
-      .then((res) => {
-        commit(types.BRA_LOADED, res.data)
-      })
-      .catch((e) => {
-        commit(types.BRA_LOADING)
-        commit(types.SET_ERROR, e)
-      })
+    try {
+      const res = await this.$axios.get(
+        `${process.env.baseUrl}/bra/${massifId}/last`
+      )
+      commit(types.BRA_LOADED, res.data)
+    } catch (e) {
+      commit(types.SET_ERROR, e)
+    } finally {
+      commit(types.BRA_LOADING)
+    }
   },
   async fetchNivoseStation({ commit }) {
     commit(types.NIVOSE_STATION_LOADING)
-    const res = await this.$axios.get(`${process.env.baseUrl}/nivo/stations`)
-    commit(types.NIVOSE_STATION_LOADED, res.data)
+    try {
+      const res = await this.$axios.get(`${process.env.baseUrl}/nivo/stations`)
+      commit(types.NIVOSE_STATION_LOADED, res.data)
+    } catch (e) {
+      commit(types.SET_ERROR, e)
+    } finally {
+      commit(types.NIVOSE_STATION_LOADING)
+    }
   },
-  fetchLastNivoseById({ commit }, nivoseStationId) {
+  async fetchLastNivoseById({ commit }, nivoseStationId) {
     commit(types.NIVOSE_DATA_LOADING)
-    this.$axios
-      .get(`${process.env.baseUrl}/nivo/${nivoseStationId}/last`)
-      .then((res) => {
-        commit(types.NIVOSE_DATA_LOADED, res.data)
-      })
-      .catch((e) => {
-        commit(types.SET_ERROR, e)
-        commit(types.NIVOSE_DATA_LOADING)
-      })
+    try {
+      const res = await this.$axios.get(
+        `${process.env.baseUrl}/nivo/${nivoseStationId}/last`
+      )
+      commit(types.NIVOSE_DATA_LOADED, res.data)
+    } catch (e) {
+      commit(types.SET_ERROR, e)
+    } finally {
+      commit(types.NIVOSE_DATA_LOADING)
+    }
   }
 }
 

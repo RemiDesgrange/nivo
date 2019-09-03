@@ -44,7 +44,7 @@ export default {
   modules: [
     // Doc: https://bootstrap-vue.js.org/docs/
     'bootstrap-vue/nuxt',
-    '@/shared/vuelayers',
+    '@/modules/vuelayers',
     '@nuxtjs/axios'
   ],
   /*
@@ -57,7 +57,8 @@ export default {
     extend(config, ctx) {}
   },
   env: {
-    baseUrl: `${process.env.API_PREFIX || 'http'}://${process.env.API_HOST || 'localhost'}:${process.env.API_PORT || 8000}`,
+    baseUrl: `${process.env.API_PREFIX || 'http'}://${process.env.API_HOST ||
+      'localhost'}:${process.env.API_PORT || 9000}`,
     baseMapUrl:
       process.env.BASE_MAP_URL ||
       'https://wxs.ign.fr/an7nvfzojv5wa96dsga5nk8w/geoportail/wmts'
