@@ -4,6 +4,7 @@ import { interopDefault } from './utils'
 import scrollBehavior from './router.scrollBehavior.js'
 
 const _d0eec4f2 = () => interopDefault(import('../pages/index.vue' /* webpackChunkName: "pages/index" */))
+const _5f4f66a5 = () => interopDefault(import('../pages/_massif.vue' /* webpackChunkName: "pages/_massif" */))
 
 Vue.use(Router)
 
@@ -18,6 +19,10 @@ export const routerOptions = {
       path: "/",
       component: _d0eec4f2,
       name: "index"
+    }, {
+      path: "/:massif",
+      component: _5f4f66a5,
+      name: "massif"
     }],
 
   fallback: false

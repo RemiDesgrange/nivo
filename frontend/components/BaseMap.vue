@@ -58,10 +58,10 @@
           :features="nivoseStations.features"
         >
         </vl-source-vector>
-        <vl-style-circle :radius="5">
+        <!-- <vl-style-circle :radius="5">
           <vl-style-stroke color="rgba(255,255,0,0.4)"></vl-style-stroke>
           <vl-style-fill color="#ff0"></vl-style-fill>
-        </vl-style-circle>
+        </vl-style-circle> -->
       </vl-layer-vector>
 
       <vl-overlay
@@ -114,7 +114,6 @@ export default {
       if (val[0]) {
         // FIXME this is ugly.
         this.$store.dispatch('fetchLastBraById', val[0].properties.id)
-        console.log(val[0].geometry)
         this.findNivoStationInExtent(val[0].geometry).forEach((id) => {
           this.$store.dispatch('fetchLastNivoseById', id)
         })

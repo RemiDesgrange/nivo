@@ -16,7 +16,6 @@ RUN pip install --user .
 
 ENV LOG_LEVEL=WARNING
 ENV ENV=PROD
-ENV DB_URL=postgresql://nivo:nivo@db:5432/nivo
 
 EXPOSE 9000
 ENTRYPOINT ["/app/docker/docker-entrypoint.sh"]
