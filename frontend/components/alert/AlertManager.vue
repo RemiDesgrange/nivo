@@ -1,6 +1,8 @@
 <template>
   <div>
-    <alert-comp :v-for="alert in alerts" :alert="alert" />
+    <div v-for="alert in alerts" :key="alert.id">
+      <alert-comp :alert="alert" />
+    </div>
   </div>
 </template>
 
@@ -12,6 +14,6 @@ export default {
   components: {
     'alert-comp': Alert
   },
-  computed: mapState('alerts')
+  computed: mapState(['alerts'])
 }
 </script>

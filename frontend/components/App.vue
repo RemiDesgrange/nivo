@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <navbar />
-    <!-- <alert-manager /> -->
+    <alert-manager />
     <div class="container-fluid">
       <div class="row">
         <div class="col-lg-6 col-md-12 col-sm-12">
@@ -26,15 +26,15 @@ import BaseMap from '@/components/BaseMap'
 import Navbar from '@/components/Navbar'
 import BraData from '@/components/BraData'
 import NivoData from '@/components/NivoData'
-// import AlertManager from '@/components/alert/AlertManager'
+import AlertManager from '@/components/alert/AlertManager'
 
 export default {
   components: {
     Navbar,
     BaseMap,
     BraData,
-    NivoData
-    // AlertManager
+    NivoData,
+    AlertManager
   }
 }
 </script>

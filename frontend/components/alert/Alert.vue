@@ -1,22 +1,22 @@
 <template>
   <div>
-    <!-- <b-alert
+    <b-alert
       dismissible
       :variant="alert.level"
-      @dismissed="alert.level = 0"
+      :show="duration"
+      @dismissed="REMOVE_ALERT(alert)"
       @dismiss-count-down="countDownChanged"
     >
       <p>{{ alert.message }}</p>
 
-      <p>This alert will dismiss after {{ dismissCountDown }} seconds...</p>
+      <p>This alert will dismiss after {{ alert.duration }} seconds...</p>
       <b-progress
         :variant="alert.level"
         :max="duration"
         :value="alert.duration"
         height="4px"
       ></b-progress>
-    </b-alert> -->
-    <p>{{ alert }}</p>
+    </b-alert>
   </div>
 </template>
 
@@ -32,14 +32,17 @@ export default {
   },
   data() {
     return {
-      duration: 10 // this.alert.duration
+      duration: this.alert.duration
     }
   },
   methods: {
     countDownChanged(dismissCountDown) {
-      this.DECREASE_ALERT_DURATION(this.alert.message, dismissCountDown)
+      this.DECREASE_ALERT_DURATION({
+        alert: this.alert,
+        newDuration: dismissCountDown
+      })
     },
-    ...mapMutations(['DECREASE_ALERT_DURATION'])
+    ...mapMutations(['DECREASE_ALERT_DURATION', 'REMOVE_ALERT'])
   }
 }
 </script>

@@ -2,9 +2,9 @@ import { mutationTypes as types, alertTypes } from '@/modules/stateTypes'
 
 export const state = () => ({
   bra: null,
-  nivoseStations: null,
+  nivoseStations: [],
   nivoseData: null,
-  massifs: null,
+  massifs: [],
   alerts: [],
   massifLoading: false,
   nivoStationLoading: false,
@@ -31,21 +31,26 @@ export const mutations = {
     if (Object.keys(alertTypes).includes(payload.level)) {
       throw new Error('Unexpected alert message type. Aborting.')
     }
+    const beforeLength = state.alerts.length
     state.alerts.push({
+      id: beforeLength + 1,
       level: payload.level,
       message: payload.message,
       duration: payload.duration || 10
     })
   },
-  [types.DECREASE_ALERT_DURATION](state, message, newDuration) {
-    state.alerts
-      .filter((e) => e.message === message)
-      .forEach((e) => {
-        e.duration = newDuration
-      })
+  [types.DECREASE_ALERT_DURATION](state, payload) {
+    const alertIndexToDecrease = state.alerts
+      .map((a) => a.id)
+      .indexOf(payload.alert.id)
+    if (alertIndexToDecrease > -1) {
+      state.alerts[alertIndexToDecrease].duration = payload.newDuration
+    } else {
+      console.log('fail to decrease')
+    }
   },
-  [types.REMOVE_ALERT](state, message) {
-    state.alerts = state.alerts.filter((e) => e.message !== message)
+  [types.REMOVE_ALERT](state, payload) {
+    state.alerts = state.alerts.filter((e) => e.id !== payload.id)
   },
   [types.TOGGLE_MASSIFS_LOADING](state) {
     state.massifLoading = !state.massifLoading
@@ -83,7 +88,7 @@ export const actions = {
     } catch (e) {
       commit(types.SET_ALERT, {
         level: alertTypes.DANGER,
-        message: JSON.stringify(e)
+        message: e
       })
     } finally {
       commit(types.TOGGLE_BRA_LOADING)
@@ -97,7 +102,7 @@ export const actions = {
     } catch (e) {
       commit(types.SET_ALERT, {
         level: alertTypes.DANGER,
-        message: JSON.stringify(e)
+        message: e
       })
     } finally {
       commit(types.TOGGLE_NIVOSE_STATION_LOADING)
