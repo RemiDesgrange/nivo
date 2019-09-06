@@ -9,7 +9,7 @@ from flask_restplus import Namespace, Resource, fields
 from flask_restplus._http import HTTPStatus
 from lxml.etree import _Element, LxmlError
 import lxml.etree as ET
-from sqlalchemy import select, cast, Date, and_, func
+from sqlalchemy import select, cast, Date, and_, func, desc
 from sqlalchemy.orm import subqueryload
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -18,7 +18,6 @@ from nivo_api.core.api_schema.geojson import (
     FeatureCollection as FeatureCollectionSchema,
 )
 from nivo_api.core.db.connection import connection_scope, session_scope
-from nivo_api.core.db.helpers import to_json
 from nivo_api.core.db.models.orm.bra import Massif, Department, Zone, BraRecord
 from nivo_api.core.db.models.sql.bra import BraRecordTable, MassifTable
 from nivo_api.namespaces.utils import UUIDField, GeometryField
@@ -69,12 +68,24 @@ department_model = bra_api.model(
 )
 
 bra_model = bra_api.model('BraModel', {
-        "id": UUIDField(attribute="br_id"),
-        "production_date": fields.DateTime(attribute="br_production_date"),
-        "max_risk": fields.Integer(attribute="br_max_risk"),
-        "risk_comment": fields.String("br_risk_comment"),
-        "dangerous_slopes": fields.List(fields.String, attribute='br_dangerous_slopes'),
-        "dangerous_slopes_comment": fields.String("br_dangerous_slopes_comment")
+    "id": UUIDField(attribute="br_id"),
+    "production_date": fields.DateTime(attribute="br_production_date"),
+    "expiration_date": fields.DateTime(attribute="br_expiration_date"),
+    "max_risk": fields.Integer(attribute="br_max_risk"),
+    "risk_comment": fields.String(attribute="br_risk_comment"),
+    "dangerous_slopes": fields.List(fields.String, attribute='br_dangerous_slopes'),
+    "dangerous_slopes_comment": fields.String(attribute="br_dangerous_slopes_comment"),
+    "opinion": fields.String(attribute="br_opinion"),
+    "snow_quality": fields.String(attribute="br_snow_quality"),
+    "last_snowfall_date": fields.DateTime(attribute="br_last_snowfall_date"),
+    "snowlimit_south": fields.Integer(attribute="br_snowlimit_south"),
+    "snowlimit_north": fields.Integer(attribute="br_snowlimit_north"),
+    "massif":
+        {
+            "id": UUIDField(attribute="m_id"),
+            "name": fields.String(attribute="m_name")
+        }
+
 })
 
 
@@ -157,9 +168,9 @@ class GenerateBraHmlByDateResource(Resource):
             try:
                 query = (
                     sess.query(BraRecord.br_raw_xml)
-                    .join(Massif)
-                    .filter(Massif.m_name == massif.upper())
-                    .filter(cast(BraRecord.br_production_date, Date) == parsed_date)
+                        .join(Massif)
+                        .filter(Massif.m_name == massif.upper())
+                        .filter(cast(BraRecord.br_production_date, Date) == parsed_date)
                 )
                 return query.one().br_raw_xml
             except NoResultFound:
@@ -191,17 +202,36 @@ class GenerateBraHmlByDateResource(Resource):
             link["href"] = f"/bra/static/{link['href']}"
         return str(soup)
 
+
+@bra_api.route('/last')
+class LastBraListResource(Resource):
+    @bra_api.marshal_with(bra_model)
+    def get(self) -> Dict:
+        with connection_scope() as con:
+            col = list(BraRecordTable.c)
+            col.append(MassifTable.c.m_name)
+            col.append(MassifTable.c.m_id)
+            join = BraRecordTable.join(MassifTable)
+            s = (select(col).select_from(join)
+                 .where(BraRecordTable.c.br_production_date.cast(Date) == select(
+                [func.max(BraRecordTable.c.br_production_date.cast(Date))]))
+                 )
+            res = con.execute(s).fetchall()
+            return res
+
+
 @bra_api.route('/<uuid:massif_id>/last')
 class LastBraResource(Resource):
     @bra_api.marshal_with(bra_model)
     def get(self, massif_id: UUID) -> Dict:
         with connection_scope() as con:
             s = (select(BraRecordTable.c)
-                 .where(BraRecordTable.c.br_massif==massif_id)
-                 .order_by(BraRecordTable.c.br_production_date).limit(1)
-            )
+                 .where(BraRecordTable.c.br_massif == massif_id)
+                 .order_by(desc(BraRecordTable.c.br_production_date)).limit(1)
+                 )
             res = con.execute(s).first()
-            return to_json(res)
+            return res
+
 
 @bra_api.route("/zone")
 @bra_api.route("/zone/<uuid:zone_id>")

@@ -1,11 +1,11 @@
 <template>
   <div>
-    <div v-if="nivoseDataLoading">
+    <div v-if="nivoDataLoading">
       <div class="text-center">
         <b-spinner type="grow" label="Spinning"></b-spinner>
       </div>
     </div>
-    <div v-if="nivoseData">
+    <div v-if="nivoData">
       <highcharts :options="chartOptions"></highcharts>
     </div>
   </div>
@@ -27,6 +27,6 @@ export default {
       records: []
     }
   },
-  computed: mapState(['nivoseData', 'nivoseDataLoading'])
+  computed: mapState(['nivoData', 'nivoDataLoading'])
 }
 </script>

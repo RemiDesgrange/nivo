@@ -191,7 +191,7 @@ def get_all_nivo_date() -> List[Dict]:
     with FTP(Config.METEO_FRANCE_FTP_DOMAIN_NAME) as ftp:
         ftp.login()
         ftp.cwd("FDPMSP/Txt/Nivo/")
-        # list recent nivose data
+        # list recent nivo observation data
         nivo = ftp.nlst("nivo*.csv")
 
         def parse_filename(filename: str) -> Dict:

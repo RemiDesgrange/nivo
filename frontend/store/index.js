@@ -1,9 +1,10 @@
 import { mutationTypes as types, alertTypes } from '@/modules/stateTypes'
 
 export const state = () => ({
-  bra: null,
-  nivoseStations: [],
-  nivoseData: null,
+  selectedBra: null,
+  braData: [],
+  nivoStations: [],
+  nivoData: null,
   massifs: [],
   alerts: [],
   massifLoading: false,
@@ -15,13 +16,16 @@ export const state = () => ({
 
 export const mutations = {
   [types.BRA_LOADED](state, newBra) {
-    state.bra = newBra
+    state.braData = newBra
   },
-  [types.NIVOSE_STATION_LOADED](state, newNivoStations) {
-    state.nivoseStations = newNivoStations
+  [types.SET_SELECTED_BRA](state, bra) {
+    state.selectedBra = bra
   },
-  [types.NIVOSE_DATA_LOADED](state, newNivoData) {
-    state.nivoseData = newNivoData
+  [types.NIVO_STATION_LOADED](state, newNivoStations) {
+    state.nivoStations = newNivoStations
+  },
+  [types.NIVO_DATA_LOADED](state, newNivoData) {
+    state.nivoData = newNivoData
   },
   [types.MASSIFS_LOADED](state, newMassifs) {
     state.massifLoading = false
@@ -46,7 +50,7 @@ export const mutations = {
     if (alertIndexToDecrease > -1) {
       state.alerts[alertIndexToDecrease].duration = payload.newDuration
     } else {
-      console.log('fail to decrease')
+      throw new Error('Fail to decrease alert duration. Fatal.')
     }
   },
   [types.REMOVE_ALERT](state, payload) {
@@ -55,10 +59,10 @@ export const mutations = {
   [types.TOGGLE_MASSIFS_LOADING](state) {
     state.massifLoading = !state.massifLoading
   },
-  [types.TOGGLE_NIVOSE_DATA_LOADING](state) {
+  [types.TOGGLE_NIVO_DATA_LOADING](state) {
     state.nivoDataLoading = !state.nivoDataLoading
   },
-  [types.TOGGLE_NIVOSE_STATION_LOADING](state) {
+  [types.TOGGLE_NIVO_STATION_LOADING](state) {
     state.nivoStationLoading = !state.nivoStationLoading
   },
   [types.TOGGLE_BRA_LOADING](state) {
@@ -78,12 +82,10 @@ export const actions = {
       commit(types.TOGGLE_MASSIFS_LOADING)
     }
   },
-  async fetchLastBraById({ commit }, massifId) {
+  async fetchLastBraData({ commit }) {
     commit(types.TOGGLE_BRA_LOADING)
     try {
-      const res = await this.$axios.get(
-        `${process.env.baseUrl}/bra/${massifId}/last`
-      )
+      const res = await this.$axios.get(`${process.env.baseUrl}/bra/last`)
       commit(types.BRA_LOADED, res.data)
     } catch (e) {
       commit(types.SET_ALERT, {
@@ -94,39 +96,39 @@ export const actions = {
       commit(types.TOGGLE_BRA_LOADING)
     }
   },
-  async fetchNivoseStation({ commit }) {
-    commit(types.TOGGLE_NIVOSE_STATION_LOADING)
+  async fetchNivoStation({ commit }) {
+    commit(types.TOGGLE_NIVO_STATION_LOADING)
     try {
       const res = await this.$axios.get(`${process.env.baseUrl}/nivo/stations`)
-      commit(types.NIVOSE_STATION_LOADED, res.data)
+      commit(types.NIVO_STATION_LOADED, res.data)
     } catch (e) {
       commit(types.SET_ALERT, {
         level: alertTypes.DANGER,
         message: e
       })
     } finally {
-      commit(types.TOGGLE_NIVOSE_STATION_LOADING)
+      commit(types.TOGGLE_NIVO_STATION_LOADING)
     }
   },
-  async fetchLastNivoseById({ commit }, nivoseStationId) {
-    commit(types.NIVOSE_DATA_LOADING)
+  async fetchLastNivoById({ commit }, nivoStationId) {
+    commit(types.NIVO_DATA_LOADING)
     try {
       const res = await this.$axios.get(
-        `${process.env.baseUrl}/nivo/${nivoseStationId}/last`
+        `${process.env.baseUrl}/nivo/${nivoStationId}/last`
       )
-      commit(types.NIVOSE_DATA_LOADED, res.data)
+      commit(types.NIVO_DATA_LOADED, res.data)
     } catch (e) {
       commit(types.SET_ALERT, { level: alertTypes.DANGER, message: e })
     } finally {
-      commit(types.TOGGLE_NIVOSE_DATA_LOADING)
+      commit(types.TOGGLE_NIVO_DATA_LOADING)
     }
   }
 }
 
 export const getters = {
   braUrl(state) {
-    if (state.bra) {
-      return `${process.env.baseUrl}/bra/html/${state.bra.id}`
+    if (state.selectedBra) {
+      return `${process.env.baseUrl}/bra/html/${state.selectedBra.id}`
     }
     return null
   }

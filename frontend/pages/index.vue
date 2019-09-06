@@ -10,8 +10,10 @@ export default {
     App
   },
   async asyncData({ store }) {
-    await store.dispatch('fetchMassifs')
-    await store.dispatch('fetchNivoseStation')
+    await Promise.all([
+      store.dispatch('fetchMassifs'),
+      store.dispatch('fetchNivoStation')
+    ])
   }
 }
 </script>

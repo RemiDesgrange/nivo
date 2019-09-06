@@ -4,22 +4,32 @@
 
 <script>
 import App from '@/components/App'
-import { alertTypes } from '@/modules/stateTypes'
+import { alertTypes, mutationTypes as types } from '@/modules/stateTypes'
 
 export default {
   components: {
     App
   },
   async asyncData({ store, params }) {
-    await store.dispatch('fetchMassifs')
-    await store.dispatch('fetchNivoseStation')
+    await Promise.all([
+      store.dispatch('fetchLastBraData'),
+      store.dispatch('fetchNivoStation'),
+      store.dispatch('fetchMassifs')
+    ])
     const massifs = store.state.massifs.features.filter(
       (massif) => params.massif.toUpperCase() === massif.properties.name
     )
     if (massifs.length > 1 || massifs.length === 0) {
-      store.commit('SET_ALERT', alertTypes.DANGER, 'Massifs cannot be found')
+      store.commit(types.SET_ALERT, {
+        level: alertTypes.DANGER,
+        message: 'Massifs cannot be found'
+      })
     } else {
-      await store.dispatch('fetchLastBraById', massifs[0].properties.id)
+      const selectedBra = store.state.braData.filter(
+        (b) => b.massif.id === massifs[0].properties.id
+      )
+      console.log(massifs)
+      store.commit(types.SET_SELECTED_BRA, selectedBra[0]) // ugly
     }
   }
 }

@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import BaseMap from '@/components/BaseMap'
+import BaseMap from '@/components/map/BaseMap'
 import Navbar from '@/components/Navbar'
 import BraData from '@/components/BraData'
 import NivoData from '@/components/NivoData'
