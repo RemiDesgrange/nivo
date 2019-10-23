@@ -22,7 +22,7 @@
     "highcharts": "^7.1.3",
     "highcharts-vue": "^1.3.5",
     "nuxt": "^2.0.0",
-    "vuelayers": "^0.11.4"
+    "vuelayers": "^0.11.9"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^1.0.1",
