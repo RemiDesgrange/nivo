@@ -13,7 +13,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@nuxtjs/axios": "^5.6.0",
+    "@nuxtjs/axios": "^5.8.0",
     "@nuxtjs/sentry": "^3.0.1",
     "@turf/turf": "^5.1.6",
     "axios": "^0.19.0",
