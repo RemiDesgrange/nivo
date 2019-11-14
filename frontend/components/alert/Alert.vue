@@ -1,11 +1,11 @@
 <template>
   <div>
     <b-alert
-      dismissible
       :variant="alert.level"
       :show="duration"
       @dismissed="REMOVE_ALERT(alert)"
       @dismiss-count-down="countDownChanged"
+      dismissible
     >
       <p>{{ alert.message }}</p>
 

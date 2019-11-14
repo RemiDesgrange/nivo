@@ -10,7 +10,6 @@ export default {
     App
   },
   async asyncData({ store }) {
-    console.log('Trying to load')
     await Promise.all([
       store.dispatch('fetchMassifs'),
       store.dispatch('fetchNivoStation')

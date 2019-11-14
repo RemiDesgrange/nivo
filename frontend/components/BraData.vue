@@ -33,8 +33,8 @@
           </div>
           <b-embed
             id="bra-iframe"
-            type="iframe"
             :src="braUrl"
+            type="iframe"
             aspect="1by1"
           ></b-embed>
         </div>

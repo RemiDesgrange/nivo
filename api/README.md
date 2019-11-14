@@ -31,7 +31,7 @@ Now that the app and the db is up, you'll need data from meteofrance
 ```bash
 # start with massif. Normaly with the standard conf it must work.
 init_db
-import_massif 
+import_massifs 
 import_last_bra
 import_nivo_sensor_station
 import_last_nivo_data

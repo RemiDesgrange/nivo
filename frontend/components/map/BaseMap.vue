@@ -28,9 +28,9 @@
       <nivo-map />
 
       <!-- get all selection event. This up to us to handle everything and dispatch -->
-      <vl-interaction-select
+      <!-- <vl-interaction-select
         :features.sync="selectedFeatures"
-      ></vl-interaction-select>
+      ></vl-interaction-select> -->
     </vl-map>
   </client-only>
 </template>
