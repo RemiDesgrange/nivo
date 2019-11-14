@@ -34,11 +34,11 @@ CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # make it so it doesn't exist
 # bra are served from december to april/may
-@freeze_time("2019-09-10")
+@freeze_time("2010-09-10")
 def test_get_last_bra_date_fail():
     with pytest.raises(AssertionError) as e:
         get_last_bra_date()
-    assert str(e.value) == "Bra list does not exist for 2019-09-10"
+    assert str(e.value) == "Bra list does not exist for 2010-09-10"
 
 
 class TestGetBraDate:

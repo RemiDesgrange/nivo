@@ -1,0 +1,33 @@
+{
+"type": "FeatureCollection",
+"name": "flowcapt",
+"features": [
+{ "type": "Feature", "properties": { "id": "FBER1", "site": "La Berarde", "altitude": 2390, "country": "France" }, "geometry": { "type": "Point", "coordinates": [ 6.237082, 44.949944 ] } },
+{ "type": "Feature", "properties": { "id": "FCMB1", "site": "Chambon", "altitude": 2460, "country": "France" }, "geometry": { "type": "Point", "coordinates": [ 6.17845, 45.017311 ] } },
+{ "type": "Feature", "properties": { "id": "FHUE1", "site": "Huez", "altitude": 2064, "country": "France" }, "geometry": { "type": "Point", "coordinates": [ 6.056158, 45.101875 ] } },
+{ "type": "Feature", "properties": { "id": "FMOR1", "site": "La Morte", "altitude": 2140, "country": "France" }, "geometry": { "type": "Point", "coordinates": [ 5.880547, 45.029648 ] } },
+{ "type": "Feature", "properties": { "id": "FSAL1", "site": "La Salette", "altitude": 1975, "country": "France" }, "geometry": { "type": "Point", "coordinates": [ 5.952989, 44.856754 ] } },
+{ "type": "Feature", "properties": { "id": "FARL1", "site": "Val Arly", "altitude": 713, "country": "France" }, "geometry": { "type": "Point", "coordinates": [ 6.484984, 45.771957 ] } },
+{ "type": "Feature", "properties": { "id": "FBON1", "site": "Bonneval sur Arc", "altitude": 2480, "country": "France" }, "geometry": { "type": "Point", "coordinates": [ 7.05232, 45.362431 ] } },
+{ "type": "Feature", "properties": { "id": "FCEL1", "site": "Cellier", "altitude": 1924, "country": "France" }, "geometry": { "type": "Point", "coordinates": [ 6.40921, 45.49057 ] } },
+{ "type": "Feature", "properties": { "id": "FCHE1", "site": "Chevril la Davie", "altitude": 2869, "country": "France" }, "geometry": { "type": "Point", "coordinates": [ 6.95439, 45.513248 ] } },
+{ "type": "Feature", "properties": { "id": "FGIE1", "site": "La Giettaz", "altitude": 1812, "country": "France" }, "geometry": { "type": "Point", "coordinates": [ 6.525692, 45.855289 ] } },
+{ "type": "Feature", "properties": { "id": "FMON1", "site": "St Martin de Belleville", "altitude": 2280, "country": "France" }, "geometry": { "type": "Point", "coordinates": [ 6.56593, 45.30283 ] } },
+{ "type": "Feature", "properties": { "id": "FPRA1", "site": "Pralognan", "altitude": 2419, "country": "France" }, "geometry": { "type": "Point", "coordinates": [ 6.688355, 45.383129 ] } },
+{ "type": "Feature", "properties": { "id": "FSARS1", "site": "Arinsal", "altitude": 2664, "country": "Andorre"}, "geometry": { "type": "Point", "coordinates": [ 1.477278, 42.599239 ] } },
+{ "type": "Feature", "properties": { "id": "FARA1", "site": "Val d'Aran", "altitude": 2100, "country": "Spain" }, "geometry": { "type": "Point", "coordinates": [ 0.936312, 42.712807 ] } },
+{ "type": "Feature", "properties": { "id": "FNUR1", "site": "Val de Nuria", "altitude": 2242, "country": "Spain" }, "geometry": { "type": "Point", "coordinates": [ 2.150004, 42.382553 ] } },
+{ "type": "Feature", "properties": { "id": "FNUR2", "site": "Val de Nuria", "altitude": 2010, "country": "Spain" }, "geometry": { "type": "Point", "coordinates": [ 2.162869, 42.387333 ] } },
+{ "type": "Feature", "properties": { "id": "FCAT1", "site": "Santa Caterina", "altitude": 2700, "country": "Italy" }, "geometry": { "type": "Point", "coordinates": [ 10.481184, 46.391384 ] } },
+{ "type": "Feature", "properties": { "id": "FLIV1", "site": "Livigno", "altitude": 2400, "country": "Italy" }, "geometry": { "type": "Point", "coordinates": [ 10.114008, 46.540951 ] } },
+{ "type": "Feature", "properties": { "id": "FMAC1", "site": "Macugnaga", "altitude": 2860, "country": "Italy" }, "geometry": { "type": "Point", "coordinates": [ 7.983703, 45.997128 ] } },
+{ "type": "Feature", "properties": { "id": "FMAC2", "site": "Macugnaga", "altitude": 2498, "country": "Italy" }, "geometry": { "type": "Point", "coordinates": [ 7.932361, 45.94989 ] } },
+{ "type": "Feature", "properties": { "id": "4EVO2", "site": "Evolene", "altitude": 2830, "country": "Swiss" }, "geometry": { "type": "Point", "coordinates": [ 7.532433, 46.126827 ] } },
+{ "type": "Feature", "properties": { "id": "4EVO3", "site": "Evolene", "altitude": 2860, "country": "Swiss" }, "geometry": { "type": "Point", "coordinates": [ 7.536951, 46.120975 ] } },
+{ "type": "Feature", "properties": { "id": "4PMO2", "site": "Cran-Montana", "altitude": 2810, "country": "Swiss" }, "geometry": { "type": "Point", "coordinates": [ 7.492504, 46.370697 ] } },
+{ "type": "Feature", "properties": { "id": "FDIA2", "site": "Les Diablerets", "altitude": 2500, "country": "Swiss" }, "geometry": { "type": "Point", "coordinates": [ 7.160795, 46.38155 ] } },
+{ "type": "Feature", "properties": { "id": "FVER1", "site": "Verbier", "altitude": 2659, "country": "Swiss" }, "geometry": { "type": "Point", "coordinates": [ 7.266408, 46.102097 ] } },
+{ "type": "Feature", "properties": { "id": "FSOM1", "site": "Somport", "altitude": 2189, "country": "Spain" }, "geometry": { "type": "Point", "coordinates": [ -0.536078, 42.745102 ] } },
+{ "type": "Feature", "properties": { "id": "FSOM2", "site": "Somport", "altitude": 2032, "country": "Spain" }, "geometry": { "type": "Point", "coordinates": [ -0.532472, 42.749863 ] } }
+]
+}

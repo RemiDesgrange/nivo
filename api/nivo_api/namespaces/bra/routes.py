@@ -80,12 +80,12 @@ bra_model = bra_api.model('BraModel', {
     "last_snowfall_date": fields.DateTime(attribute="br_last_snowfall_date"),
     "snowlimit_south": fields.Integer(attribute="br_snowlimit_south"),
     "snowlimit_north": fields.Integer(attribute="br_snowlimit_north"),
-    "massif":
-        {
+    "massif": fields.Nested(
+        bra_api.model("BraMassifModel", {
             "id": UUIDField(attribute="m_id"),
             "name": fields.String(attribute="m_name")
-        }
-
+        })
+    )
 })
 
 

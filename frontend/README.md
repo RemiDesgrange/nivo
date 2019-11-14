@@ -1,6 +1,8 @@
-# test-front
+# Nivo Frontend
 
-> My fabulous Nuxt.js project
+This is the frontend of Nivo. This app is build with nuxtjs in `universal` mode. This mean you need a nodejs server to serve the HTML/CSS/JS files.
+
+Dockerfile is meant for production build.
 
 ## Build Setup
 

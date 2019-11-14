@@ -3,7 +3,9 @@ from contextlib import contextmanager
 from datetime import datetime
 
 import click
+import geojson
 import requests
+from pkg_resources import resource_stream
 from sqlalchemy import func, select
 
 from nivo_api.cli.bra_record_helper.miscellaneous import (
@@ -20,6 +22,7 @@ import logging
 import logging.config
 from sqlalchemy.dialects.postgresql import insert
 
+from nivo_api.cli.flowcapt_record_helper import persist_flowcapt_station
 from nivo_api.cli.nivo_record_helper import (
     import_nivo,
     download_nivo,
@@ -186,6 +189,13 @@ def import_massifs():
                     except ValueError:
                         log.warning(f"Do no import massif: {massif}")
 
+@click.command()
+def import_flowcapt_station():
+    with connection_scope() as con:
+        with resource_stream('nivo_api', 'cli/data/flowcapt.geojson') as fp:
+            gj = geojson.load(fp)
+            for station in gj:
+                persist_flowcapt_station(con, station)
 
 @click.command()
 @click.option("--drop", is_flag=True, help="Drop db before creating the schema")

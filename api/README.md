@@ -30,9 +30,11 @@ Now that the app and the db is up, you'll need data from meteofrance
 
 ```bash
 # start with massif. Normaly with the standard conf it must work.
+init_db
 import_massif 
 import_last_bra
-import_last_nivo
+import_nivo_sensor_station
+import_last_nivo_data
 ```
 
 You can now start the app. Via `flask` cli or `gunicorn`

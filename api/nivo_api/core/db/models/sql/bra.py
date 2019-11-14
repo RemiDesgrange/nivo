@@ -14,9 +14,9 @@ from sqlalchemy import (
 )
 
 from nivo_api.core.db.connection import metadata
+
 from nivo_api.core.db.models import AbstractSpatialTable, AbstractTable
 from sqlalchemy.dialects.postgresql import UUID, ENUM
-
 from nivo_api.core.db.models.sql.helper import ArrayOfEnum, XML
 
 

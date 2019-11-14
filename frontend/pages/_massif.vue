@@ -28,7 +28,6 @@ export default {
       const selectedBra = store.state.braData.filter(
         (b) => b.massif.id === massifs[0].properties.id
       )
-      console.log(massifs)
       store.commit(types.SET_SELECTED_BRA, selectedBra[0]) // ugly
     }
   }
