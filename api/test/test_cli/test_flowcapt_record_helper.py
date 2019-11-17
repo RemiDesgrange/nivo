@@ -9,8 +9,15 @@ from test.pytest_fixtures import setup_db
 
 @setup_db()
 def test_expected_json() -> None:
-    test_f = Feature(properties={"id": "FBER1", "site": "La Berarde", "altitude": 2390, "country": "France"},
-                     geometry={"type": "Point", "coordinates": [6.237082, 44.949944]})
+    test_f = Feature(
+        properties={
+            "id": "FBER1",
+            "site": "La Berarde",
+            "altitude": 2390,
+            "country": "France",
+        },
+        geometry={"type": "Point", "coordinates": [6.237082, 44.949944]},
+    )
     with connection_scope() as con:
         persist_flowcapt_station(con, test_f)
         res = con.execute(select([FlowCaptStationTable])).fetchall()

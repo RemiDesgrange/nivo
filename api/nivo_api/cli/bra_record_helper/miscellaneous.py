@@ -33,7 +33,7 @@ def get_bra_date(bra_date: date) -> Dict[str, datetime]:
         raise AssertionError(f"Bra list does not exist for {bra_date}")
     try:
         massifs_json = res.json()
-        # special case. haut-var/haut-verdn as a character missmatch between bra.<date>.json and the bra xml file.
+        # special case. haut-var/haut-verdn has a character missmatch between bra.<date>.json and the bra xml file.
         def cleanup_json(massif: Dict):
             if massif["massif"] == "HAUT-VAR_HAUT-VERDON":
                 massif["massif"] = massif["massif"].replace("_", "/")
@@ -66,6 +66,8 @@ def get_last_bra_date() -> Dict[str, datetime]:
 
 def get_bra_xml(massif: str, bra_date: datetime) -> ET:
     bra_date_str = bra_date.strftime("%Y%m%d%H%M%S")
+    # massif named "HAUT-VAT/HAUT-VERDON" doesn't work that way in the URL...
+    massif = massif.replace("/", "_")
     url = Config.BRA_BASE_URL + f"/BRA.{massif}.{bra_date_str}.xml"
     # meteofrance way of saying 404 is by redirecting you (302) to the 404 page, which is served with a 200 status...
     # so 302 means 404
@@ -89,7 +91,7 @@ def get_massif_geom(massif: str) -> WKBElement:
      * swap X and Y coordinates (with plugin)
      * use grass v.transform with various x, y scale and rotation until you get what you want.
     """
-    with resource_stream('nivo_api', 'cli/data/all_massifs.geojson') as fp:
+    with resource_stream("nivo_api", "cli/data/all_massifs.geojson") as fp:
         gj = geojson.load(fp)
     for obj in gj.features:
         if obj.properties["label"].upper() == massif.upper():

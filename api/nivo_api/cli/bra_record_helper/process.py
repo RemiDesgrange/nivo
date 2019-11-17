@@ -35,7 +35,11 @@ def _transform_or_none(data: Any, t: Any) -> Optional[Any]:
     It does *not* fail silently
     """
     if data:
-        return t(data)
+        try:
+            return t(data)
+        except Exception as e:
+            log.debug(f"Failed to convert {data} to {type(t)}, returning None")
+            log.debug(e)
     return None
 
 
@@ -52,7 +56,9 @@ def _get_bra_record(bra_xml: _Element, bra_id: UUID, con: Connection) -> Dict:
         "br_is_amended": strtobool(
             bra_xml.find("//BULLETINS_NEIGE_AVALANCHE").get("AMENDEMENT")
         ),
-        "br_max_risk": bra_xml.find("//RISQUE").get("RISQUEMAXI"),
+        "br_max_risk": _transform_or_none(
+            bra_xml.find("//RISQUE").get("RISQUEMAXI"), int
+        ),
         "br_risk_comment": bra_xml.find("//RISQUE").get("COMMENTAIRE"),
         "br_dangerous_slopes": _get_dangerous_slopes(bra_xml),
         "br_dangerous_slopes_comment": bra_xml.find("//PENTE").get("COMMENTAIRE"),
@@ -75,13 +81,19 @@ def _get_risk(bra_xml: _Element, bra_id: UUID) -> Generator[Dict, None, None]:
         raise ValueError(
             f"Need to pass RISQUE xml element to this function found : {bra_xml.tag}"
         )
-    yield {
+    risk = {
         "r_record_id": bra_id,
         "r_altitude_limit": _transform_or_none(bra_xml.get("LOC1"), str),
         "r_evolution": _transform_or_none(bra_xml.get("EVOLURISQUE1"), int),
         "r_risk": _transform_or_none(bra_xml.get("RISQUE1"), int),
     }
-    if bra_xml.get("ALTITUDE"):
+    # check for inconsistencies, for example -1 value in risk
+    if risk["r_risk"] == -1:
+        yield None
+    else:
+        yield risk
+
+    if bra_xml.get("ALTITUDE") and bra_xml.get("ALTITUDE") != "-1":
         yield {
             "r_record_id": bra_id,
             "r_altitude_limit": bra_xml.get("LOC2"),

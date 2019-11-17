@@ -5,6 +5,8 @@ export const state = () => ({
   braData: [],
   nivoStations: [],
   nivoData: null,
+  flowCaptStations: [],
+  flowCaptData: null,
   massifs: [],
   alerts: [],
   massifLoading: false,
@@ -30,6 +32,12 @@ export const mutations = {
   [types.MASSIFS_LOADED](state, newMassifs) {
     state.massifLoading = false
     state.massifs = newMassifs
+  },
+  [types.FLOWCAPT_STATION_LOADED](state, newFlowCapt) {
+    state.flowCaptStations = newFlowCapt
+  },
+  [types.FLOWCAPT_DATA_LOADED](state, newFlowCapt) {
+    state.flowCaptData = newFlowCapt
   },
   [types.SET_ALERT](state, payload) {
     if (Object.keys(alertTypes).includes(payload.level)) {
@@ -67,6 +75,9 @@ export const mutations = {
   },
   [types.TOGGLE_BRA_LOADING](state) {
     state.braLoading = !state.braLoading
+  },
+  [types.TOGGLE_FLOWCAPT_LOADING](state) {
+    state.flowCaptLoading = !state.flowCaptLoading
   }
 }
 
@@ -121,6 +132,38 @@ export const actions = {
       commit(types.SET_ALERT, { level: alertTypes.DANGER, message: e })
     } finally {
       commit(types.TOGGLE_NIVO_DATA_LOADING)
+    }
+  },
+  async fetchFlowCaptStation({ commit }) {
+    commit(types.TOGGLE_FLOWCAPT_LOADING)
+    try {
+      const res = await this.$axios.get(
+        `${process.env.baseUrl}/flowcapt/stations`
+      )
+      commit(types.FLOWCAPT_STATION_LOADED, res.data)
+    } catch (e) {
+      commit(types.SET_ALERT, {
+        level: alertTypes.DANGER,
+        message: e
+      })
+    } finally {
+      commit(types.TOGGLE_FLOWCAPT_LOADING)
+    }
+  },
+  async fetchFlowCaptData({ commit }, stationId) {
+    commit(types.TOGGLE_FLOWCAPT_LOADING)
+    try {
+      const res = await this.$axios.get(
+        `${process.env.baseUrl}/flowcapt/measures/with_timestamp/${stationId}`
+      )
+      commit(types.FLOWCAPT_DATA_LOADED, res.data)
+    } catch (e) {
+      commit(types.SET_ALERT, {
+        level: alertTypes.DANGER,
+        message: e
+      })
+    } finally {
+      commit(types.TOGGLE_FLOWCAPT_LOADING)
     }
   }
 }

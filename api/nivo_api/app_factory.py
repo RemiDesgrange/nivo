@@ -5,6 +5,7 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 from werkzeug.utils import find_modules, import_string
 from flask_cors import CORS
+import logging
 
 from nivo_api.core.helpers import UUIDEncoder
 
@@ -35,8 +36,7 @@ def load_config(app: Flask) -> None:
 
 
 def setup_logging(app: Flask) -> None:
-    # TODO
-    pass
+    logging.basicConfig(level=app.config["LOG_LEVEL"])
 
 
 def init_sentry():

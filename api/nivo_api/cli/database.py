@@ -1,7 +1,8 @@
 from nivo_api.core.db.connection import metadata, db_engine
 
+
 def create_schema_and_table(drop: bool) -> None:
-    schema = ['bra', "nivo", "flowcapt"]
+    schema = ["bra", "nivo", "flowcapt"]
     if drop:
         metadata.drop_all(db_engine)
         [db_engine.execute(f"DROP SCHEMA IF EXISTS {s} CASCADE") for s in schema]

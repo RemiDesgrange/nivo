@@ -14,6 +14,8 @@ export default {
       store.dispatch('fetchMassifs'),
       store.dispatch('fetchNivoStation')
     ])
+    // in order to populate massifs color, we need the risk of all the bra.
+    // await store.dispatch('fetchLastBraRiskLevel')
   }
 }
 </script>

@@ -10,11 +10,13 @@ from nivo_api.core.db.models.sql.flowcapt import FlowCaptStationTable
 
 def persist_flowcapt_station(con: Connection, station: Feature) -> None:
     geom = _get_geom(station)
-    ins = insert(FlowCaptStationTable).values(fcs_id=station.properties['id'],
-                                              fcs_site=station.properties['site'],
-                                              fcs_country=station.properties['country'],
-                                              fcs_altitude=station.properties['altitude'],
-                                              the_geom=geom)
+    ins = insert(FlowCaptStationTable).values(
+        fcs_id=station.properties["id"],
+        fcs_site=station.properties["site"],
+        fcs_country=station.properties["country"],
+        fcs_altitude=station.properties["altitude"],
+        the_geom=geom,
+    )
     ins = ins.on_conflict_do_nothing(index_elements=["fcs_id"])
     con.execute(ins)
 

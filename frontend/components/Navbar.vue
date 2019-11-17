@@ -5,6 +5,9 @@
 
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav> <b-nav-item href="#">Infos</b-nav-item> </b-navbar-nav>
+        <b-navbar-nav>
+          <b-nav-item to="/flowcapt">flowcapt</b-nav-item>
+        </b-navbar-nav>
       </b-collapse>
     </b-navbar>
   </div>

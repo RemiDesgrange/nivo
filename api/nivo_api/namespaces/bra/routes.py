@@ -67,26 +67,34 @@ department_model = bra_api.model(
     },
 )
 
-bra_model = bra_api.model('BraModel', {
-    "id": UUIDField(attribute="br_id"),
-    "production_date": fields.DateTime(attribute="br_production_date"),
-    "expiration_date": fields.DateTime(attribute="br_expiration_date"),
-    "max_risk": fields.Integer(attribute="br_max_risk"),
-    "risk_comment": fields.String(attribute="br_risk_comment"),
-    "dangerous_slopes": fields.List(fields.String, attribute='br_dangerous_slopes'),
-    "dangerous_slopes_comment": fields.String(attribute="br_dangerous_slopes_comment"),
-    "opinion": fields.String(attribute="br_opinion"),
-    "snow_quality": fields.String(attribute="br_snow_quality"),
-    "last_snowfall_date": fields.DateTime(attribute="br_last_snowfall_date"),
-    "snowlimit_south": fields.Integer(attribute="br_snowlimit_south"),
-    "snowlimit_north": fields.Integer(attribute="br_snowlimit_north"),
-    "massif": fields.Nested(
-        bra_api.model("BraMassifModel", {
-            "id": UUIDField(attribute="m_id"),
-            "name": fields.String(attribute="m_name")
-        })
-    )
-})
+bra_model = bra_api.model(
+    "BraModel",
+    {
+        "id": UUIDField(attribute="br_id"),
+        "production_date": fields.DateTime(attribute="br_production_date"),
+        "expiration_date": fields.DateTime(attribute="br_expiration_date"),
+        "max_risk": fields.Integer(attribute="br_max_risk"),
+        "risk_comment": fields.String(attribute="br_risk_comment"),
+        "dangerous_slopes": fields.List(fields.String, attribute="br_dangerous_slopes"),
+        "dangerous_slopes_comment": fields.String(
+            attribute="br_dangerous_slopes_comment"
+        ),
+        "opinion": fields.String(attribute="br_opinion"),
+        "snow_quality": fields.String(attribute="br_snow_quality"),
+        "last_snowfall_date": fields.DateTime(attribute="br_last_snowfall_date"),
+        "snowlimit_south": fields.Integer(attribute="br_snowlimit_south"),
+        "snowlimit_north": fields.Integer(attribute="br_snowlimit_north"),
+        "massif": fields.Nested(
+            bra_api.model(
+                "BraMassifModel",
+                {
+                    "id": UUIDField(attribute="m_id"),
+                    "name": fields.String(attribute="m_name"),
+                },
+            )
+        ),
+    },
+)
 
 
 @bra_api.route("/html/<uuid:id>")
@@ -168,9 +176,9 @@ class GenerateBraHmlByDateResource(Resource):
             try:
                 query = (
                     sess.query(BraRecord.br_raw_xml)
-                        .join(Massif)
-                        .filter(Massif.m_name == massif.upper())
-                        .filter(cast(BraRecord.br_production_date, Date) == parsed_date)
+                    .join(Massif)
+                    .filter(Massif.m_name == massif.upper())
+                    .filter(cast(BraRecord.br_production_date, Date) == parsed_date)
                 )
                 return query.one().br_raw_xml
             except NoResultFound:
@@ -203,7 +211,7 @@ class GenerateBraHmlByDateResource(Resource):
         return str(soup)
 
 
-@bra_api.route('/last')
+@bra_api.route("/last")
 class LastBraListResource(Resource):
     @bra_api.marshal_with(bra_model)
     def get(self) -> Dict:
@@ -212,23 +220,31 @@ class LastBraListResource(Resource):
             col.append(MassifTable.c.m_name)
             col.append(MassifTable.c.m_id)
             join = BraRecordTable.join(MassifTable)
-            s = (select(col).select_from(join)
-                 .where(BraRecordTable.c.br_production_date.cast(Date) == select(
-                [func.max(BraRecordTable.c.br_production_date.cast(Date))]))
-                 )
+            s = (
+                select(col)
+                .select_from(join)
+                .where(
+                    BraRecordTable.c.br_production_date.cast(Date)
+                    == select(
+                        [func.max(BraRecordTable.c.br_production_date.cast(Date))]
+                    )
+                )
+            )
             res = con.execute(s).fetchall()
             return res
 
 
-@bra_api.route('/<uuid:massif_id>/last')
+@bra_api.route("/<uuid:massif_id>/last")
 class LastBraResource(Resource):
     @bra_api.marshal_with(bra_model)
     def get(self, massif_id: UUID) -> Dict:
         with connection_scope() as con:
-            s = (select(BraRecordTable.c)
-                 .where(BraRecordTable.c.br_massif == massif_id)
-                 .order_by(desc(BraRecordTable.c.br_production_date)).limit(1)
-                 )
+            s = (
+                select(BraRecordTable.c)
+                .where(BraRecordTable.c.br_massif == massif_id)
+                .order_by(desc(BraRecordTable.c.br_production_date))
+                .limit(1)
+            )
             res = con.execute(s).first()
             return res
 

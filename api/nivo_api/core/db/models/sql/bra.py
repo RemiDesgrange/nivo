@@ -135,12 +135,7 @@ BraRecordTable = AbstractTable(
     Column("br_production_date", DateTime, nullable=False),
     Column("br_expiration_date", DateTime, nullable=False),
     Column("br_is_amended", Boolean),
-    Column(
-        "br_max_risk",
-        Integer,
-        CheckConstraint("br_max_risk>0 AND br_max_risk<=5"),
-        nullable=False,
-    ),
+    Column("br_max_risk", Integer, CheckConstraint("br_max_risk>0 AND br_max_risk<=5")),
     Column("br_risk_comment", TEXT),
     Column("br_dangerous_slopes", ArrayOfEnum(_PGDangerousSlopes)),
     Column("br_dangerous_slopes_comment", TEXT),

@@ -189,13 +189,15 @@ def import_massifs():
                     except ValueError:
                         log.warning(f"Do no import massif: {massif}")
 
+
 @click.command()
 def import_flowcapt_station():
     with connection_scope() as con:
-        with resource_stream('nivo_api', 'cli/data/flowcapt.geojson') as fp:
+        with resource_stream("nivo_api", "cli/data/flowcapt.geojson") as fp:
             gj = geojson.load(fp)
             for station in gj:
                 persist_flowcapt_station(con, station)
+
 
 @click.command()
 @click.option("--drop", is_flag=True, help="Drop db before creating the schema")

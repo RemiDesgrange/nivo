@@ -25,3 +25,6 @@ class Config(dict):
     BRA_BASE_URL = os.getenv(
         "BRA_BASE_URL", "https://donneespubliques.meteofrance.fr/donnees_libres/Pdf/BRA"
     )
+    FLOWCAPT_MEASURE_URL = os.getenv(
+        "FLOWCAPT_MEASURE_URL", "http://www.isaw.ch/idod/idod.php?f=json"
+    )

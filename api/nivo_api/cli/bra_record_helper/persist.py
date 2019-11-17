@@ -20,8 +20,14 @@ def persist_bra(con: Connection, bra: List[Dict]):
                 if isinstance(data, Generator):
                     # execute is not capable of understanding a generator. But it understand list.
                     # behind the scene, the DBAPI `executemany` is called.
-                    data = list(data)
-                con.execute(insert(e), data)
+                    intermediate_data = list()
+                    for x in data:
+                        if x:
+                            intermediate_data.append(x)
+                    data = intermediate_data
+                # data can be null (generator yield None) then no need to execute
+                if data:
+                    con.execute(insert(e), data)
 
 
 def persist_zone(con: Connection, zone: str) -> UUID:

@@ -1,5 +1,3 @@
-
-
 from geoalchemy2 import Geometry
 from sqlalchemy import TEXT, Column, Integer
 
