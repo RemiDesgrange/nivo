@@ -52,6 +52,7 @@ export default {
   },
   methods: {
     dataFor(graphToFilter) {
+      // Data need to be pre ordered, dunno with, seems to me that they are ordered :-/ highchart error 15
       try {
         return {
           chart: {
@@ -80,6 +81,7 @@ export default {
         }
       } catch (e) {
         // alert !
+        // dispatch the alert to the store.
       }
     }
   }
