@@ -1,13 +1,20 @@
 <template>
-  <div v-if="flowCaptData">
-    <client-only>
-      <chart :highcharts="hcInstance" :options="chartSnowLevelOptions" />
-      <chart :highcharts="hcInstance" :options="chartSnowDriftOptions" />
-      <chart :highcharts="hcInstance" :options="chartWindDirOptions" />
-      <chart :highcharts="hcInstance" :options="chartWindOptions" />
-      <chart :highcharts="hcInstance" :options="chartAirTempOptions" />
-      <chart :highcharts="hcInstance" :options="chartAirHumidityOptions" />
-    </client-only>
+  <div>
+    <div v-if="flowCaptData">
+      <client-only>
+        <chart :highcharts="hcInstance" :options="chartSnowLevelOptions" />
+        <chart :highcharts="hcInstance" :options="chartSnowDriftOptions" />
+        <chart :highcharts="hcInstance" :options="chartWindDirOptions" />
+        <chart :highcharts="hcInstance" :options="chartWindOptions" />
+        <chart :highcharts="hcInstance" :options="chartAirTempOptions" />
+        <chart :highcharts="hcInstance" :options="chartAirHumidityOptions" />
+      </client-only>
+    </div>
+    <div v-if="flowCaptLoading">
+      <div class="d-flex justify-content-center mb-3">
+        <b-spinner style="width: 8rem; height: 8rem;" type="grow"></b-spinner>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -32,7 +39,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['flowCaptData']),
+    ...mapState(['flowCaptData', 'flowCaptLoading']),
     chartSnowLevelOptions() {
       return this.dataFor({
         title: {
@@ -130,13 +137,13 @@ export default {
         series: [
           {
             name: 'wind_direction_mini_young',
-            label: 'Direction du vent mini',
-            type: 'windbarb'
+            label: 'Direction du vent mini'
+            // type: 'windbarb'
           },
           {
             name: 'wind_direction_maxi_young',
-            label: 'Direction du vent maxi',
-            type: 'windbarb'
+            label: 'Direction du vent maxi'
+            // type: 'windbarb'
           }
         ]
       })

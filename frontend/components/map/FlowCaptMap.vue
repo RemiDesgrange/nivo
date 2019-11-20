@@ -50,14 +50,13 @@
                   </li>
                 </ul>
               </b-card-text>
-              <b-button :to="'/flowcapt/' + feature.properties.fcs_id"
-                >voir les données</b-button
-              >
+              <b-button :to="'/flowcapt/' + feature.properties.fcs_id">
+                voir les données
+              </b-button>
             </b-card>
           </vl-overlay>
         </vl-interaction-select>
       </vl-map>
-      <div>{{ selectedFeatures }}</div>
     </div>
   </client-only>
 </template>
