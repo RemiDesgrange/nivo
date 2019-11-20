@@ -22,4 +22,5 @@ def persist_flowcapt_station(con: Connection, station: Feature) -> None:
 
 
 def _get_geom(station: Feature) -> WKBElement:
+    print(station)
     return from_shape(shape(station.geometry), 4326)

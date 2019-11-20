@@ -5,11 +5,12 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-lg-6 col-md-12 col-sm-12">
-          <chart :options="chartSnowLevelOptions"></chart>
-          <!-- <chart :options="chartSnowDriftOptions"></chart> -->
+          <flow-capt-chart />
         </div>
         <div class="col-lg-6 col-md-12 col-sm-12">
-          <div class="col">{{ flowCaptData }}</div>
+          <div class="col">
+            <flow-capt-map />
+          </div>
           <div class="w-100"></div>
           <div class="col"></div>
         </div>
@@ -19,71 +20,22 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import { Chart } from 'highcharts-vue'
+import FlowCaptChart from '@/components/chart/FlowCaptChart'
 
 import Navbar from '@/components/Navbar'
+import FlowCaptMap from '@/components/map/FlowCaptMap'
 import AlertManager from '@/components/alert/AlertManager'
 
 export default {
   components: {
     Navbar,
     AlertManager,
-    Chart
-  },
-  computed: {
-    ...mapState(['flowCaptStations', 'flowCaptData']),
-    chartSnowLevelOptions() {
-      return this.dataFor([
-        { name: 'snow_height_seg1_nc', label: 'Snow Height Seg1' },
-        { name: 'snow_height_seg2_nc', label: 'SnowHeight Seg2' }
-      ])
-    },
-    chartSnowDriftOptions() {
-      return this.dataFor([
-        { name: 'snow_drift_seg1_flowcapt', label: 'Snow drift seg1' },
-        { name: 'snow_drift_seg2_flowcapt', label: 'Snow drift seg2' }
-      ])
-    }
+    FlowCaptMap,
+    FlowCaptChart
   },
   async asyncData({ store, params }) {
     await store.dispatch('fetchFlowCaptStation')
     await store.dispatch('fetchFlowCaptData', params.flowcapt)
-  },
-  methods: {
-    dataFor(graphToFilter) {
-      // Data need to be pre ordered, dunno with, seems to me that they are ordered :-/ highchart error 15
-      try {
-        return {
-          chart: {
-            zoomType: 'x'
-          },
-          title: {
-            text: 'graph'
-          },
-          xAxis: {
-            type: 'date'
-          },
-          series: Object.keys(this.flowCaptData.measures)
-            .filter((fcKeys) =>
-              graphToFilter.map((e) => e.name).includes(fcKeys)
-            )
-            .map((fcKeys, index) => {
-              return {
-                type: 'area',
-                name: graphToFilter[index].label,
-                data: this.flowCaptData.measures[fcKeys].map((e) => [
-                  e[1],
-                  e[0]
-                ])
-              }
-            })
-        }
-      } catch (e) {
-        // alert !
-        // dispatch the alert to the store.
-      }
-    }
   }
 }
 </script>

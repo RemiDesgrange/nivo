@@ -95,8 +95,9 @@ export default {
 </script>
 
 <style>
-#map {
+#vl-map-map {
   width: 100%;
+  height: 500px;
 }
 .captialize-text {
   text-transform: capitalize;

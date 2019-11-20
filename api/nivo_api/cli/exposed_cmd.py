@@ -195,7 +195,7 @@ def import_flowcapt_station():
     with connection_scope() as con:
         with resource_stream("nivo_api", "cli/data/flowcapt.geojson") as fp:
             gj = geojson.load(fp)
-            for station in gj:
+            for station in gj.features:
                 persist_flowcapt_station(con, station)
 
 

@@ -28,8 +28,8 @@ export default {
    ** Plugins to load before mounting the App
    */
   plugins: [
-    { src: '@/plugins/vuelayers', ssr: false },
-    { src: '@/plugins/highcharts', ssr: true }
+    { src: '@/plugins/vuelayers', ssr: false } // ,
+    // { src: '@/plugins/highcharts', ssr: false }
   ],
   /*
    ** Nuxt.js dev-modules

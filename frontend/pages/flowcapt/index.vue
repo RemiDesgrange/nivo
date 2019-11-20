@@ -5,10 +5,12 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-lg-6 col-md-12 col-sm-12">
-          <chart :options="chartOptions"></chart>
+          <flow-capt-chart />
         </div>
         <div class="col-lg-6 col-md-12 col-sm-12">
-          <div class="col">{{ flowCaptData }}</div>
+          <div class="col">
+            <flow-capt-map />
+          </div>
           <div class="w-100"></div>
           <div class="col"></div>
         </div>
@@ -18,44 +20,21 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import { Chart } from 'highcharts-vue'
+import FlowCaptChart from '@/components/chart/FlowCaptChart'
 
 import Navbar from '@/components/Navbar'
+import FlowCaptMap from '@/components/map/FlowCaptMap'
 import AlertManager from '@/components/alert/AlertManager'
 
 export default {
   components: {
     Navbar,
     AlertManager,
-    Chart
-  },
-  computed: {
-    ...mapState(['flowCaptStations', 'flowCaptData']),
-    chartOptions() {
-      return {
-        chart: {
-          zoomType: 'x'
-        },
-        title: {
-          text: 'test'
-        },
-        xAxis: {
-          type: 'datetime'
-        },
-        series: Object.keys(this.flowCaptData.measures).map((fcKeys) => {
-          return {
-            type: 'area',
-            name: fcKeys,
-            data: this.flowCaptData.measures[fcKeys].map((e) => [e[1], e[0]])
-          }
-        })
-      }
-    }
+    FlowCaptMap,
+    FlowCaptChart
   },
   async asyncData({ store }) {
     await store.dispatch('fetchFlowCaptStation')
-    await store.dispatch('fetchFlowCaptData', 'FGIE1')
   }
 }
 </script>
