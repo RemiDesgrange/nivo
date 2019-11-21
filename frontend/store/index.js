@@ -4,6 +4,7 @@ export const state = () => ({
   selectedBra: null,
   braData: [],
   nivoStations: [],
+  selectedNivoStation: null,
   nivoData: null,
   flowCaptStations: [],
   flowCaptData: null,
@@ -23,6 +24,9 @@ export const mutations = {
   [types.SET_SELECTED_BRA](state, bra) {
     state.selectedBra = bra
   },
+  [types.SET_SELECTED_NIVO_STATION](state, nivo) {
+    state.selectedNivoStation = nivo
+  },
   [types.NIVO_STATION_LOADED](state, newNivoStations) {
     state.nivoStations = newNivoStations
   },
@@ -30,7 +34,6 @@ export const mutations = {
     state.nivoData = newNivoData
   },
   [types.MASSIFS_LOADED](state, newMassifs) {
-    state.massifLoading = false
     state.massifs = newMassifs
   },
   [types.FLOWCAPT_STATION_LOADED](state, newFlowCapt) {
@@ -121,11 +124,24 @@ export const actions = {
       commit(types.TOGGLE_NIVO_STATION_LOADING)
     }
   },
-  async fetchLastNivoById({ commit }, nivoStationId) {
-    commit(types.NIVO_DATA_LOADING)
+  async fetchNivoRecordsByStationId({ commit }, nivoStationId) {
+    commit(types.TOGGLE_NIVO_DATA_LOADING)
     try {
       const res = await this.$axios.get(
-        `${process.env.baseUrl}/nivo/${nivoStationId}/last`
+        `${process.env.baseUrl}/nivo/stations/${nivoStationId}/records`
+      )
+      commit(types.NIVO_DATA_LOADED, res.data)
+    } catch (e) {
+      commit(types.SET_ALERT, { level: alertTypes.DANGER, message: e })
+    } finally {
+      commit(types.TOGGLE_NIVO_DATA_LOADING)
+    }
+  },
+  async fetchLastNivoById({ commit }, nivoStationId) {
+    commit(types.TOGGLE_NIVO_DATA_LOADING)
+    try {
+      const res = await this.$axios.get(
+        `${process.env.baseUrl}/nivo/stations/${nivoStationId}/records/last`
       )
       commit(types.NIVO_DATA_LOADED, res.data)
     } catch (e) {

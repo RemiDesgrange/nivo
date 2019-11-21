@@ -23,9 +23,7 @@
         ></vl-source-wmts>
       </vl-layer-tile>
 
-      <bra-map />
-
-      <nivo-map />
+      <slot></slot>
 
       <!-- get all selection event. This up to us to handle everything and dispatch -->
       <!-- <vl-interaction-select
@@ -37,16 +35,8 @@
 
 <script>
 import 'vuelayers/lib/style.css'
-import { pointOnFeature, booleanPointInPolygon } from '@turf/turf'
-import { mapActions, mapMutations } from 'vuex'
-import NivoMap from '@/components/map/NivoMap'
-import BraMap from '@/components/map/BraMap'
 
 export default {
-  components: {
-    NivoMap,
-    BraMap
-  },
   data() {
     return {
       zoom: 5,
@@ -57,39 +47,8 @@ export default {
       baseLayerName: 'GEOGRAPHICALGRIDSYSTEMS.MAPS.SCAN-EXPRESS.STANDARD',
       matrixSet: 'PM',
       format: 'image/jpeg',
-      styleName: 'normal',
-      selectedFeatures: [],
-      displayNivo: true
+      styleName: 'normal'
     }
-  },
-  watch: {
-    selectedFeatures(val) {
-      this.selectedFeatures = val
-      if (val[0]) {
-        // FIXME this is ugly.
-        this.fetchLastBraById(val[0].properties.id)
-        this.findNivoStationInExtent(val[0].geometry).forEach((id) => {
-          this.fetchLastNivoById(id)
-        })
-      }
-    }
-  },
-  methods: {
-    findPointOnSurface(feature) {
-      const point = pointOnFeature(feature.geometry)
-      return point.geometry.coordinates
-    },
-    findNivoStationInExtent(geometry) {
-      if (this.nivoStations) {
-        return this.nivoStations.features
-          .filter((f) => {
-            booleanPointInPolygon(f, geometry)
-          })
-          .map((f) => f.properties.id)
-      }
-    },
-    ...mapActions(['fetchLastNivoById', 'fetchLastBraById']),
-    ...mapMutations(['selectBra'])
   }
 }
 </script>

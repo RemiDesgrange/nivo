@@ -12,16 +12,31 @@
       </vl-style-circle>-->
     </vl-layer-vector>
 
-    <vl-overlay
-      v-for="feature in selectedNivoFeature"
-      :id="'popup-nivo' + feature.id"
-      :key="feature.id"
-      :position="findPointOnSurface(feature)"
-    >
-      <b-card :title="feature.properties.nss_name">
-        <b-card-text>..</b-card-text>
-      </b-card>
-    </vl-overlay>
+    <!-- get all selection event. This up to us to handle everything and dispatch -->
+    <vl-interaction-select :features.sync="selectedFeatures">
+      <vl-overlay
+        v-for="feature in selectedFeatures"
+        :key="feature.id"
+        :id="feature.id"
+        :position="feature.geometry.coordinates"
+        :auto-pan="true"
+        :auto-pan-animation="{ duration: 300 }"
+        class="feature-popup"
+      >
+        <b-card :title="'Site ' + feature.properties.nss_name">
+          <b-card-text>
+            <ul>
+              <li v-for="(v, k) in feature.properties">
+                <em>{{ k }}</em> : {{ v }}
+              </li>
+            </ul>
+          </b-card-text>
+          <b-button :to="'/poste-nivo/' + feature.properties.nss_id">
+            voir les données
+          </b-button>
+        </b-card>
+      </vl-overlay>
+    </vl-interaction-select>
   </div>
 </template>
 
@@ -30,7 +45,7 @@ import { mapState } from 'vuex'
 export default {
   data() {
     return {
-      selectedNivoFeature: []
+      selectedFeatures: []
     }
   },
   computed: mapState(['nivoStations'])

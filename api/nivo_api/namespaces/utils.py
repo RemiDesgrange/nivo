@@ -9,6 +9,8 @@ from geoalchemy2.shape import to_shape
 
 
 class UUIDField(fields.Raw):
+    __schema_type__ = "string"
+
     def format(self, value: UUID) -> str:
         return str(value)
 

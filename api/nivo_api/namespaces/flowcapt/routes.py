@@ -31,7 +31,7 @@ class FlowCaptMeasureResource(Resource):
     ISAW does not respond to CORS. So proxying request to their website.
     """
 
-    @flowcapt_api.response(200, 'OK')
+    @flowcapt_api.response(200, "OK")
     @flowcapt_api.response("404", "Measure for this station_id cannot be found.")
     def get(self, station_id: str) -> dict:
         url = _build_query(station_id, 168)
@@ -44,20 +44,21 @@ class FlowCaptMeasureResource(Resource):
 
 @flowcapt_api.route("/measures/with_timestamp/<string:station_id>")
 class FlowCaptMeasureWithTimestamp(Resource):
-    @flowcapt_api.response(200, 'OK')
+    @flowcapt_api.response(200, "OK")
     @flowcapt_api.response("404", "Measure for this station_id cannot be found.")
     def get(self, station_id: str) -> dict:
         url = _build_query(station_id, 168)
         try:
             res = requests.get(url).json()
-            lastdata = datetime.strptime(res['lastdata'], '%Y-%m-%d %H:%M:%S')
+            lastdata = datetime.strptime(res["lastdata"], "%Y-%m-%d %H:%M:%S")
             for k, values in res["measures"].items():
-                res['measures'][k] = [[v, (lastdata-timedelta(hours=idx)).timestamp()] for idx, v in enumerate(values)]
+                res["measures"][k] = [
+                    [v, (lastdata - timedelta(hours=idx)).timestamp()]
+                    for idx, v in enumerate(values)
+                ]
             return res
         except JSONDecodeError as e:
             abort(404, "Measure for this station_id cannot be found.")
-            
-
 
 
 def _build_query(station: str, duration: int) -> str:
