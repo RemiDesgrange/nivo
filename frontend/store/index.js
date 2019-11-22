@@ -170,7 +170,7 @@ export const actions = {
     commit(types.TOGGLE_FLOWCAPT_LOADING)
     try {
       const res = await this.$axios.get(
-        `${process.env.baseUrl}/flowcapt/measures/with_timestamp/${stationId}`
+        `${process.env.baseUrl}/flowcapt/measures/${stationId}`
       )
       commit(types.FLOWCAPT_DATA_LOADED, res.data)
     } catch (e) {

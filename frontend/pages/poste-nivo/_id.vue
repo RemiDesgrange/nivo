@@ -81,6 +81,11 @@ export default {
     NivoDataChart,
     BaseMap
   },
+  filters: {
+    cleanStationsName(station) {
+      return station.toLowerCase().replace('_', ' ')
+    }
+  },
   computed: {
     ...mapState(['nivoData', 'nivoStations', 'selectedNivoStation']),
     selectedStation() {
@@ -94,24 +99,18 @@ export default {
     }
   },
   async asyncData({ store, params }) {
-    await store.dispatch('fetchNivoStation').then(() => {
-      store.commit(
-        types.SET_SELECTED_NIVO_STATION,
-        store.state.nivoStations.features.find(
-          (s) => s.properties.nss_id === params.id
-        )
-      )
-    })
+    await store.dispatch('fetchNivoStation')
     await store.dispatch('fetchNivoRecordsByStationId', params.id)
+    store.commit(
+      types.SET_SELECTED_NIVO_STATION,
+      store.state.nivoStations.features.find(
+        (s) => s.properties.nss_id === params.id
+      )
+    )
   },
   methods: {
     oldLastData(dateAsStr) {
       return moment().diff(moment(dateAsStr), 'days') > 1
-    }
-  },
-  filters: {
-    cleanStationsName(station) {
-      return station.toLowerCase().replace('_', ' ')
     }
   }
 }

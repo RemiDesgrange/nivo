@@ -1,12 +1,10 @@
-// import Vue from 'vue'
-// import Highcharts from 'highcharts'
-// import HighchartsVue from 'highcharts-vue'
-// // import exportingInit from 'highcharts/modules/exporting'
-// import windbarbInit from 'highcharts/modules/windbarb'
+import Vue from 'vue'
+import Highcharts from 'highcharts'
+import WindbarbHighcharts from 'highcharts/modules/windbarb'
+import HighchartsVue from 'highcharts-vue'
 
-// if (typeof Highcharts === 'object') {
-//   // exportingInit(Highcharts)
-//   windbarbInit(Highcharts)
-// }
+if (typeof Highcharts === 'object') {
+  WindbarbHighcharts(Highcharts)
+}
 
-// Vue.use(HighchartsVue, { highcharts: Highcharts })
+Vue.use(HighchartsVue)

@@ -56,16 +56,16 @@ export default {
     NivoMap,
     BaseMap
   },
+  filters: {
+    cleanStationsName(station) {
+      return station.toLowerCase().replace('_', ' ')
+    }
+  },
   computed: {
     ...mapState(['nivoStations'])
   },
   async asyncData({ store }) {
     await store.dispatch('fetchNivoStation')
-  },
-  filters: {
-    cleanStationsName(station) {
-      return station.toLowerCase().replace('_', ' ')
-    }
   }
 }
 </script>

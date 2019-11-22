@@ -1,7 +1,7 @@
 {
-  "name": "test-front",
+  "name": "nivo-front",
   "version": "1.0.0",
-  "description": "My fabulous Nuxt.js project",
+  "description": "Frontend of nivo application",
   "author": "Rémi Desgrange",
   "private": true,
   "scripts": {

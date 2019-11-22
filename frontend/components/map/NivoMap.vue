@@ -2,14 +2,14 @@
   <div>
     <!-- nivo station -->
     <vl-layer-vector id="nivoStationLayer" render-mode="image">
-      <vl-source-vector
-        v-if="nivoStations"
-        :features="nivoStations.features"
-      ></vl-source-vector>
-      <!-- <vl-style-circle :radius="5">
-          <vl-style-stroke color="rgba(255,255,0,0.4)"></vl-style-stroke>
-          <vl-style-fill color="#ff0"></vl-style-fill>
-      </vl-style-circle>-->
+      <vl-source-vector v-if="nivoStations" :features="nivoStations.features">
+      </vl-source-vector>
+      <vl-style-box>
+        <vl-style-circle :radius="5">
+          <vl-style-stroke color="white"></vl-style-stroke>
+          <vl-style-fill color="red"></vl-style-fill>
+        </vl-style-circle>
+      </vl-style-box>
     </vl-layer-vector>
 
     <!-- get all selection event. This up to us to handle everything and dispatch -->

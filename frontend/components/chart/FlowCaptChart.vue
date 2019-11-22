@@ -2,12 +2,11 @@
   <div>
     <div v-if="flowCaptData">
       <client-only>
-        <chart :highcharts="hcInstance" :options="chartSnowLevelOptions" />
-        <chart :highcharts="hcInstance" :options="chartSnowDriftOptions" />
-        <chart :highcharts="hcInstance" :options="chartWindDirOptions" />
-        <chart :highcharts="hcInstance" :options="chartWindOptions" />
-        <chart :highcharts="hcInstance" :options="chartAirTempOptions" />
-        <chart :highcharts="hcInstance" :options="chartAirHumidityOptions" />
+        <chart :options="chartSnowLevelOptions" />
+        <chart :options="chartSnowDriftOptions" />
+        <chart :options="chartWindOptions" />
+        <chart :options="chartAirTempOptions" />
+        <chart :options="chartAirHumidityOptions" />
       </client-only>
     </div>
     <div v-if="flowCaptLoading">
@@ -19,24 +18,14 @@
 </template>
 
 <script>
-import Highcharts from 'highcharts'
-import windbarbInit from 'highcharts/modules/windbarb'
 import { Chart } from 'highcharts-vue'
 import { mapState, mapMutations } from 'vuex'
+import moment from 'moment'
 import { mutationTypes as types, alertTypes } from '@/modules/stateTypes'
-
-if (typeof Highcharts === 'object') {
-  windbarbInit(Highcharts)
-}
 
 export default {
   components: {
     Chart
-  },
-  data() {
-    return {
-      hcInstance: Highcharts
-    }
   },
   computed: {
     ...mapState(['flowCaptData', 'flowCaptLoading']),
@@ -55,6 +44,10 @@ export default {
         },
         plotOptions: {
           series: {
+            pointStart: moment(this.flowCaptData.lastdata)
+              .utc()
+              .valueOf(),
+            pointInterval: 3600 * 1000, // 1h
             marker: {
               radius: 0
             }
@@ -112,52 +105,21 @@ export default {
         ]
       })
     },
-    chartWindDirOptions() {
-      return this.dataFor({
-        chart: {
-          polar: true
-        },
-        title: {
-          text: 'Direction du vent'
-        },
-        xAxis: {
-          type: 'datetime'
-        },
-        plotOptions: {
-          series: {
-            marker: {
-              radius: 0
-            }
-          }
-        },
-        tooltip: {
-          headerFormat: '<b>{series.name}</b><br>',
-          pointFormat: '{point.x:%e. %b %H:%M}: {point.y:.2f} °'
-        },
-        series: [
-          {
-            name: 'wind_direction_mini_young',
-            label: 'Direction du vent mini'
-            // type: 'windbarb'
-          },
-          {
-            name: 'wind_direction_maxi_young',
-            label: 'Direction du vent maxi'
-            // type: 'windbarb'
-          }
-        ]
-      })
-    },
     chartWindOptions() {
-      return this.dataFor({
+      return this.dataForWind({
         title: {
-          text: 'Vent'
+          text: 'Force et Direction du vent'
         },
         xAxis: {
-          type: 'datetime'
+          type: 'datetime',
+          offset: 40
         },
         plotOptions: {
           series: {
+            pointStart: moment(this.flowCaptData.lastdata)
+              .utc()
+              .valueOf(),
+            pointInterval: 3600 * 1000, // 1h
             marker: {
               radius: 0
             }
@@ -169,12 +131,13 @@ export default {
         },
         series: [
           {
-            name: 'wind_speed_mean_flowcapt',
-            label: 'Vitesse du vent moyenne'
-          },
-          {
             name: 'wind_speed_maxi_young',
             label: 'Vitesse du vent maxi'
+          },
+          {
+            name: 'wind_direction_maxi_young',
+            label: 'Direction du vent maxi',
+            type: 'windbarb'
           }
         ]
       })
@@ -189,6 +152,10 @@ export default {
         },
         plotOptions: {
           series: {
+            pointStart: moment(this.flowCaptData.lastdata)
+              .utc()
+              .valueOf(),
+            pointInterval: 3600 * 1000, // 1h
             marker: {
               radius: 0
             }
@@ -216,6 +183,10 @@ export default {
         },
         plotOptions: {
           series: {
+            pointStart: moment(this.flowCaptData.lastdata)
+              .utc()
+              .valueOf(),
+            pointInterval: 3600 * 1000, // 1h
             marker: {
               radius: 0
             }
@@ -247,15 +218,50 @@ export default {
             return {
               type: graphMetaData.series[index].type || 'area',
               name: graphMetaData.series[index].label,
-              data: this.flowCaptData.measures[serieKey].map((e) => [
-                e[1] * 1000,
-                e[0]
-              ])
+              data: this.flowCaptData.measures[serieKey]
             }
           })
         graphMetaData.chart = { zoomType: 'x' }
         return graphMetaData
       } catch (e) {
+        this.$store.commit(types.SET_ALERT, {
+          level: alertTypes.DANGER,
+          message: 'Error drawing charts'
+        })
+      }
+    },
+    dataForWind(graphMetaData) {
+      try {
+        const seriesKeys = Object.keys(
+          this.flowCaptData.measures
+        ).filter((serie) =>
+          graphMetaData.series.map((e) => e.name).includes(serie)
+        )
+
+        const measures = this.flowCaptData.measures
+
+        const windbarb = {
+          type: 'windbarb',
+          name: graphMetaData.series[0].label,
+          data: measures[seriesKeys[0]].map((measure, index) => {
+            return [measure, measures[seriesKeys[1]][index]]
+          })
+        }
+
+        const area = {
+          type: 'area',
+          name: graphMetaData.series[1].label,
+          keys: ['y', 'rotation'],
+          data: measures[seriesKeys[0]].map((measure, index) => {
+            return [measure, measures[seriesKeys[1]][index]]
+          })
+        }
+        graphMetaData.series = [windbarb, area]
+        graphMetaData.chart = { zoomType: 'x' }
+        console.log(graphMetaData)
+        return graphMetaData
+      } catch (e) {
+        console.log(e)
         this.$store.commit(types.SET_ALERT, {
           level: alertTypes.DANGER,
           message: 'Error drawing charts'
