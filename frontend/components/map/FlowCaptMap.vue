@@ -47,10 +47,7 @@
 <script>
 import 'vuelayers/lib/style.css'
 import { mapState } from 'vuex'
-import Fill from 'ol/style/Fill'
-import Stroke from 'ol/style/Stroke'
-import Circle from 'ol/style/Circle'
-import Style from 'ol/style/Style'
+import { Fill, Stroke, Circle, Style } from 'ol/style'
 
 export default {
   data() {
