@@ -258,10 +258,8 @@ export default {
         }
         graphMetaData.series = [windbarb, area]
         graphMetaData.chart = { zoomType: 'x' }
-        console.log(graphMetaData)
         return graphMetaData
       } catch (e) {
-        console.log(e)
         this.$store.commit(types.SET_ALERT, {
           level: alertTypes.DANGER,
           message: 'Error drawing charts'

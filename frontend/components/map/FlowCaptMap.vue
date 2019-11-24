@@ -2,7 +2,7 @@
   <client-only>
     <div>
       <vl-layer-vector id="flowCaptStationLayer" render-mode="image">
-        <vl-style-func :factory="myStyleFunc" />
+        <!-- <vl-style-func :factory="myStyleFunc" /> -->
         <vl-source-vector
           :v-if="flowCaptStations"
           :features="flowCaptStations.features"
@@ -47,7 +47,6 @@
 <script>
 import 'vuelayers/lib/style.css'
 import { mapState } from 'vuex'
-import { Fill, Stroke, Circle, Style } from 'ol/style'
 
 export default {
   data() {
@@ -64,30 +63,7 @@ export default {
       selectedFeatures: []
     }
   },
-  computed: mapState(['flowCaptStations']),
-  methods: {
-    myStyleFunc() {
-      return (feature) => {
-        const fill = new Fill({
-          color: feature.values_.fcs_altitude > 2000 ? 'black' : 'white'
-        })
-        const stroke = new Stroke({
-          color: '#3399CC',
-          width: 1.25
-        })
-
-        return new Style({
-          image: new Circle({
-            fill,
-            stroke,
-            radius: 5
-          }),
-          fill,
-          stroke
-        })
-      }
-    }
-  }
+  computed: mapState(['flowCaptStations'])
 }
 </script>
 

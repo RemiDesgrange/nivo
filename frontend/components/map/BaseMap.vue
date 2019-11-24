@@ -30,18 +30,16 @@
         <vl-layer-group id="mapFeaturesLayersGroup">
           <slot></slot>
         </vl-layer-group>
-
-        <!-- get all selection event. This up to us to handle everything and dispatch -->
-        <!-- <vl-interaction-select
-          :features.sync="selectedFeatures"
-        ></vl-interaction-select> -->
       </vl-map>
 
-      <div class="map-panel">
-        <div>
+      <!-- <div class="map-panel">
+        <b-button v-b-toggle.collapse-layer-tree variant="light" size="sm"
+          >Afficher couches</b-button
+        >
+        <b-collapse id="collapse-layer-tree">
           <b-form-checkbox name="pompom" switch>this is a test</b-form-checkbox>
-        </div>
-      </div>
+        </b-collapse>
+      </div> -->
     </div>
   </client-only>
 </template>
@@ -63,13 +61,13 @@ export default {
       matrixSet: 'EPSG:3857',
       format: 'image/jpeg',
       styleName: '',
-      panelOpen: false,
       layers: false
     }
   },
   methods: {
     onMapMounted() {
       // The idea is to build the base layer group and the feature layer group
+      // list of layer groups in the map
     }
   }
 }

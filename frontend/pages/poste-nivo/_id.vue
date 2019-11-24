@@ -23,38 +23,18 @@
           </div>
           <div class="w-100"></div>
           <div class="col">
-            <!-- <dl v-if="selectedStation">
+            <dl v-if="selectedNivoStation">
               <dt>Station</dt>
-              <dd>{{ selectedStation.properties.fcs_id }}</dd>
-              <dt>label</dt>
-              <dd>{{ selectedStation.properties.fcs_site }}</dd>
-              <dt>pays</dt>
-              <dd>{{ selectedStation.properties.fcs_country }}</dd>
+              <dd class="capitalize">
+                {{
+                  selectedNivoStation.properties.nss_name | cleanStationsName
+                }}
+              </dd>
               <dt>Dernier relevé</dt>
-              <dd v-if="oldLastData(flowCaptData.lastdata)">
-                {{ flowCaptData.lastdata }}
-                <font-awesome-icon
-                  id="lastDataIndicatorKo"
-                  :style="{ color: 'red' }"
-                  icon="times"
-                />
-              </dd>
-              <dd v-else>
-                {{ flowCaptData.lastdata }}
-                <font-awesome-icon
-                  id="lastDataIndicatorOk"
-                  :style="{ color: 'green' }"
-                  icon="check"
-                />
-              </dd>
+              <dd>{{ lastData }}</dd>
+              <dt>Altitude Station</dt>
+              <dd>{{ altitudeStation }}</dd>
             </dl>
-            <b-tooltip target="lastDataIndicatorOk" placement="right">
-              The capteur send his data at {{ flowCaptData.lastdata }}
-            </b-tooltip>
-            <b-tooltip target="lastDataIndicatorKo" placement="right">
-              The capteur send his data more than 1 days ago at
-              {{ flowCaptData.lastdata }}
-            </b-tooltip> -->
           </div>
         </div>
       </div>
@@ -96,6 +76,19 @@ export default {
       } else {
         return null
       }
+    },
+    lastData() {
+      const lastData = this.nivoData
+        .map((n) => moment(n.date))
+        .sort()
+        .reverse()
+      if (lastData.length > 0) {
+        return lastData[0].format('DD MM YYYY, hh:mm:ss')
+      }
+      return 'Inconnu'
+    },
+    altitudeStation() {
+      return this.selectedNivoStation.geometry.coordinates[2]
     }
   },
   async asyncData({ store, params }) {
@@ -107,11 +100,6 @@ export default {
         (s) => s.properties.nss_id === params.id
       )
     )
-  },
-  methods: {
-    oldLastData(dateAsStr) {
-      return moment().diff(moment(dateAsStr), 'days') > 1
-    }
   }
 }
 </script>

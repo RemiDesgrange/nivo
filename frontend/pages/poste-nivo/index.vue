@@ -20,7 +20,11 @@
             <h3>Liste des stations</h3>
             <ul class="list-unstyled">
               <li v-for="station in nivoStations.features" v-if="nivoStations">
-                <b-link :to="'/poste-nivo/' + station.properties.nss_id">
+                <b-link
+                  :to="'/poste-nivo/' + station.properties.nss_id"
+                  @mouseover="showOverlay(station.properties.nss_id)"
+                  @mouseleave="hideOverlay()"
+                >
                   <!-- eslint-disable -->
                   <span class="capitalize"> {{ station.properties.nss_name | cleanStationsName }} </span>
                 </b-link>
@@ -48,6 +52,7 @@ import Navbar from '@/components/Navbar'
 import AlertManager from '@/components/alert/AlertManager'
 import NivoMap from '@/components/map/NivoMap'
 import BaseMap from '@/components/map/BaseMap'
+import { mutationTypes as types } from '~/modules/stateTypes'
 
 export default {
   components: {
@@ -66,6 +71,17 @@ export default {
   },
   async asyncData({ store }) {
     await store.dispatch('fetchNivoStation')
+  },
+  methods: {
+    showOverlay(id) {
+      this.$store.commit(
+        types.SET_SELECTED_NIVO_STATION,
+        this.nivoStations.features.find((n) => n.properties.nss_id === id)
+      )
+    },
+    hideOverlay() {
+      this.$store.commit(types.SET_SELECTED_NIVO_STATION, null)
+    }
   }
 }
 </script>
