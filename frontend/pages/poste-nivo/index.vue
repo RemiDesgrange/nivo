@@ -18,8 +18,11 @@
             </p>
             <hr class="my-4" />
             <h3>Liste des stations</h3>
-            <ul class="list-unstyled">
-              <li v-for="station in nivoStations.features" v-if="nivoStations">
+            <ul v-if="nivoStations" class="list-unstyled">
+              <li
+                v-for="station in nivoStations.features"
+                :key="station.properties.nss_id"
+              >
                 <b-link
                   :to="'/poste-nivo/' + station.properties.nss_id"
                   @mouseover="showOverlay(station.properties.nss_id)"
@@ -66,11 +69,11 @@ export default {
       return station.toLowerCase().replace('_', ' ')
     }
   },
-  computed: {
-    ...mapState(['nivoStations'])
-  },
   async asyncData({ store }) {
     await store.dispatch('fetchNivoStation')
+  },
+  computed: {
+    ...mapState(['nivoStations'])
   },
   methods: {
     showOverlay(id) {

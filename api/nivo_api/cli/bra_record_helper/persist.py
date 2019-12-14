@@ -13,6 +13,9 @@ log = logging.getLogger(__name__)
 
 
 def persist_bra(con: Connection, bra: List[Dict]):
+    """
+    This function is dumb, because it does not take care of the case when bra already exist
+    """
     with con.begin():
         for entities in bra:
             for e, data in entities.items():

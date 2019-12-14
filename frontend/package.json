@@ -26,7 +26,6 @@
     "moment": "^2.24.0",
     "nuxt": "^2.10.2",
     "nuxt-fontawesome": "^0.4.0",
-    "ol-layerswitcher": "^3.4.0",
     "vuelayers": "^0.11.17"
   },
   "devDependencies": {

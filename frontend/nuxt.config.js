@@ -41,12 +41,7 @@ export default {
   /*
    ** Nuxt.js modules
    */
-  modules: [
-    'bootstrap-vue/nuxt',
-    '@/modules/vuelayers',
-    '@nuxtjs/axios',
-    'nuxt-fontawesome'
-  ],
+  modules: ['bootstrap-vue/nuxt', '@nuxtjs/axios', 'nuxt-fontawesome'],
   /*
    ** Build configuration
    */
@@ -59,8 +54,8 @@ export default {
   env: {
     baseUrl: `${process.env.API_PREFIX || 'http'}://${process.env.API_HOST ||
       'localhost'}:${process.env.API_PORT || 8000}`,
-    baseMapUrl:
-      process.env.BASE_MAP_URL ||
+    ignBaseMapURL:
+      process.env.IGN_BASE_MAP_URL ||
       'https://wxs.ign.fr/an7nvfzojv5wa96dsga5nk8w/geoportail/wmts'
   },
   axios: {
@@ -70,7 +65,7 @@ export default {
     imports: [
       {
         set: '@fortawesome/free-solid-svg-icons', // Solid icons
-        icons: ['faTimes', 'faCheck']
+        icons: ['faTimes', 'faCheck', 'faLayerGroup']
       }
     ]
   }

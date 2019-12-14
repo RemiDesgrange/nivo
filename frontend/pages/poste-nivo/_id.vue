@@ -66,6 +66,16 @@ export default {
       return station.toLowerCase().replace('_', ' ')
     }
   },
+  async asyncData({ store, params }) {
+    await store.dispatch('fetchNivoStation')
+    await store.dispatch('fetchNivoRecordsByStationId', params.id)
+    store.commit(
+      types.SET_SELECTED_NIVO_STATION,
+      store.state.nivoStations.features.find(
+        (s) => s.properties.nss_id === params.id
+      )
+    )
+  },
   computed: {
     ...mapState(['nivoData', 'nivoStations', 'selectedNivoStation']),
     selectedStation() {
@@ -90,16 +100,6 @@ export default {
     altitudeStation() {
       return this.selectedNivoStation.geometry.coordinates[2]
     }
-  },
-  async asyncData({ store, params }) {
-    await store.dispatch('fetchNivoStation')
-    await store.dispatch('fetchNivoRecordsByStationId', params.id)
-    store.commit(
-      types.SET_SELECTED_NIVO_STATION,
-      store.state.nivoStations.features.find(
-        (s) => s.properties.nss_id === params.id
-      )
-    )
   }
 }
 </script>

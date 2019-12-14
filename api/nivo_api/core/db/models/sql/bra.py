@@ -65,7 +65,7 @@ class WeatherType(IntEnum):
 
 class RiskEvolution(IntEnum):
     STABLE = 0
-    UP = 0
+    UP = 1
     DOWN = -1
     UNKNOWN = -2
 

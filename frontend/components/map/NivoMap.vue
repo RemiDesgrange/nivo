@@ -3,8 +3,8 @@
     <!-- nivo station -->
     <vl-layer-vector id="nivoStationLayer" render-mode="image">
       <vl-source-vector
-        ref="nivoStationsSourceVector"
         v-if="nivoStations"
+        ref="nivoStationsSourceVector"
         :features="nivoStations.features"
       >
       </vl-source-vector>
@@ -21,8 +21,8 @@
     <vl-interaction-select :features.sync="selectedFeatures">
       <vl-overlay
         v-for="feature in selectedFeatures"
-        :key="feature.id"
         :id="feature.id"
+        :key="feature.id"
         :position="feature.geometry.coordinates.slice(0, 2)"
         :auto-pan="true"
         :auto-pan-animation="{ duration: 300 }"

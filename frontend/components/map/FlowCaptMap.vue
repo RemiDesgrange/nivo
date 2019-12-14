@@ -19,8 +19,8 @@
       <vl-interaction-select :features.sync="selectedFeatures">
         <vl-overlay
           v-for="feature in selectedFeatures"
-          :key="feature.id"
           :id="feature.id"
+          :key="feature.id"
           :position="feature.geometry.coordinates"
           :auto-pan="true"
           :auto-pan-animation="{ duration: 300 }"
@@ -29,7 +29,7 @@
           <b-card :title="'Site ' + feature.properties.fcs_site">
             <b-card-text>
               <ul>
-                <li v-for="(v, k) in feature.properties">
+                <li v-for="(v, k) in feature.properties" :key="v">
                   <em>{{ k }}</em> : {{ v }}
                 </li>
               </ul>
@@ -45,7 +45,6 @@
 </template>
 
 <script>
-import 'vuelayers/lib/style.css'
 import { mapState } from 'vuex'
 
 export default {

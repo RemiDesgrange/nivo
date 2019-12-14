@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Massif -->
-    <vl-layer-vector id="massifLayer" render-mode="image">
+    <vl-layer-vector id="massifLayer" name="Massif" render-mode="image">
       <vl-source-vector
         v-if="massifs"
         :features="massifs.features"

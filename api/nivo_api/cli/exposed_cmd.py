@@ -6,6 +6,7 @@ import click
 import geojson
 import requests
 from pkg_resources import resource_stream
+from requests import HTTPError
 from sqlalchemy import func, select
 
 from nivo_api.cli.bra_record_helper.miscellaneous import (
@@ -13,7 +14,7 @@ from nivo_api.cli.bra_record_helper.miscellaneous import (
     get_bra_xml,
     get_bra_date,
     check_bra_record_exist,
-)
+    get_bra_by_dept_from_mf_rpc_api, format_xml_from_mf_rpc)
 from nivo_api.cli.bra_record_helper.persist import persist_bra, persist_massif
 from nivo_api.cli.bra_record_helper.process import process_xml
 from nivo_api.cli.database import create_schema_and_table
@@ -31,6 +32,7 @@ from nivo_api.cli.nivo_record_helper import (
     get_all_nivo_date,
 )
 from nivo_api.core.db.connection import connection_scope
+from nivo_api.core.db.models.sql.bra import DepartmentTable
 from nivo_api.core.db.models.sql.nivo import SensorStationTable
 from nivo_api.settings import Config
 
@@ -120,22 +122,22 @@ def import_nivo_sensor_station():
 
 @click.command()
 def import_last_bra():
-    # setup,
-    # get https://donneespubliques.meteofrance.fr/donnees_libres/Pdf/BRA/bra.%Y%m%d.json
-    # if not 302 (302 means 404 at meteofrance 😭)
-    # for all the date, get the xml
-    # process
-    # import
-    bra_dates = get_last_bra_date()
+    # Open data from meteo france via it's obscure rest api because they are not providing opendata for the current day
+    # They start providing the BRA one ay after it's been released, which makes the app useless.
     with connection_scope() as con:
-        for massif, date in bra_dates.items():
+        for dept in DepartmentTable.get(con):
             try:
-                xml = get_bra_xml(massif, date)
-                processed_bra = process_xml(con, xml)
-                persist_bra(con, processed_bra)
+                dept = get_bra_by_dept_from_mf_rpc_api(dept.d_number)
+                for massif in dept:
+                    xml = format_xml_from_mf_rpc(massif['corpsBulletin'])
+                    processed_bra = process_xml(con, xml)
+                    persist_bra(con, processed_bra)
+            except HTTPError as e:
+                log.critical(f"dept {dept.d_name} cannot be fetch no BRA")
+                continue
             except Exception as e:
                 log.critical(
-                    f"an error occured when processing massif {massif} for date {date}"
+                    f"an error occured when processing dept {dept.d_name} for today"
                 )
 
 

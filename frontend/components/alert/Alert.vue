@@ -3,9 +3,9 @@
     <b-alert
       :variant="alert.level"
       :show="duration"
+      dismissible
       @dismissed="REMOVE_ALERT(alert)"
       @dismiss-count-down="countDownChanged"
-      dismissible
     >
       <p>{{ alert.message }}</p>
 

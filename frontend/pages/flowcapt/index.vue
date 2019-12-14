@@ -14,10 +14,10 @@
             </p>
             <hr class="my-4" />
             <h3>Liste des stations</h3>
-            <ul class="list-unstyled">
+            <ul v-if="flowCaptStations" class="list-unstyled">
               <li
                 v-for="station in flowCaptStations.features"
-                v-if="flowCaptStations"
+                :key="station.properties.fcs_id"
               >
                 <b-link :to="'/flowcapt/' + station.properties.fcs_id">
                   {{ station.properties.fcs_site }},
@@ -55,9 +55,9 @@ export default {
     FlowCaptMap,
     BaseMap
   },
-  computed: mapState(['flowCaptStations']),
   async asyncData({ store }) {
     await store.dispatch('fetchFlowCaptStation')
-  }
+  },
+  computed: mapState(['flowCaptStations'])
 }
 </script>

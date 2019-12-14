@@ -1,6 +1,5 @@
 import io
 import logging
-import os
 from datetime import datetime, date
 
 from json import JSONDecodeError
@@ -8,9 +7,11 @@ from typing import Dict, Tuple
 import geojson
 import requests
 import lxml.etree as ET
+from copy import deepcopy
 from geoalchemy2 import WKBElement
 from geoalchemy2.shape import from_shape
 from pkg_resources import resource_stream
+from requests import HTTPError
 from shapely.geometry import shape
 from sqlalchemy import select, and_, exists
 from sqlalchemy.engine import Connection
@@ -116,3 +117,35 @@ def check_bra_record_exist(con: Connection, massif: str, bra_date: datetime) -> 
         )
     )
     return con.execute(select([exists(s)])).first()[0]
+
+
+def get_bra_by_dept_from_mf_rpc_api(dept_number: int) -> Dict:
+    dept = 'DEPT'
+    if dept_number < 10:
+        # check if the dept number is < 10, then add a 0 in front of it
+        dept_number = f"0{dept_number}"
+    if dept_number == 99:
+        # special case for andorre
+        dept_number = "ANDORRE"
+        dept=''
+    if dept_number == 20:
+        # special case for corsica
+        dept_number = '2A'
+    req = requests.get(
+        f'https://www.meteofrance.com/mf3-rpc-portlet/rest/enneigement/bulletins/bulletinbra/AV{dept}{dept_number}')
+    # wrong dept number return 302 with empty json...
+    if req.status_code == 200:
+        return req.json()
+    else:
+        raise HTTPError(404, f'BRA in the department {dept_number} cannot be fetched from mf server.')
+
+
+def format_xml_from_mf_rpc(str_xml: str) -> ET.ElementTree:
+    """
+    Mf does not return the same XML that from his opendata plateform. need to mess with XML tree.
+    """
+    bra = ET.fromstring(str_xml)
+    bra.tag = 'BULLETINS_NEIGE_AVALANCHE'
+    bulletins = ET.Element('Bulletins')
+    bulletins.append(deepcopy(bra))
+    return ET.ElementTree(bulletins)

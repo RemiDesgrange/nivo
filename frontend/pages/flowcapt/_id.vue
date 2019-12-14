@@ -80,6 +80,10 @@ export default {
     FlowCaptChart,
     BaseMap
   },
+  async asyncData({ store, params }) {
+    await store.dispatch('fetchFlowCaptStation')
+    await store.dispatch('fetchFlowCaptData', params.id)
+  },
   computed: {
     ...mapState(['flowCaptData', 'flowCaptStations']),
     selectedStation() {
@@ -91,10 +95,6 @@ export default {
         return null
       }
     }
-  },
-  async asyncData({ store, params }) {
-    await store.dispatch('fetchFlowCaptStation')
-    await store.dispatch('fetchFlowCaptData', params.id)
   },
   methods: {
     oldLastData(dateAsStr) {
