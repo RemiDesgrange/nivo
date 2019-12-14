@@ -5,7 +5,7 @@ from uuid import UUID
 
 from bs4 import BeautifulSoup
 from flask import Response, send_file
-from flask_restplus import Namespace, Resource, fields
+from flask_restplus import Namespace, Resource, fields, marshal
 from flask_restplus._http import HTTPStatus
 from lxml.etree import _Element, LxmlError
 import lxml.etree as ET
@@ -213,25 +213,16 @@ class GenerateBraHmlByDateResource(Resource):
 
 @bra_api.route("/last")
 class LastBraListResource(Resource):
-    @bra_api.marshal_with(bra_model)
+    # @bra_api.marshal_with(bra_model)
     def get(self) -> Dict:
-        with connection_scope() as con:
-            col = list(BraRecordTable.c)
-            col.append(MassifTable.c.m_name)
-            col.append(MassifTable.c.m_id)
-            join = BraRecordTable.join(MassifTable)
-            s = (
-                select(col)
-                .select_from(join)
-                .where(
-                    BraRecordTable.c.br_production_date.cast(Date)
-                    == select(
-                        [func.max(BraRecordTable.c.br_production_date.cast(Date))]
-                    )
+        with session_scope() as sess:
+            res = sess.query(BraRecord).join(Massif).filter(
+                BraRecord.br_production_date.cast(Date)
+                == select(
+                    [func.max(BraRecord.br_production_date.cast(Date))]
                 )
-            )
-            res = con.execute(s).fetchall()
-            return res
+            ).all()
+            return marshal(res, bra_model)
 
 
 @bra_api.route("/<uuid:massif_id>/last")

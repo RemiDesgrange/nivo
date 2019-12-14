@@ -102,7 +102,7 @@ export default {
         },
         {
           cmp: 'vl-source-xyz',
-          url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+          url: 'https://b.tile.opentopomap.org/{z}/{x}/{y}.png',
           label: 'OpenTopoMap',
           layerName: 'opentopomap',
           attribution:

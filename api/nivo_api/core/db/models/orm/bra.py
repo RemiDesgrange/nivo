@@ -43,6 +43,7 @@ class BraRecord(Base):
     fresh_snow_records = relationship("FreshSnowRecord", back_populates="bra_record")
     weather_forcasts = relationship("WeatherForcast", back_populates="bra_record")
     risk_forcasts = relationship("RiskForcast", back_populates="bra_record")
+    massif = relationship('Massif')
 
 
 class SnowRecord(Base):
