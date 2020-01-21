@@ -1,7 +1,5 @@
 <template>
   <div id="app">
-    <navbar />
-    <alert-manager />
     <div class="container-fluid">
       <div class="row">
         <div class="col-lg-6 col-md-12 col-sm-12">
@@ -12,9 +10,7 @@
             <base-map />
           </div>
           <div class="w-100"></div>
-          <div class="col">
-            <nivo-data />
-          </div>
+          <div class="col"></div>
         </div>
       </div>
     </div>
@@ -23,24 +19,17 @@
 
 <script>
 import BaseMap from '@/components/map/BaseMap'
-import Navbar from '@/components/Navbar'
 import BraData from '@/components/BraData'
-import NivoData from '@/components/NivoData'
-import AlertManager from '@/components/alert/AlertManager'
 import { alertTypes, mutationTypes as types } from '@/modules/stateTypes'
 
 export default {
   components: {
-    Navbar,
     BaseMap,
-    BraData,
-    NivoData,
-    AlertManager
+    BraData
   },
   async asyncData({ store, params }) {
     await Promise.all([
       store.dispatch('fetchLastBraData'),
-      store.dispatch('fetchNivoStation'),
       store.dispatch('fetchMassifs')
     ])
     const massif = store.state.massifs.features.find(

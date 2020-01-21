@@ -1,7 +1,5 @@
 <template>
   <div id="app">
-    <navbar />
-    <alert-manager />
     <div class="container-fluid">
       <div class="row">
         <div class="col-12">
@@ -47,16 +45,12 @@ import { mapState } from 'vuex'
 import moment from 'moment'
 import NivoDataChart from '@/components/chart/NivoDataChart'
 
-import Navbar from '@/components/Navbar'
 import NivoMap from '@/components/map/NivoMap'
 import BaseMap from '@/components/map/BaseMap'
-import AlertManager from '@/components/alert/AlertManager'
 import { mutationTypes as types } from '@/modules/stateTypes'
 
 export default {
   components: {
-    Navbar,
-    AlertManager,
     NivoMap,
     NivoDataChart,
     BaseMap

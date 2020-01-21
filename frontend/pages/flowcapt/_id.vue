@@ -1,7 +1,5 @@
 <template>
   <div id="app">
-    <navbar />
-    <alert-manager />
     <div class="container-fluid">
       <div class="row">
         <div class="col-12">
@@ -67,15 +65,11 @@ import { mapState } from 'vuex'
 import moment from 'moment'
 import FlowCaptChart from '@/components/chart/FlowCaptChart'
 
-import Navbar from '@/components/Navbar'
 import FlowCaptMap from '@/components/map/FlowCaptMap'
 import BaseMap from '@/components/map/BaseMap'
-import AlertManager from '@/components/alert/AlertManager'
 
 export default {
   components: {
-    Navbar,
-    AlertManager,
     FlowCaptMap,
     FlowCaptChart,
     BaseMap

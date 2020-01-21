@@ -1,7 +1,5 @@
 <template>
   <div>
-    <navbar />
-    <alert-manager />
     <div class="container-fluid">
       <div class="row">
         <div class="col-lg-6 col-md-12 col-sm-12">
@@ -51,16 +49,12 @@
 
 <script>
 import { mapState } from 'vuex'
-import Navbar from '@/components/Navbar'
-import AlertManager from '@/components/alert/AlertManager'
 import NivoMap from '@/components/map/NivoMap'
 import BaseMap from '@/components/map/BaseMap'
 import { mutationTypes as types } from '~/modules/stateTypes'
 
 export default {
   components: {
-    Navbar,
-    AlertManager,
     NivoMap,
     BaseMap
   },
