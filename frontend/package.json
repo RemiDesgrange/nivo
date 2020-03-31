@@ -26,7 +26,7 @@
     "moment": "^2.24.0",
     "nuxt": "^2.12.1",
     "nuxt-fontawesome": "^0.4.0",
-    "vuelayers": "^0.11.21"
+    "vuelayers": "^0.11.22"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^2.0.2",
