@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-navbar type="dark" variant="dark">
-      <b-navbar-brand href="/">Nivo</b-navbar-brand>
+      <b-navbar-brand to="/">Nivo</b-navbar-brand>
 
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>

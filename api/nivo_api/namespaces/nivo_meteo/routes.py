@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from flask import jsonify
-from flask_restplus import Namespace, Resource, fields
+from flask_restx import Namespace, Resource, fields
 
 from nivo_api.core.api_schema.geojson import Feature, FeatureCollection
 from nivo_api.core.db.connection import connection_scope, session_scope

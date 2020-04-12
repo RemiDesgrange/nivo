@@ -26,7 +26,7 @@ import BaseAreaChart from '~/components/chart/BaseAreaChart'
 
 export default {
   components: {
-    BaseAreaChart
+    BaseAreaChart,
   },
   computed: {
     ...mapState([
@@ -34,20 +34,20 @@ export default {
       'nivoStations',
       'selectedNivoStation',
       'nivoStationLoading',
-      'nivoDataLoading'
+      'nivoDataLoading',
     ]),
     chartSnowLevelOptions() {
       return [
         {
           type: 'area',
           name: 'Hauteur de neige',
-          data: this.nivoData.map((n) => n.ht_neige * 100) // eslint-disable
+          data: this.nivoData.map((n) => n.ht_neige * 100), // eslint-disable
         },
         {
           type: 'area',
           name: 'Hauteur de neige fraiche',
-          data: this.nivoData.map((n) => n.ssfrai)
-        }
+          data: this.nivoData.map((n) => n.ssfrai),
+        },
       ]
     },
     chartWindOptions() {
@@ -55,31 +55,31 @@ export default {
         {
           type: 'area',
           name: 'Vitesse',
-          data: this.nivoData.map((n) => n.ff)
+          data: this.nivoData.map((n) => n.ff),
         },
         {
           type: 'area',
           name: 'Direction',
-          data: this.nivoData.map((n) => n.dd)
-        }
+          data: this.nivoData.map((n) => n.dd),
+        },
       ]
     },
     chartAirTempOptions() {
       return [
         {
           name: 'Humidité',
-          data: this.nivoData.map((n) => n.u)
+          data: this.nivoData.map((n) => n.u),
         },
         {
           name: 'Température',
-          data: this.nivoData.map((n) => n.t + 273.15)
+          data: this.nivoData.map((n) => n.t + 273.15),
         },
         {
           name: 'Point de rosé',
-          data: this.nivoData.map((n) => n.td + 273.15)
-        }
+          data: this.nivoData.map((n) => n.td + 273.15),
+        },
       ]
-    }
+    },
   },
   methods: {
     lastData() {
@@ -90,10 +90,8 @@ export default {
       if (lastData.length > 0) {
         return lastData[0].utc().valueOf()
       }
-      return moment()
-        .utc()
-        .valueOf()
-    }
-  }
+      return moment().utc().valueOf()
+    },
+  },
 }
 </script>

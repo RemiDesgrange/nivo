@@ -47,11 +47,11 @@ import BaseMap from '@/components/map/BaseMap'
 export default {
   components: {
     FlowCaptMap,
-    BaseMap
+    BaseMap,
   },
   async asyncData({ store }) {
     await store.dispatch('fetchFlowCaptStation')
   },
-  computed: mapState(['flowCaptStations'])
+  computed: mapState(['flowCaptStations']),
 }
 </script>

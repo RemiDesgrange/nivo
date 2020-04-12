@@ -72,7 +72,7 @@ export default {
   components: {
     FlowCaptMap,
     FlowCaptChart,
-    BaseMap
+    BaseMap,
   },
   async asyncData({ store, params }) {
     await store.dispatch('fetchFlowCaptStation')
@@ -88,12 +88,12 @@ export default {
       } else {
         return null
       }
-    }
+    },
   },
   methods: {
     oldLastData(dateAsStr) {
       return moment().diff(moment(dateAsStr), 'days') > 1
-    }
-  }
+    },
+  },
 }
 </script>

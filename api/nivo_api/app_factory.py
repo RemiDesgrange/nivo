@@ -1,6 +1,6 @@
 import sentry_sdk
 from flask import Flask
-from flask_restplus import Api, Namespace
+from flask_restx import Api, Namespace
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 from werkzeug.utils import find_modules, import_string

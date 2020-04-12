@@ -20,13 +20,13 @@ export default {
       chartOptions: {
         series: [
           {
-            data: [1, 2, 3] // sample data
-          }
-        ]
+            data: [1, 2, 3], // sample data
+          },
+        ],
       },
-      records: []
+      records: [],
     }
   },
-  computed: mapState(['nivoData', 'nivoDataLoading'])
+  computed: mapState(['nivoData', 'nivoDataLoading']),
 }
 </script>

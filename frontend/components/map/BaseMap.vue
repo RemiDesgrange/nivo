@@ -1,152 +1,130 @@
 <template>
-  <client-only>
-    <div id="map-container">
-      <vl-map
-        id="map"
-        ref="map"
-        :load-tiles-while-animating="true"
-        :load-tiles-while-interacting="true"
-        data-projection="EPSG:4326"
-      >
-        <vl-view
-          :zoom.sync="zoom"
-          :center.sync="center"
-          :rotation.sync="rotation"
-        ></vl-view>
-        <vl-layer-group id="mapBaseLayersGroup">
-          <vl-layer-tile
-            v-for="layer in baseLayers"
-            :key="layer.layerName"
-            :visible="layer.visible"
-          >
-            <component :is="layer.cmp" v-bind="layer" />
-          </vl-layer-tile>
-        </vl-layer-group>
+  <div id="map-container">
+    <!--      <vl-map-->
+    <!--        id="map"-->
+    <!--        ref="map"-->
+    <!--        :load-tiles-while-animating="true"-->
+    <!--        :load-tiles-while-interacting="true"-->
+    <!--        data-projection="EPSG:4326"-->
+    <!--      >-->
+    <!--        <vl-view-->
+    <!--          :zoom.sync="zoom"-->
+    <!--          :center.sync="center"-->
+    <!--          :rotation.sync="rotation"-->
+    <!--        ></vl-view>-->
+    <!--        <vl-layer-group id="mapBaseLayersGroup">-->
+    <!--          <vl-layer-tile-->
+    <!--            v-for="layer in baseLayers"-->
+    <!--            :key="layer.layerName"-->
+    <!--            :visible="layer.visible"-->
+    <!--          >-->
+    <!--            <component :is="layer.cmp" v-bind="layer" />-->
+    <!--          </vl-layer-tile>-->
+    <!--        </vl-layer-group>-->
 
-        <vl-layer-group id="mapSlopesLayerGroup">
-          <vl-layer-tile :opacity="slopesOpacity" :visible="slopes.visible">
-            <component :is="slopes.cmp" v-bind="slopes" />
-          </vl-layer-tile>
-        </vl-layer-group>
+    <!--        <vl-layer-group id="mapSlopesLayerGroup">-->
+    <!--          <vl-layer-tile :opacity="slopesOpacity" :visible="slopes.visible">-->
+    <!--            <component :is="slopes.cmp" v-bind="slopes" />-->
+    <!--          </vl-layer-tile>-->
+    <!--        </vl-layer-group>-->
 
-        <vl-layer-group id="mapFeaturesLayersGroup">
-          <slot></slot>
-        </vl-layer-group>
-      </vl-map>
-
-      <div class="ol-control ol-control-layer-switcher">
-        <b-button v-b-toggle.collapse-layer-tree variant="light" size="sm">
-          <font-awesome-icon icon="layer-group" />
-        </b-button>
-        <b-collapse id="collapse-layer-tree">
-          <b-form-group label="Fond de plan">
+    <!--        <vl-layer-group id="mapFeaturesLayersGroup">-->
+    <!--          <slot></slot>-->
+    <!--        </vl-layer-group>-->
+    <!--      </vl-map>-->
+    <div id="map"></div>
+    <div class="ol-control ol-control-layer-switcher">
+      <b-button v-b-toggle.collapse-layer-tree variant="light" size="sm">
+        <!--                  <font-awesome-icon icon="layer-group" />-->
+        <b-icon-layers />
+      </b-button>
+      <b-collapse id="collapse-layer-tree">
+        <b-form-group label="Fond de plan">
+          <b-form-radio-group v-model="selectBaseLayer" stacked>
             <b-form-radio
-              v-for="layer in baseLayers"
-              :key="layer.layerName"
-              v-model="selectedBaseLayer"
-              :value="layer.layerName"
+              v-for="layer in GET_BASE_LAYERS"
+              :key="layer.get('name')"
+              :value="layer.get('name')"
               name="baselayers-radio"
-              >{{ layer.label }}</b-form-radio
-            >
-          </b-form-group>
-          <hr />
-          <p>Pentes</p>
-          <b-form-checkbox v-model="slopes.visible" name="slopes" switch>
-            IGN 30°/40°/45°
-          </b-form-checkbox>
-          <b-form-input
-            v-model="slopesOpacity"
-            type="range"
-            min="0"
-            max="1"
-            step="0.1"
-          ></b-form-input>
-          <hr />
-          <p>Couche</p>
-          <b-form-checkbox switch>
-            test
-          </b-form-checkbox>
-        </b-collapse>
-      </div>
+              >{{ layer.get('label') }} {{ layer.getVisible() }}
+            </b-form-radio>
+          </b-form-radio-group>
+        </b-form-group>
+        <hr />
+        <p>Pentes</p>
+        <b-form-checkbox v-model="slopesVisibility" name="slopes" switch>
+          IGN 30°/40°/45°
+        </b-form-checkbox>
+        <b-form-input
+          v-model="slopesOpacity"
+          type="range"
+          min="0"
+          max="1"
+          step="0.1"
+        ></b-form-input>
+        <hr />
+        <p>Couche</p>
+        <b-form-checkbox switch>
+          test
+        </b-form-checkbox>
+      </b-collapse>
     </div>
-  </client-only>
+  </div>
 </template>
 
 <script>
+import { mapGetters, mapActions, mapState, mapMutations } from 'vuex'
+
+import {
+  mapMutationTypes,
+  mapGettersTypes,
+  mapActionsTypes,
+} from '../../modules/stateTypes'
+import 'ol/ol.css'
+
 export default {
-  data() {
-    return {
-      zoom: 5,
-      center: [3.845, 45.506],
-      rotation: 0,
-      baseLayers: [
-        {
-          cmp: 'vl-source-wmts',
-          url: process.env.ignBaseMapURL,
-          layerName: 'GEOGRAPHICALGRIDSYSTEMS.MAPS.SCAN-EXPRESS.STANDARD',
-          matrixSet: 'PM',
-          format: 'image/jpeg',
-          attribution: ['IGN-F/Géoportail'],
-          styleName: 'normal',
-          label: 'Carte IGN',
-          visible: true
-        },
-        {
-          cmp: 'vl-source-xyz',
-          url:
-            'https://api.mapbox.com/styles/v1/brankgnol/ck05b5qfv08zp1cqxpcpmmuc5/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiYnJhbmtnbm9sIiwiYSI6IjNVUmliWG8ifQ.QfnRYCCoSPUqX0Z4tr_Rjg',
-          layerName: 'Outdoors winter web',
-          label: 'Carte enrichie données station',
-          attribution: 'Brankgnol/Mapbox',
-          visible: false
-        },
-        {
-          cmp: 'vl-source-xyz',
-          url: 'https://b.tile.opentopomap.org/{z}/{x}/{y}.png',
-          label: 'OpenTopoMap',
-          layerName: 'opentopomap',
-          attribution:
-            '© OpenStreetMap-Mitwirkende, SRTM | Kartendarstellung: © OpenTopoMap (CC-BY-SA)',
-          visible: false
-        }
-      ],
-      slopes: {
-        cmp: 'vl-source-wmts',
-        url: process.env.ignBaseMapURL,
-        layerName: 'GEOGRAPHICALGRIDSYSTEMS.SLOPES.MOUNTAIN',
-        matrixSet: 'PM',
-        format: 'image/png',
-        attribution: ['IGN-F/Géoportail'],
-        styleName: 'normal',
-        opacity: 0.5,
-        visible: true
-      }
-    }
-  },
   computed: {
-    selectedBaseLayer: {
-      get() {
-        return this.baseLayers.find((l) => l.visible === true).layerName
-      },
-      set(newVal) {
-        this.baseLayers.forEach((l) => {
-          if (l.layerName === newVal) {
-            l.visible = true
-          } else {
-            l.visible = false
-          }
-        })
-      }
-    },
+    ...mapGetters('map', [
+      mapGettersTypes.GET_BASE_LAYERS,
+      mapGettersTypes.SELECTED_BASE_LAYER,
+    ]),
+    ...mapState('map', ['map', 'slopes']),
     slopesOpacity: {
       get() {
-        return this.slopes.opacity
+        return this.slopes.getOpacity()
       },
-      set(newVal) {
-        this.slopes.opacity = Number(newVal)
-      }
-    }
-  }
+      set(val) {
+        this.SET_SLOPES_OPACITY(val)
+      },
+    },
+    slopesVisibility: {
+      get() {
+        return this.slopes.getVisible()
+      },
+      set(val) {
+        this.SET_SLOPES_VISIBILITY(val)
+      },
+    },
+    selectBaseLayer: {
+      get() {
+        return this.SELECTED_BASE_LAYER
+      },
+      set(val) {
+        this.SET_SELECTED_BASE_LAYER(val)
+      },
+    },
+  },
+  mounted() {
+    this.INIT_MAP()
+  },
+  methods: {
+    ...mapActions('map', [mapActionsTypes.INIT_MAP]),
+    ...mapMutations('map', [
+      mapMutationTypes.SET_SLOPES_OPACITY,
+      mapMutationTypes.SET_SELECTED_BASE_LAYER,
+      mapMutationTypes.SET_SLOPES_VISIBILITY,
+    ]),
+  },
 }
 </script>
 
@@ -155,9 +133,10 @@ export default {
   width: 100%;
   height: 100%;
 }
+
 #map {
   width: 100%;
-  height: 100%;
+  height: 500px;
 }
 
 .ol-control-layer-switcher {
@@ -169,6 +148,7 @@ export default {
   color: black;
   background-color: white;
 }
+
 .map-panel {
   position: absolute;
   display: inline-block;
@@ -176,6 +156,7 @@ export default {
   right: 2em;
   text-align: left;
 }
+
 .captialize-text {
   text-transform: capitalize;
 }

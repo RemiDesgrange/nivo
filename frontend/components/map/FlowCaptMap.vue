@@ -59,10 +59,10 @@ export default {
       matrixSet: 'PM',
       format: 'image/jpeg',
       styleName: 'normal',
-      selectedFeatures: []
+      selectedFeatures: [],
     }
   },
-  computed: mapState(['flowCaptStations'])
+  computed: mapState(['flowCaptStations']),
 }
 </script>
 

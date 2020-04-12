@@ -1,4 +1,11 @@
-import { mutationTypes as types, alertTypes } from '@/modules/stateTypes'
+import {
+  gloablMutationTypes as types,
+  globalActionsTypes as actionsTypes,
+  alertTypes,
+  mapMutationTypes,
+} from '@/modules/stateTypes'
+
+export const strict = false
 
 export const state = () => ({
   selectedBra: null,
@@ -14,7 +21,7 @@ export const state = () => ({
   nivoStationLoading: false,
   nivoDataLoading: false,
   flowCaptLoading: false,
-  braLoading: false
+  braLoading: false,
 })
 
 export const mutations = {
@@ -51,7 +58,7 @@ export const mutations = {
       id: beforeLength + 1,
       level: payload.level,
       message: payload.message,
-      duration: payload.duration || 10
+      duration: payload.duration || 10,
     })
   },
   [types.DECREASE_ALERT_DURATION](state, payload) {
@@ -81,11 +88,11 @@ export const mutations = {
   },
   [types.TOGGLE_FLOWCAPT_LOADING](state) {
     state.flowCaptLoading = !state.flowCaptLoading
-  }
+  },
 }
 
 export const actions = {
-  async fetchMassifs({ commit }) {
+  async [actionsTypes.FETCH_MASSIFS]({ commit }) {
     commit(types.TOGGLE_MASSIFS_LOADING)
     try {
       const res = await this.$axios.get(`${process.env.baseUrl}/bra/massifs`)
@@ -104,7 +111,7 @@ export const actions = {
     } catch (e) {
       commit(types.SET_ALERT, {
         level: alertTypes.DANGER,
-        message: e
+        message: e,
       })
     } finally {
       commit(types.TOGGLE_BRA_LOADING)
@@ -118,7 +125,7 @@ export const actions = {
     } catch (e) {
       commit(types.SET_ALERT, {
         level: alertTypes.DANGER,
-        message: e
+        message: e,
       })
     } finally {
       commit(types.TOGGLE_NIVO_STATION_LOADING)
@@ -157,10 +164,15 @@ export const actions = {
         `${process.env.baseUrl}/flowcapt/stations`
       )
       commit(types.FLOWCAPT_STATION_LOADED, res.data)
+
+      commit(`map/${mapMutationTypes.ADD_RAW_GEOJSON}`, {
+        layerName: 'flowcapt',
+        geojson: res.data,
+      })
     } catch (e) {
       commit(types.SET_ALERT, {
         level: alertTypes.DANGER,
-        message: e
+        message: e,
       })
     } finally {
       commit(types.TOGGLE_FLOWCAPT_LOADING)
@@ -176,12 +188,12 @@ export const actions = {
     } catch (e) {
       commit(types.SET_ALERT, {
         level: alertTypes.DANGER,
-        message: e
+        message: e,
       })
     } finally {
       commit(types.TOGGLE_FLOWCAPT_LOADING)
     }
-  }
+  },
 }
 
 export const getters = {
@@ -190,5 +202,5 @@ export const getters = {
       return `${process.env.baseUrl}/bra/html/${state.selectedBra.id}`
     }
     return null
-  }
+  },
 }

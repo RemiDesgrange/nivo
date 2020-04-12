@@ -69,12 +69,12 @@ export default {
   data() {
     return {
       noPrevious: false,
-      noFollowed: true
+      noFollowed: true,
     }
   },
   computed: {
     ...mapState(['braLoading']),
-    ...mapGetters(['braUrl'])
+    ...mapGetters(['braUrl']),
   },
   methods: {
     getMassifsFeature(featureCollection) {
@@ -82,8 +82,8 @@ export default {
         return featureCollection.features
       }
       return []
-    }
-  }
+    },
+  },
 }
 </script>
 

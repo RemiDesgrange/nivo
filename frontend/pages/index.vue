@@ -13,7 +13,7 @@
           </div>
           <div class="w-100"></div>
           <div class="col">
-            <nivo-data />
+            <!--            <nivo-data />-->
           </div>
         </div>
       </div>
@@ -22,20 +22,22 @@
 </template>
 
 <script>
-import BaseMap from '@/components/map/BaseMap'
+import { globalActionsTypes as actionsTypes } from '~/modules/stateTypes'
+
+import BaseMap from '~/components/map/BaseMap'
 import BraMap from '~/components/map/BraMap'
-import BraData from '@/components/BraData'
+import BraData from '~/components/BraData'
 
 export default {
   components: {
     BaseMap,
     BraData,
-    BraMap
+    BraMap,
   },
   async asyncData({ store }) {
-    await store.dispatch('fetchMassifs')
+    await store.dispatch(actionsTypes.FETCH_MASSIFS)
     // in order to populate massifs color, we need the risk of all the bra.
     // await store.dispatch('fetchLastBraRiskLevel')
-  }
+  },
 }
 </script>

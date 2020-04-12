@@ -10,19 +10,17 @@ import moment from 'moment'
 
 export default {
   components: {
-    Chart
+    Chart,
   },
   props: {
     title: {
       type: String,
-      default: 'Inconnu'
+      default: 'Inconnu',
     },
     yAxisText: { type: String, default: 'Inconnu' },
     pointStart: {
       type: Number,
-      default: moment()
-        .utc()
-        .valueOf()
+      default: moment().utc().valueOf(),
     },
     pointInterval: { type: Number, default: 3600 * 1000 },
     tooltip: {
@@ -30,45 +28,45 @@ export default {
       default() {
         return {
           headerFormat: '<b>{series.name}</b><br>',
-          pointFormat: '{point.x:%e. %b %H:%M}: {point.y:.2f} m'
+          pointFormat: '{point.x:%e. %b %H:%M}: {point.y:.2f} m',
         }
-      }
+      },
     },
     series: {
       type: Array,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
       chartOptions: {
         chart: {
-          zoomType: 'x'
+          zoomType: 'x',
         },
         title: {
-          text: this.title
+          text: this.title,
         },
         xAxis: {
-          type: 'datetime'
+          type: 'datetime',
         },
         yAxis: {
           title: {
-            text: this.yAxisText
-          }
+            text: this.yAxisText,
+          },
         },
         plotOptions: {
           series: {
             pointStart: this.pointStart,
             pointInterval: this.pointInterval,
             marker: {
-              radius: 0
-            }
-          }
+              radius: 0,
+            },
+          },
         },
         tooltip: this.tooltip,
-        series: this.series
-      }
+        series: this.series,
+      },
     }
-  }
+  },
 }
 </script>

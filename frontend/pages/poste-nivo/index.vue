@@ -49,25 +49,25 @@
 
 <script>
 import { mapState } from 'vuex'
-import NivoMap from '@/components/map/NivoMap'
-import BaseMap from '@/components/map/BaseMap'
-import { mutationTypes as types } from '~/modules/stateTypes'
+import NivoMap from '~/components/map/NivoMap'
+import BaseMap from '~/components/map/BaseMap'
+import { gloablMutationTypes as types } from '@/modules/stateTypes'
 
 export default {
   components: {
     NivoMap,
-    BaseMap
+    BaseMap,
   },
   filters: {
     cleanStationsName(station) {
       return station.toLowerCase().replace('_', ' ')
-    }
+    },
   },
   async asyncData({ store }) {
     await store.dispatch('fetchNivoStation')
   },
   computed: {
-    ...mapState(['nivoStations'])
+    ...mapState(['nivoStations']),
   },
   methods: {
     showOverlay(id) {
@@ -78,8 +78,8 @@ export default {
     },
     hideOverlay() {
       this.$store.commit(types.SET_SELECTED_NIVO_STATION, null)
-    }
-  }
+    },
+  },
 }
 </script>
 

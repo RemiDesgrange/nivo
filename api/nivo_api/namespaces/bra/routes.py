@@ -1,15 +1,19 @@
+import json
 import os
 from datetime import datetime
 from typing import Optional, Dict, List, Union
 from uuid import UUID
 
+from geoalchemy2 import WKBElement
+from shapely.wkb import loads as WKBLoads
+
 from bs4 import BeautifulSoup
-from flask import Response, send_file
-from flask_restplus import Namespace, Resource, fields, marshal
-from flask_restplus._http import HTTPStatus
+from flask import Response, send_file, jsonify
+from flask_restx import Namespace, Resource, fields, marshal
+from flask_restx._http import HTTPStatus
 from lxml.etree import _Element, LxmlError
 import lxml.etree as ET
-from sqlalchemy import select, cast, Date, and_, func, desc
+from sqlalchemy import select, cast, Date, func, desc, join, text
 from sqlalchemy.orm import subqueryload
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -18,8 +22,13 @@ from nivo_api.core.api_schema.geojson import (
     FeatureCollection as FeatureCollectionSchema,
 )
 from nivo_api.core.db.connection import connection_scope, session_scope
-from nivo_api.core.db.models.orm.bra import Massif, Department, Zone, BraRecord
-from nivo_api.core.db.models.sql.bra import BraRecordTable, MassifTable
+from nivo_api.core.db.models.orm.bra import Massif, Department, Zone, BraRecord, Risk
+from nivo_api.core.db.models.sql.bra import (
+    BraRecordTable,
+    MassifTable,
+    RiskTable,
+    DepartmentTable,
+)
 from nivo_api.namespaces.utils import UUIDField, GeometryField
 from geojson import FeatureCollection, Feature
 
@@ -216,12 +225,15 @@ class LastBraListResource(Resource):
     # @bra_api.marshal_with(bra_model)
     def get(self) -> Dict:
         with session_scope() as sess:
-            res = sess.query(BraRecord).join(Massif).filter(
-                BraRecord.br_production_date.cast(Date)
-                == select(
-                    [func.max(BraRecord.br_production_date.cast(Date))]
+            res = (
+                sess.query(BraRecord)
+                .join(Massif)
+                .filter(
+                    BraRecord.br_production_date.cast(Date)
+                    == select([func.max(BraRecord.br_production_date.cast(Date))])
                 )
-            ).all()
+                .all()
+            )
             return marshal(res, bra_model)
 
 
@@ -280,29 +292,46 @@ class MassifResource(Resource):
     @bra_api.response(HTTPStatus.NOT_FOUND, "department for this id cannot be found.")
     @bra_api.response(HTTPStatus.OK, "OK", FeatureCollectionSchema)
     def get(self, massif_id: UUID = None) -> Dict:
-        with session_scope() as sess:
-            query = sess.query(Massif).options(subqueryload(Massif.department))
+        with connection_scope() as con:
+            whereclause = ""
             if massif_id:
-                query = query.filter(Massif.m_id == massif_id)
+                whereclause = f"m_id = {massif_id}"
+
+            # no idea how to do this in sqlalchemy
+            query = text(
+                f"""
+            SELECT result.* FROM bra.massif m
+                JOIN LATERAL (
+                    SELECT ST_AsGeoJSON(m.the_geom) as the_geom, m.m_id, m.m_name, d.d_id, d.d_name, d.d_number,r.br_max_risk, r.br_production_date FROM bra.record r
+                        join bra.department d on (d.d_id=m_department)
+                        where (m.m_id=r.br_massif)
+                    ORDER BY r.br_production_date limit 1
+                    ) result on true
+                {whereclause}
+                ORDER BY m.m_id, result.br_production_date DESC
+            """
+            )
+
             features = list()
-            for res in query:
+            for res in con.execute(query):
                 features.append(
                     Feature(
-                        geometry=GeometryField().format(res.the_geom),
+                        geometry=json.loads(res.the_geom),
                         properties={
                             "id": res.m_id,
                             "name": res.m_name,
+                            "lastest_risk": res.br_max_risk,
                             "department": {
-                                "id": res.department.d_id,
-                                "name": res.department.d_name,
-                                "number": res.department.d_number,
+                                "id": res.d_id,
+                                "name": res.d_name,
+                                "number": res.d_number,
                             },
                         },
                     )
                 )
             if len(features) == 1:
-                return features[0]
-            return FeatureCollection(features)
+                return jsonify(features[0])
+            return jsonify(FeatureCollection(features))
 
 
 class CssResource(Resource):

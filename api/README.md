@@ -14,7 +14,7 @@ both for nivo data and for BRA. So grab the last one if you develop (or a partic
 This command will start the app and the db with port exposed. the app is started but we 
 won't use it. You can kill it if you want.
 ```bash
-docker-compose up -f docker-compose.dev.yml -f docker-compose.yml -d
+docker-compose  -f docker-compose.dev.yml -f docker-compose.yml -d up
 ```
 
 ### Setup dev env

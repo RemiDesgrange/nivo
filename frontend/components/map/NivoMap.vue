@@ -54,7 +54,7 @@ import { mapState } from 'vuex'
 export default {
   data() {
     return {
-      selectedFeatures: []
+      selectedFeatures: [],
     }
   },
   computed: mapState(['nivoStations', 'selectedNivoStation']),
@@ -71,7 +71,7 @@ export default {
             return value
           })
       }
-    }
-  }
+    },
+  },
 }
 </script>

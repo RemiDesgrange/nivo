@@ -43,22 +43,25 @@
 <script>
 import { mapState } from 'vuex'
 import moment from 'moment'
-import NivoDataChart from '@/components/chart/NivoDataChart'
+import NivoDataChart from '~/components/chart/NivoDataChart'
 
-import NivoMap from '@/components/map/NivoMap'
-import BaseMap from '@/components/map/BaseMap'
-import { mutationTypes as types } from '@/modules/stateTypes'
+import NivoMap from '~/components/map/NivoMap'
+import BaseMap from '~/components/map/BaseMap'
+import {
+  gloablMutationTypes as types,
+  mapGettersTypes,
+} from '@/modules/stateTypes'
 
 export default {
   components: {
     NivoMap,
     NivoDataChart,
-    BaseMap
+    BaseMap,
   },
   filters: {
     cleanStationsName(station) {
       return station.toLowerCase().replace('_', ' ')
-    }
+    },
   },
   async asyncData({ store, params }) {
     await store.dispatch('fetchNivoStation')
@@ -69,9 +72,11 @@ export default {
         (s) => s.properties.nss_id === params.id
       )
     )
+    // TODO do it on map too an fit
   },
   computed: {
     ...mapState(['nivoData', 'nivoStations', 'selectedNivoStation']),
+    ...mapState('map', [mapGettersTypes.SELECTED_NIVO_STATION_ALTITUDE_HOVER]),
     selectedStation() {
       if (this.nivoData && this.nivoStations) {
         return this.nivoStations.features.find(
@@ -93,8 +98,8 @@ export default {
     },
     altitudeStation() {
       return this.selectedNivoStation.geometry.coordinates[2]
-    }
-  }
+    },
+  },
 }
 </script>
 

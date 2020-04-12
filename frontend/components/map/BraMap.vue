@@ -30,9 +30,9 @@ import { mapState } from 'vuex'
 export default {
   data() {
     return {
-      selectedMassifFeature: []
+      selectedMassifFeature: [],
     }
   },
-  computed: mapState(['massifs'])
+  computed: mapState(['massifs']),
 }
 </script>

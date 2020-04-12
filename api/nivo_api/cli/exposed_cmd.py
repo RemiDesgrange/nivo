@@ -14,7 +14,9 @@ from nivo_api.cli.bra_record_helper.miscellaneous import (
     get_bra_xml,
     get_bra_date,
     check_bra_record_exist,
-    get_bra_by_dept_from_mf_rpc_api, format_xml_from_mf_rpc)
+    get_bra_by_dept_from_mf_rpc_api,
+    format_xml_from_mf_rpc,
+)
 from nivo_api.cli.bra_record_helper.persist import persist_bra, persist_massif
 from nivo_api.cli.bra_record_helper.process import process_xml
 from nivo_api.cli.database import create_schema_and_table
@@ -129,7 +131,7 @@ def import_last_bra():
             try:
                 dept = get_bra_by_dept_from_mf_rpc_api(dept.d_number)
                 for massif in dept:
-                    xml = format_xml_from_mf_rpc(massif['corpsBulletin'])
+                    xml = format_xml_from_mf_rpc(massif["corpsBulletin"])
                     processed_bra = process_xml(con, xml)
                     persist_bra(con, processed_bra)
             except HTTPError as e:

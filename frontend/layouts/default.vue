@@ -13,8 +13,8 @@ import Navbar from '@/components/Navbar'
 export default {
   components: {
     AlertManager,
-    Navbar
-  }
+    Navbar,
+  },
 }
 </script>
 

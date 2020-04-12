@@ -5,7 +5,7 @@ import json
 import os
 from pathlib import Path
 
-from flask_restplus import SchemaModel
+from flask_restx import SchemaModel
 
 
 _current_path = Path(os.path.dirname(os.path.realpath(__file__)))

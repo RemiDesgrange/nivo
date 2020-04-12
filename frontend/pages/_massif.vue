@@ -18,19 +18,19 @@
 </template>
 
 <script>
-import BaseMap from '@/components/map/BaseMap'
-import BraData from '@/components/BraData'
-import { alertTypes, mutationTypes as types } from '@/modules/stateTypes'
+import BaseMap from '~/components/map/BaseMap'
+import BraData from '~/components/BraData'
+import { alertTypes, gloablMutationTypes as types } from '~/modules/stateTypes'
 
 export default {
   components: {
     BaseMap,
-    BraData
+    BraData,
   },
   async asyncData({ store, params }) {
     await Promise.all([
       store.dispatch('fetchLastBraData'),
-      store.dispatch('fetchMassifs')
+      store.dispatch('fetchMassifs'),
     ])
     const massif = store.state.massifs.features.find(
       (massif) => params.massif.toUpperCase() === massif.properties.name
@@ -39,7 +39,7 @@ export default {
     if (!massif) {
       store.commit(types.SET_ALERT, {
         level: alertTypes.DANGER,
-        message: 'Massifs cannot be found'
+        message: 'Massifs cannot be found',
       })
     } else {
       const selectedBra = store.state.braData.find(
@@ -47,6 +47,6 @@ export default {
       )
       store.commit(types.SET_SELECTED_BRA, selectedBra)
     }
-  }
+  },
 }
 </script>

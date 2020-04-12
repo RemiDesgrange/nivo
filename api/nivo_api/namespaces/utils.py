@@ -2,7 +2,7 @@ from uuid import UUID
 
 
 import shapely.geometry
-from flask_restplus import fields
+from flask_restx import fields
 from typing import Dict, Union
 from geoalchemy2 import WKBElement, WKTElement
 from geoalchemy2.shape import to_shape

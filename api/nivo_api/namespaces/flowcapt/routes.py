@@ -5,7 +5,7 @@ from urllib.parse import urlencode
 
 import requests
 from flask import jsonify
-from flask_restplus import Namespace, Resource, fields, abort
+from flask_restx import Namespace, Resource, fields, abort
 
 from nivo_api.core.api_schema.geojson import FeatureCollection
 from nivo_api.core.db.connection import connection_scope
