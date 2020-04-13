@@ -25,7 +25,8 @@
     "highcharts-vue": "^1.3.5",
     "moment": "^2.24.0",
     "nuxt": "^2.12.2",
-    "ol": "^6.3.1"
+    "ol": "^6.3.1",
+    "@turf/point-on-feature": "latest"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^2.0.2",

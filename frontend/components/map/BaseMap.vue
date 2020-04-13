@@ -33,6 +33,7 @@
     <!--        </vl-layer-group>-->
     <!--      </vl-map>-->
     <div id="map"></div>
+    <slot></slot>
     <div class="ol-control ol-control-layer-switcher">
       <b-button v-b-toggle.collapse-layer-tree variant="light" size="sm">
         <!--                  <font-awesome-icon icon="layer-group" />-->

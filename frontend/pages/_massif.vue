@@ -7,7 +7,9 @@
         </div>
         <div class="col-lg-6 col-md-12 col-sm-12">
           <div class="col">
-            <base-map />
+            <base-map>
+              <bra-map />
+            </base-map>
           </div>
           <div class="w-100"></div>
           <div class="col"></div>
@@ -19,29 +21,36 @@
 
 <script>
 import BaseMap from '~/components/map/BaseMap'
+import BraMap from '~/components/map/BraMap'
 import BraData from '~/components/BraData'
-import { alertTypes, gloablMutationTypes as types } from '~/modules/stateTypes'
+import {
+  alertTypes,
+  gloablMutationTypes as types,
+  globalActionsTypes as actionsTypes,
+} from '~/modules/stateTypes'
 
 export default {
   components: {
     BaseMap,
+    BraMap,
     BraData,
   },
   async asyncData({ store, params }) {
-    await Promise.all([
-      store.dispatch('fetchLastBraData'),
-      store.dispatch('fetchMassifs'),
-    ])
+    await store.dispatch(actionsTypes.FETCH_MASSIFS)
     const massif = store.state.massifs.features.find(
       (massif) => params.massif.toUpperCase() === massif.properties.name
     )
-
     if (!massif) {
       store.commit(types.SET_ALERT, {
         level: alertTypes.DANGER,
         message: 'Massifs cannot be found',
       })
     } else {
+      await store.dispatch(
+        actionsTypes.FETCH_LAST_BRA_DATA,
+        massif.properties.id
+      )
+      console.log(store.state.braData)
       const selectedBra = store.state.braData.find(
         (b) => b.massif.id === massif.properties.id
       )

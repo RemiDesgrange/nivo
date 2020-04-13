@@ -36,8 +36,6 @@ export default {
   },
   async asyncData({ store }) {
     await store.dispatch(actionsTypes.FETCH_MASSIFS)
-    // in order to populate massifs color, we need the risk of all the bra.
-    // await store.dispatch('fetchLastBraRiskLevel')
   },
 }
 </script>

@@ -20,6 +20,9 @@ export const gloablMutationTypes = {
 
 export const globalActionsTypes = {
   FETCH_MASSIFS: 'FETCH_MASSIFS',
+  FETCH_LAST_BRA_DATA: 'FETCH_LAST_BRA_DATA',
+  FETCH_FLOWCAPT_STATIONS: 'FETCH_FLOWCAPT_STATIONS',
+  FETCH_FLOWCAPT_DATA: 'FETCH_FLOWCAPT_DATA',
 }
 
 export const alertTypes = {

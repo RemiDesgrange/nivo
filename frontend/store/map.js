@@ -154,6 +154,12 @@ export const getters = {
       .find((l) => l.getVisible())
     return selected.get('name')
   },
+  [getterTypes.SELECTED_MASSIF_CLICK](state) {
+    return state.selectedFeatures.massifs.byClick.getArray()
+  },
+  [getterTypes.SELECTED_MASSIF_HOVER](state) {
+    return state.selectedFeatures.massifs.byHover.getArray()
+  },
 }
 
 export const actions = {
@@ -172,7 +178,7 @@ export const actions = {
       commit(
         types.ADD_INTERACTION,
         new Select({
-          features: state.selectedFeatures.flowcapt.byClick,
+          features: state.selectedFeatures[e].byClick,
           layers: [state[e]],
           condition: click,
         })
@@ -185,6 +191,9 @@ export const actions = {
           condition: pointerMove,
         })
       )
+      state.selectedFeatures[e].byClick.on('add', (e) => {
+        console.log(e)
+      })
     })
   },
   [mapActionsTypes.ADD_FEATURES]({ commit }, { layer, features }) {
@@ -219,9 +228,6 @@ export const mutations = {
   },
   [types.REMOVE_OVERLAY](state, overlay) {
     state.map.removeOverlay(overlay)
-  },
-  [types.SET_OVERLAY_POSITION](state, { overlay, coordinate: coord }) {
-    state[overlay].setPosition(coord)
   },
   [types.ADD_INTERACTION](state, interaction) {
     state.map.addInteraction(interaction)

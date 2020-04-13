@@ -51,7 +51,7 @@
 import { mapState } from 'vuex'
 import NivoMap from '~/components/map/NivoMap'
 import BaseMap from '~/components/map/BaseMap'
-import { gloablMutationTypes as types } from '@/modules/stateTypes'
+import { gloablMutationTypes as types } from '~/modules/stateTypes'
 
 export default {
   components: {

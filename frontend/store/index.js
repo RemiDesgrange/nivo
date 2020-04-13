@@ -103,11 +103,13 @@ export const actions = {
       commit(types.TOGGLE_MASSIFS_LOADING)
     }
   },
-  async fetchLastBraData({ commit }) {
+  async [actionsTypes.FETCH_LAST_BRA_DATA]({ commit }, massifId) {
     commit(types.TOGGLE_BRA_LOADING)
     try {
-      const res = await this.$axios.get(`${process.env.baseUrl}/bra/last`)
-      commit(types.BRA_LOADED, res.data)
+      const res = await this.$axios.get(
+        `${process.env.baseUrl}/bra/massifs/${massifId}/last`
+      )
+      commit(types.BRA_LOADED, [res.data])
     } catch (e) {
       commit(types.SET_ALERT, {
         level: alertTypes.DANGER,
@@ -157,7 +159,7 @@ export const actions = {
       commit(types.TOGGLE_NIVO_DATA_LOADING)
     }
   },
-  async fetchFlowCaptStation({ commit }) {
+  async [actionsTypes.FETCH_FLOWCAPT_STATIONS]({ commit }) {
     commit(types.TOGGLE_FLOWCAPT_LOADING)
     try {
       const res = await this.$axios.get(
@@ -178,7 +180,7 @@ export const actions = {
       commit(types.TOGGLE_FLOWCAPT_LOADING)
     }
   },
-  async fetchFlowCaptData({ commit }, stationId) {
+  async [actionsTypes.FETCH_FLOWCAPT_DATA]({ commit }, stationId) {
     commit(types.TOGGLE_FLOWCAPT_LOADING)
     try {
       const res = await this.$axios.get(

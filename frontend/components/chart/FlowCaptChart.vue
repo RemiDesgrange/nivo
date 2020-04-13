@@ -19,9 +19,9 @@
 
 <script>
 import { Chart } from 'highcharts-vue'
-import { mapState, mapMutations } from 'vuex'
+import { mapState } from 'vuex'
 import moment from 'moment'
-import { globalMutationTypes as types, alertTypes } from '@/modules/stateTypes'
+import { globalMutationTypes as types, alertTypes } from '~/modules/stateTypes'
 
 export default {
   components: {
@@ -198,7 +198,6 @@ export default {
     },
   },
   methods: {
-    ...mapMutations([types.SET_ALERT]),
     dataFor(graphMetaData) {
       // Data need to be pre ordered, dunno with, seems to me that they are ordered :-/ highchart error 15
       try {

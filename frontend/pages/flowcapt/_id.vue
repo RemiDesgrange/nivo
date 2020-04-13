@@ -47,10 +47,10 @@
               </dd>
             </dl>
             <b-tooltip target="lastDataIndicatorOk" placement="right">
-              The capteur send his data at {{ flowCaptData.lastdata }}
+              The sensor send his data at {{ flowCaptData.lastdata }}
             </b-tooltip>
             <b-tooltip target="lastDataIndicatorKo" placement="right">
-              The capteur send his data more than 1 days ago at
+              The sensor send his data more than 1 days ago at
               {{ flowCaptData.lastdata }}
             </b-tooltip>
           </div>
@@ -63,6 +63,7 @@
 <script>
 import { mapState } from 'vuex'
 import moment from 'moment'
+import { globalActionsTypes as actionsType } from '../../modules/stateTypes'
 import FlowCaptChart from '@/components/chart/FlowCaptChart'
 
 import FlowCaptMap from '@/components/map/FlowCaptMap'
@@ -75,20 +76,20 @@ export default {
     BaseMap,
   },
   async asyncData({ store, params }) {
-    await store.dispatch('fetchFlowCaptStation')
-    await store.dispatch('fetchFlowCaptData', params.id)
+    await store.dispatch(actionsType.FETCH_FLOWCAPT_STATIONS)
+    await store.dispatch(actionsType.FETCH_FLOWCAPT_DATA, params.id)
   },
   computed: {
     ...mapState(['flowCaptData', 'flowCaptStations']),
-    selectedStation() {
-      if (this.flowCaptData && this.flowCaptStations) {
-        return this.flowCaptStations.features.find(
-          (f) => this.flowCaptData.station === f.properties.fcs_id
-        )
-      } else {
-        return null
-      }
-    },
+    // selectedStation() {
+    //   if (this.flowCaptData && this.flowCaptStations) {
+    //     return this.flowCaptStations.features.find(
+    //       (f) => this.flowCaptData.station === f.properties.fcs_id
+    //     )
+    //   } else {
+    //     return null
+    //   }
+    // },
   },
   methods: {
     oldLastData(dateAsStr) {

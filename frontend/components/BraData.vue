@@ -48,7 +48,7 @@
           </template>
           <template slot="lead">
             Pour consulter les données d'un massifs, cliquez sur celui-ci dans
-            la carte a droite.
+            la carte à droite.
           </template>
 
           <p>
@@ -62,6 +62,7 @@
     </div>
   </div>
 </template>
+
 <script>
 import { mapState, mapGetters } from 'vuex'
 

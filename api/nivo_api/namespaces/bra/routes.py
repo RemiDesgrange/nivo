@@ -154,6 +154,9 @@ class GenerateBraHtmlResource(Resource):
         links = soup.find_all("link")
         for link in links:
             link["href"] = f"/bra/static/{link['href']}"
+        scripts = soup.find_all("script")
+        for script in scripts:
+            script["src"] = f"/bra/static/{script['src']}"
         # Also need to modify CSS "background" in the html
         return str(soup)
 
@@ -237,18 +240,18 @@ class LastBraListResource(Resource):
             return marshal(res, bra_model)
 
 
-@bra_api.route("/<uuid:massif_id>/last")
-class LastBraResource(Resource):
+@bra_api.route("/massifs/<uuid:massif_id>/last")
+class LastBraRecordResource(Resource):
     @bra_api.marshal_with(bra_model)
     def get(self, massif_id: UUID) -> Dict:
-        with connection_scope() as con:
+        with session_scope() as sess:
             s = (
-                select(BraRecordTable.c)
-                .where(BraRecordTable.c.br_massif == massif_id)
-                .order_by(desc(BraRecordTable.c.br_production_date))
+                sess.query(BraRecord).filter(BraRecord.br_massif == massif_id)
+                .order_by(desc(BraRecord.br_production_date))
                 .limit(1)
+                .options(subqueryload(BraRecord.massif))
             )
-            res = con.execute(s).first()
+            res = s.first()
             return res
 
 
@@ -302,10 +305,19 @@ class MassifResource(Resource):
                 f"""
             SELECT result.* FROM bra.massif m
                 JOIN LATERAL (
-                    SELECT ST_AsGeoJSON(m.the_geom) as the_geom, m.m_id, m.m_name, d.d_id, d.d_name, d.d_number,r.br_max_risk, r.br_production_date FROM bra.record r
+                    SELECT ST_AsGeoJSON(m.the_geom) as the_geom, 
+m.m_id, 
+m.m_name, 
+d.d_id, 
+d.d_name, 
+d.d_number,
+r.br_max_risk, 
+r.br_production_date::date,
+r.br_dangerous_slopes
+FROM bra.record r
                         join bra.department d on (d.d_id=m_department)
                         where (m.m_id=r.br_massif)
-                    ORDER BY r.br_production_date limit 1
+                    ORDER BY r.br_production_date DESC limit 1
                     ) result on true
                 {whereclause}
                 ORDER BY m.m_id, result.br_production_date DESC
@@ -320,7 +332,9 @@ class MassifResource(Resource):
                         properties={
                             "id": res.m_id,
                             "name": res.m_name,
-                            "lastest_risk": res.br_max_risk,
+                            "latest_risk": res.br_max_risk,
+                            "latest_date": res.br_production_date,
+                            "latest_dangerous_slopes": res.br_dangerous_slopes[1:-1].split(','),
                             "department": {
                                 "id": res.d_id,
                                 "name": res.d_name,
