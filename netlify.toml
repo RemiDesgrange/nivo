@@ -1,0 +1,5 @@
+# the frontend is deployed on netlify. But that's just a detail
+[build]
+base = "frontend"
+publish = "frontend/dist/"
+command = "npm run generate"
