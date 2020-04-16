@@ -15,7 +15,7 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.9.7",
     "@nuxtjs/moment": "^1.6.0",
-    "@nuxtjs/sentry": "^4.0.0",
+    "@nuxtjs/sentry": "^4.0.1",
     "@turf/turf": "^5.1.6",
     "axios": "^0.19.2",
     "bootstrap": "^4.4.1",
