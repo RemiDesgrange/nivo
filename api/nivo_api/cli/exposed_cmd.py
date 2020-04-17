@@ -10,7 +10,6 @@ from requests import HTTPError
 from sqlalchemy import func, select
 
 from nivo_api.cli.bra_record_helper.miscellaneous import (
-    get_last_bra_date,
     get_bra_xml,
     get_bra_date,
     check_bra_record_exist,
@@ -38,7 +37,9 @@ from nivo_api.core.db.models.sql.bra import DepartmentTable
 from nivo_api.core.db.models.sql.nivo import SensorStationTable
 from nivo_api.settings import Config
 
+logging.basicConfig(level=Config.LOG_LEVEL)
 log = logging.getLogger(__name__)
+log.setLevel(Config.LOG_LEVEL)
 
 
 @contextmanager
@@ -68,19 +69,22 @@ def import_last_nivo_data():
 @click.command()
 def import_all_nivo_data():
     # setup
-    # go through the meteofrance ftp
+    # download from 2010 to now
     # download all file (via http, better)
     # process it
     # import it
     all_nivo_date = get_all_nivo_date()
     log.info(f"Need to process {len(all_nivo_date)}")
     for nivo_date in all_nivo_date:
-        if check_nivo_doesnt_exist(nivo_date["nivo_date"]):
+        if check_nivo_doesnt_exist(nivo_date.nivo_date):
             try:
-                downloaded_nivo = download_nivo(**nivo_date)
+                log.info(f"Processing for {nivo_date.nivo_date.strftime('%d-%m-%Y')}")
+                downloaded_nivo = download_nivo(nivo_date)
                 import_nivo(downloaded_nivo)
             except Exception as e:
-                click.echo("Something bad append : ", e)
+                click.echo("Something bad append")
+                log.debug(e)
+
 
 
 @click.command()

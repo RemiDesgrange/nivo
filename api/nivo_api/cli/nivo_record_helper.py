@@ -1,9 +1,10 @@
+from  dataclasses import dataclass
 import io
 import logging
 import re
 from abc import ABC
 from csv import DictReader
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from ftplib import FTP
 from typing import List, Dict
 
@@ -17,7 +18,6 @@ from nivo_api.core.db.models.sql.nivo import NivoRecordTable, SensorStationTable
 from nivo_api.settings import Config
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 # data quality is not the best stuff at meteofrance.
 SPECIAL_CHAR_TO_SET_TO_NONE = ["mq", "/"]
@@ -34,12 +34,15 @@ class ANivoCsv(ABC):
     nivo_csv: DictReader
     cleaned_csv: List[Dict]
 
-    def __init__(self, nivo_date: date, download_url: str = None):
-        self.nivo_date = nivo_date
+    def __init__(self, nivo_date: "NivoDate", download_url: str = None):
+        self.nivo_date = nivo_date.nivo_date
         self.cleaned_csv = list()
 
     def fetch_and_parse(self) -> DictReader:
-        res = requests.get(self.download_url)
+        logger.debug(f"requests : {self.download_url}")
+        res = requests.get(self.download_url, allow_redirects=False)
+        if res.status_code == 302:
+            requests.HTTPError("Cannot found Nivo record", response=res)
         res.raise_for_status()
         self.nivo_csv = DictReader(io.StringIO(res.text), delimiter=";")
         return self.nivo_csv
@@ -48,12 +51,8 @@ class ANivoCsv(ABC):
         """
         Before importing to db, change invalid value
         """
-
         def remove_empty_column(line: Dict) -> Dict:
-            for title, _ in line.items():
-                if title == "":
-                    line.pop(title)
-            return line
+            return {k: v for k, v in line.items() if k != ""}
 
         def remove_unvalid_int(line: Dict) -> Dict:
             # change invalid value that should be int but are string.
@@ -73,7 +72,6 @@ class ANivoCsv(ABC):
         def parse_date(line: Dict) -> Dict:
             line["nr_date"] = datetime.strptime(line["nr_date"], "%Y%m%d%H%M%S")
             return line
-
         filtered_csv = map(remove_empty_column, self.nivo_csv)
         filtered_csv = map(remove_unvalid_int, filtered_csv)
         filtered_csv = map(change_column_name, filtered_csv)
@@ -109,9 +107,9 @@ class ANivoCsv(ABC):
 
 
 class NivoCsv(ANivoCsv):
-    def __init__(self, nivo_date: date, download_url: str = None):
+    def __init__(self, nivo_date: "NivoDate", download_url: str = None):
         super().__init__(nivo_date, download_url)
-        download_date = date.strftime(nivo_date, "%Y%m%d")
+        download_date = date.strftime(nivo_date.nivo_date, "%Y%m%d")
         self.download_url = (
             download_url
             or f"{Config.METEO_FRANCE_NIVO_BASE_URL}/nivo.{download_date}.csv"
@@ -119,9 +117,9 @@ class NivoCsv(ANivoCsv):
 
 
 class ArchiveNivoCss(ANivoCsv):
-    def __init__(self, nivo_date: date, download_url: str = None):
+    def __init__(self, nivo_date: "NivoDate", download_url: str = None):
         super().__init__(nivo_date, download_url)
-        download_date = date.strftime(nivo_date, "%Y%m")
+        download_date = date.strftime(nivo_date.nivo_date, "%Y%m")
         self.download_url = (
             download_url
             or f"{Config.METEO_FRANCE_NIVO_BASE_URL}/Archive/nivo.{download_date}.csv.gz"
@@ -159,15 +157,15 @@ def check_nivo_doesnt_exist(nivo_date: date) -> bool:
         )
         s = select([s.label("exists")])
         does_nivo_already_exist = con.execute(s).first().exists
-        logger.info(
-            f"does nivo for date {date} already exist : {does_nivo_already_exist}"
+        logger.debug(
+            f"does nivo for date {nivo_date.strftime('%d-%m-%Y')} already exist : {does_nivo_already_exist}"
         )
         return not does_nivo_already_exist
 
 
-def download_nivo(nivo_date: date, is_archive=False) -> "ANivoCsv":
+def download_nivo(nivo_date: "NivoDate") -> "ANivoCsv":
     nivo_csv: ANivoCsv
-    if is_archive:
+    if nivo_date.is_archive:
         nivo_csv = ArchiveNivoCss(nivo_date)
     else:
         nivo_csv = NivoCsv(nivo_date)
@@ -176,7 +174,7 @@ def download_nivo(nivo_date: date, is_archive=False) -> "ANivoCsv":
     return nivo_csv
 
 
-def import_nivo(csv_file: ANivoCsv):
+def import_nivo(csv_file: ANivoCsv) -> None:
     csv_file.normalize()
     csv_file.find_and_replace_foreign_key_value()
     with connection_scope() as con:
@@ -187,31 +185,29 @@ def import_nivo(csv_file: ANivoCsv):
             con.execute(ins)
 
 
-def get_all_nivo_date() -> List[Dict]:
-    with FTP(Config.METEO_FRANCE_FTP_DOMAIN_NAME) as ftp:
-        ftp.login()
-        ftp.cwd("FDPMSP/Txt/Nivo/")
-        # list recent nivo observation data
-        nivo = ftp.nlst("nivo*.csv")
+@dataclass
+class NivoDate:
+    is_archive: bool
+    nivo_date: date
 
-        def parse_filename(filename: str) -> Dict:
-            date_str = re.search("nivo.(.*).csv", filename).group(1)  # type: ignore
-            return {
-                "is_archive": False,
-                "nivo_date": datetime.strptime(date_str, "%Y%m%d").date(),
-            }
+def get_all_nivo_date() -> List["NivoDate"]:
+    """
+    create nivo date to downloads programmaticaly
+    """
+    def generate_archive_date_range():
+        first_archived_record = date(year=2010, month=12, day=1)
+        last_archived_record = date.today() - timedelta(days=15)
+        total_months = lambda dt: dt.month + 12 * dt.year
+        months_list = []
+        for tot_m in range(total_months(first_archived_record)-1, total_months(last_archived_record)):
+            y, m = divmod(tot_m, 12)
+            months_list.append(NivoDate(is_archive=True, nivo_date=date(y, m+1, 1)))
+        return months_list
 
-        nivo_list = [parse_filename(n) for n in nivo]
-        # then list archived one
-        ftp.cwd("Archive")
-        nivo = ftp.nlst("nivo*.csv.gz")
-
-        def parse_filename_archived(filename: str) -> Dict:
-            date_str = re.search("nivo.(.*).csv.gz", filename).group(1)  # type: ignore
-            return {
-                "is_archive": True,
-                "nivo_date": datetime.strptime(date_str, "%Y%m").date(),
-            }
-
-        nivo_list_archived = [parse_filename_archived(n) for n in nivo]
-        return nivo_list + nivo_list_archived
+    nivo_list_archived = generate_archive_date_range()
+    start_date = date.today()-timedelta(days=15)
+    nivo_list = [
+        NivoDate(is_archive=False, nivo_date=(date.today() - timedelta(days=x)))
+        for x in range(0, (date.today() - start_date).days + 1)
+    ]
+    return nivo_list_archived + nivo_list

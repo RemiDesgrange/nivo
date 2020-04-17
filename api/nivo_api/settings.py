@@ -10,7 +10,7 @@ class Env(Enum):
 
 class Config(dict):
     ENV = Env(os.getenv("ENV", Env.DEV))
-    LOG_LEVEL = os.getenv("LOG_LEVEL", "DEBUG")
+    LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
     DB_URL = os.getenv("DB_URL", "postgresql://nivo:nivo@localhost:5432/nivo")
     METEO_FRANCE_NIVO_BASE_URL = os.getenv(
         "METEO_FRANCE_NIVO_BASE_URL",
