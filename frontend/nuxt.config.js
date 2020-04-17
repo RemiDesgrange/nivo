@@ -38,7 +38,7 @@ export default {
   /*
    ** Nuxt.js modules
    */
-  modules: ['bootstrap-vue/nuxt', '@nuxtjs/axios'],
+  modules: ['bootstrap-vue/nuxt', '@nuxtjs/axios', '@nuxtjs/sentry'],
   /*
    ** Build configuration
    */
@@ -73,5 +73,8 @@ export default {
   },
   bootstrapVue: {
     icons: true,
+  },
+  sentry: {
+    publishRelease: true,
   },
 }

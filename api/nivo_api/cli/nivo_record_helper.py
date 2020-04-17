@@ -148,7 +148,7 @@ def get_last_nivo_date() -> date:
     res = requests.get(url, allow_redirects=False)
     if res.status_code != 200:
         raise AssertionError("Impossible to fetch last nivo data from meteofrance url")
-    date_str = re.search("jour=(.*);", res.text).group(1)
+    date_str = re.search("jour=(.*);", res.text).group(1)  # type: ignore
     return datetime.strptime(date_str, "%Y%m%d").date()
 
 
@@ -195,7 +195,7 @@ def get_all_nivo_date() -> List[Dict]:
         nivo = ftp.nlst("nivo*.csv")
 
         def parse_filename(filename: str) -> Dict:
-            date_str = re.search("nivo.(.*).csv", filename).group(1)
+            date_str = re.search("nivo.(.*).csv", filename).group(1)  # type: ignore
             return {
                 "is_archive": False,
                 "nivo_date": datetime.strptime(date_str, "%Y%m%d").date(),
@@ -207,7 +207,7 @@ def get_all_nivo_date() -> List[Dict]:
         nivo = ftp.nlst("nivo*.csv.gz")
 
         def parse_filename_archived(filename: str) -> Dict:
-            date_str = re.search("nivo.(.*).csv.gz", filename).group(1)
+            date_str = re.search("nivo.(.*).csv.gz", filename).group(1)  # type: ignore
             return {
                 "is_archive": True,
                 "nivo_date": datetime.strptime(date_str, "%Y%m").date(),

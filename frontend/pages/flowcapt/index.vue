@@ -43,6 +43,10 @@
 import { mapState } from 'vuex'
 import FlowCaptMap from '@/components/map/FlowCaptMap'
 import BaseMap from '@/components/map/BaseMap'
+import {
+  globalActionsTypes as actionsTypes,
+  mapMutationTypes,
+} from '~/modules/stateTypes'
 
 export default {
   components: {
@@ -50,7 +54,19 @@ export default {
     BaseMap,
   },
   async asyncData({ store }) {
-    await store.dispatch('fetchFlowCaptStation')
+    store.commit('map/' + mapMutationTypes.SET_VISIBILITY, {
+      layerName: 'massifs',
+      visibility: false,
+    })
+    store.commit('map/' + mapMutationTypes.SET_VISIBILITY, {
+      layerName: 'flowcapt',
+      visibility: true,
+    })
+    store.commit('map/' + mapMutationTypes.SET_VISIBILITY, {
+      layerName: 'posteNivo',
+      visibility: false,
+    })
+    await store.dispatch(actionsTypes.FETCH_FLOWCAPT_STATIONS)
   },
   computed: mapState(['flowCaptStations']),
 }

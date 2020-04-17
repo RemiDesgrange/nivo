@@ -12,5 +12,6 @@ setup(
     url="https://nivo.desgran.ge",
     packages=find_packages(),
     install_requires=REQUIREMENTS,
-    package_data={"nivo_api.cli.data": ["*.geojson"]},
+    package_data={"nivo_api.cli.data": ["*.geojson"], "nivo_api.static": ["*"]},
+    include_package_data=True
 )

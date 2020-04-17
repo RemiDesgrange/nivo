@@ -30,18 +30,21 @@ def to_geojson(
         return _build_featurecollection(db_row_or_rows, geom_field)
     elif isinstance(db_row_or_rows, RowProxy):
         return _build_feature(db_row_or_rows, geom_field)
-
-
-def to_json(db_row_or_rows: Union[List[RowProxy], RowProxy]) -> Union[List[Dict], Dict]:
-    if isinstance(db_row_or_rows, list):
-        final_json = list()
-        for row in db_row_or_rows:
-            final_json.append(to_json(row))
-        return final_json
-    elif isinstance(db_row_or_rows, RowProxy):
-        final_dict = {}
-        for k, v in db_row_or_rows.items():
-            final_dict[k] = v
-        return final_dict
     else:
-        raise AssertionError("Rows need to be list of RowProxy or RowProxy.")
+        raise TypeError("Expected type List of RowProxy or RowProxy")
+
+
+# problem of type with this function...
+# def to_json(db_row_or_rows: Union[List[RowProxy], RowProxy]) -> Union[List[Dict], Dict]:
+#     if isinstance(db_row_or_rows, list):
+#         final_json = list()
+#         for row in db_row_or_rows:
+#             final_json.append(to_json(row))
+#         return final_json
+#     elif isinstance(db_row_or_rows, RowProxy):
+#         final_dict = {}
+#         for k, v in db_row_or_rows.items():
+#             final_dict[k] = v
+#         return final_dict
+#     else:
+#         raise TypeError("Rows need to be list of RowProxy or RowProxy.")

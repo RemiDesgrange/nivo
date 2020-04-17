@@ -12,7 +12,9 @@
             </base-map>
           </div>
           <div class="w-100"></div>
-          <div class="col"></div>
+          <div class="col">
+            <bra-chart />
+          </div>
         </div>
       </div>
     </div>
@@ -23,10 +25,12 @@
 import BaseMap from '~/components/map/BaseMap'
 import BraMap from '~/components/map/BraMap'
 import BraData from '~/components/BraData'
+import BraChart from '~/components/chart/BraChart'
 import {
   alertTypes,
-  gloablMutationTypes as types,
+  globalMutationTypes as types,
   globalActionsTypes as actionsTypes,
+  mapMutationTypes,
 } from '~/modules/stateTypes'
 
 export default {
@@ -34,9 +38,25 @@ export default {
     BaseMap,
     BraMap,
     BraData,
+    BraChart,
   },
   async asyncData({ store, params }) {
+    // set map visibility
+    store.commit('map/' + mapMutationTypes.SET_VISIBILITY, {
+      layerName: 'massifs',
+      visibility: true,
+    })
+    store.commit('map/' + mapMutationTypes.SET_VISIBILITY, {
+      layerName: 'flowcapt',
+      visibility: false,
+    })
+    store.commit('map/' + mapMutationTypes.SET_VISIBILITY, {
+      layerName: 'posteNivo',
+      visibility: false,
+    })
+    // fetch massif
     await store.dispatch(actionsTypes.FETCH_MASSIFS)
+    // select the fetched massif
     const massif = store.state.massifs.features.find(
       (massif) => params.massif.toUpperCase() === massif.properties.name
     )
@@ -50,11 +70,10 @@ export default {
         actionsTypes.FETCH_LAST_BRA_DATA,
         massif.properties.id
       )
-      console.log(store.state.braData)
-      const selectedBra = store.state.braData.find(
-        (b) => b.massif.id === massif.properties.id
-      )
-      store.commit(types.SET_SELECTED_BRA, selectedBra)
+      // const selectedBra = store.state.braData.find(
+      //   (b) => b.massif.id === massif.properties.id
+      // )
+      // store.dispatch(actionsTypes.SET_SELECTED_BRA, selectedBra)
     }
   },
 }

@@ -174,6 +174,7 @@ SnowRecordTable = AbstractTable(
     ),
     schema="bra",
 )
+
 FreshSnowRecordTable = AbstractTable(
     "fresh_snow_record",
     metadata,

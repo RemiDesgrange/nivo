@@ -1,68 +1,59 @@
 <template>
-  <client-only>
-    <div>
-      <vl-layer-vector id="flowCaptStationLayer" render-mode="image">
-        <!-- <vl-style-func :factory="myStyleFunc" /> -->
-        <vl-source-vector
-          :v-if="flowCaptStations"
-          :features="flowCaptStations.features"
-        ></vl-source-vector>
-        <!-- <vl-style-box>
-          <vl-style-circle :radius="5">
-            <vl-style-stroke color="white"></vl-style-stroke>
-            <vl-style-fill color="red"></vl-style-fill>
+  <div>
+    <!--      <vl-layer-vector id="flowCaptStationLayer" render-mode="image">-->
+    <!--        &lt;!&ndash; <vl-style-func :factory="myStyleFunc" /> &ndash;&gt;-->
+    <!--        <vl-source-vector-->
+    <!--          :v-if="flowCaptStations"-->
+    <!--          :features="flowCaptStations.features"-->
+    <!--        ></vl-source-vector>-->
+    <!--        &lt;!&ndash; <vl-style-box>-->
+    <!--          <vl-style-circle :radius="5">-->
+    <!--            <vl-style-stroke color="white"></vl-style-stroke>-->
+    <!--            <vl-style-fill color="red"></vl-style-fill>-->
 
-          </vl-style-circle>
-        </vl-style-box> -->
-      </vl-layer-vector>
-      <!-- get all selection event. This up to us to handle everything and dispatch -->
-      <vl-interaction-select :features.sync="selectedFeatures">
-        <vl-overlay
-          v-for="feature in selectedFeatures"
-          :id="feature.id"
-          :key="feature.id"
-          :position="feature.geometry.coordinates"
-          :auto-pan="true"
-          :auto-pan-animation="{ duration: 300 }"
-          class="feature-popup"
-        >
-          <b-card :title="'Site ' + feature.properties.fcs_site">
-            <b-card-text>
-              <ul>
-                <li v-for="(v, k) in feature.properties" :key="v">
-                  <em>{{ k }}</em> : {{ v }}
-                </li>
-              </ul>
-            </b-card-text>
-            <b-button :to="'/flowcapt/' + feature.properties.fcs_id">
-              voir les données
-            </b-button>
-          </b-card>
-        </vl-overlay>
-      </vl-interaction-select>
-    </div>
-  </client-only>
+    <!--          </vl-style-circle>-->
+    <!--        </vl-style-box> &ndash;&gt;-->
+    <!--      </vl-layer-vector>-->
+    <!-- get all selection event. This up to us to handle everything and dispatch -->
+    <ol-overlay
+      v-for="feature in SELECTED_FLOWCAPT_STATION_HOVER"
+      :id="'flowcapt-popup-' + feature.get('id')"
+      :key="feature.id"
+      :position="feature"
+      class="feature-popup"
+    >
+      <b-card :title="'Site ' + feature.get('fcs_site')">
+        <b-card-text>
+          <ul>
+            <li><em>Identifiant</em> : {{ feature.get('fcs_id') }}</li>
+            <li><em>Site</em> : {{ feature.get('fcs_site') }}</li>
+            <li><em>Pays</em> : {{ feature.get('fcs_country') }}</li>
+            <li><em>Altitude</em> : {{ feature.get('fcs_altitude') }}</li>
+          </ul>
+        </b-card-text>
+        <b-button :to="'/flowcapt/' + feature.get('fcs_id')">
+          voir les données
+        </b-button>
+      </b-card>
+    </ol-overlay>
+  </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapGetters } from 'vuex'
+import OlOverlay from '~/components/map/OlOverlay'
+import { mapGettersTypes as getterTypes } from '~/modules/stateTypes'
 
 export default {
-  data() {
-    return {
-      zoom: 5,
-      center: [3.845, 45.506],
-      rotation: 0,
-      attribution: ['IGN-F/Géoportail'],
-      url: process.env.baseMapUrl,
-      baseLayerName: 'GEOGRAPHICALGRIDSYSTEMS.MAPS.SCAN-EXPRESS.STANDARD',
-      matrixSet: 'PM',
-      format: 'image/jpeg',
-      styleName: 'normal',
-      selectedFeatures: [],
-    }
+  components: {
+    OlOverlay,
   },
-  computed: mapState(['flowCaptStations']),
+  computed: {
+    ...mapGetters('map', [
+      getterTypes.SELECTED_FLOWCAPT_STATION_HOVER,
+      getterTypes.SELECTED_FLOWCAPT_STATION_CLICK,
+    ]),
+  },
 }
 </script>
 

@@ -1,3 +1,4 @@
+from enum import Enum
 from uuid import UUID
 
 
@@ -13,6 +14,13 @@ class UUIDField(fields.Raw):
 
     def format(self, value: UUID) -> str:
         return str(value)
+
+
+class EnumField(fields.Raw):
+    __schema_type__ = "string"
+
+    def format(self, value: Enum) -> str:
+        return str(value).split(".")[-1]
 
 
 class GeometryField(fields.Raw):

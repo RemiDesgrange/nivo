@@ -48,8 +48,10 @@ import NivoDataChart from '~/components/chart/NivoDataChart'
 import NivoMap from '~/components/map/NivoMap'
 import BaseMap from '~/components/map/BaseMap'
 import {
-  gloablMutationTypes as types,
+  globalActionsTypes as actionTypes,
+  // globalMutationTypes as types,
   mapGettersTypes,
+  mapMutationTypes,
 } from '@/modules/stateTypes'
 
 export default {
@@ -64,28 +66,33 @@ export default {
     },
   },
   async asyncData({ store, params }) {
-    await store.dispatch('fetchNivoStation')
+    store.commit('map/' + mapMutationTypes.SET_VISIBILITY, {
+      layerName: 'massifs',
+      visibility: false,
+    })
+    store.commit('map/' + mapMutationTypes.SET_VISIBILITY, {
+      layerName: 'flowcapt',
+      visibility: false,
+    })
+    store.commit('map/' + mapMutationTypes.SET_VISIBILITY, {
+      layerName: 'posteNivo',
+      visibility: true,
+    })
+    await store.dispatch(actionTypes.FETCH_NIVO_STATIONS)
     await store.dispatch('fetchNivoRecordsByStationId', params.id)
-    store.commit(
-      types.SET_SELECTED_NIVO_STATION,
+    store.dispatch(
+      actionTypes.SET_SELECTED_NIVO_STATION,
       store.state.nivoStations.features.find(
         (s) => s.properties.nss_id === params.id
       )
     )
-    // TODO do it on map too an fit
   },
   computed: {
     ...mapState(['nivoData', 'nivoStations', 'selectedNivoStation']),
-    ...mapState('map', [mapGettersTypes.SELECTED_NIVO_STATION_ALTITUDE_HOVER]),
-    selectedStation() {
-      if (this.nivoData && this.nivoStations) {
-        return this.nivoStations.features.find(
-          (f) => this.nivoData.station === f.properties.nss_id
-        )
-      } else {
-        return null
-      }
-    },
+    ...mapState('map', [
+      mapGettersTypes.SELECTED_NIVO_STATION_HOVER,
+      mapGettersTypes.SELECTED_NIVO_STATION_CLICK,
+    ]),
     lastData() {
       const lastData = this.nivoData
         .map((n) => moment(n.date))

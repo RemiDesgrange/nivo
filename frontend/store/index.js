@@ -1,5 +1,6 @@
+import moment from 'moment'
 import {
-  gloablMutationTypes as types,
+  globalMutationTypes as types,
   globalActionsTypes as actionsTypes,
   alertTypes,
   mapMutationTypes,
@@ -8,13 +9,13 @@ import {
 export const strict = false
 
 export const state = () => ({
-  selectedBra: null,
-  braData: [],
+  braData: null,
   nivoStations: [],
   selectedNivoStation: null,
   nivoData: null,
   flowCaptStations: [],
   flowCaptData: null,
+  selectedFlowCaptStation: null,
   massifs: [],
   alerts: [],
   massifLoading: false,
@@ -29,10 +30,13 @@ export const mutations = {
     state.braData = newBra
   },
   [types.SET_SELECTED_BRA](state, bra) {
-    state.selectedBra = bra
+    state.braData = bra
   },
   [types.SET_SELECTED_NIVO_STATION](state, nivo) {
     state.selectedNivoStation = nivo
+  },
+  [types.SET_SELECTED_FLOWCAPT_STATION](state, flowcapt) {
+    state.selectedFlowCaptStation = flowcapt
   },
   [types.NIVO_STATION_LOADED](state, newNivoStations) {
     state.nivoStations = newNivoStations
@@ -97,19 +101,23 @@ export const actions = {
     try {
       const res = await this.$axios.get(`${process.env.baseUrl}/bra/massifs`)
       commit(types.MASSIFS_LOADED, res.data)
+      commit(`map/${mapMutationTypes.SET_RAW_GEOJSON}`, {
+        layerName: 'massifs',
+        geojson: res.data,
+      })
     } catch (e) {
       commit(types.SET_ALERT, { level: alertTypes.DANGER, message: e })
     } finally {
       commit(types.TOGGLE_MASSIFS_LOADING)
     }
   },
-  async [actionsTypes.FETCH_LAST_BRA_DATA]({ commit }, massifId) {
+  async [actionsTypes.FETCH_LAST_BRA_DATA]({ commit, dispatch }, massifId) {
     commit(types.TOGGLE_BRA_LOADING)
     try {
       const res = await this.$axios.get(
         `${process.env.baseUrl}/bra/massifs/${massifId}/last`
       )
-      commit(types.BRA_LOADED, [res.data])
+      dispatch(actionsTypes.SET_SELECTED_BRA, res.data)
     } catch (e) {
       commit(types.SET_ALERT, {
         level: alertTypes.DANGER,
@@ -119,11 +127,15 @@ export const actions = {
       commit(types.TOGGLE_BRA_LOADING)
     }
   },
-  async fetchNivoStation({ commit }) {
+  async [actionsTypes.FETCH_NIVO_STATIONS]({ commit }) {
     commit(types.TOGGLE_NIVO_STATION_LOADING)
     try {
       const res = await this.$axios.get(`${process.env.baseUrl}/nivo/stations`)
       commit(types.NIVO_STATION_LOADED, res.data)
+      commit(`map/${mapMutationTypes.SET_RAW_GEOJSON}`, {
+        layerName: 'posteNivo',
+        geojson: res.data,
+      })
     } catch (e) {
       commit(types.SET_ALERT, {
         level: alertTypes.DANGER,
@@ -132,6 +144,18 @@ export const actions = {
     } finally {
       commit(types.TOGGLE_NIVO_STATION_LOADING)
     }
+  },
+  [actionsTypes.SET_SELECTED_BRA]({ commit }, bra) {
+    commit(types.SET_SELECTED_BRA, bra)
+    commit('map/' + mapMutationTypes.SET_SELECTED_MASSIF, bra.massif)
+  },
+  [actionsTypes.SET_SELECTED_NIVO_STATION]({ commit }, nivo) {
+    commit(types.SET_SELECTED_NIVO_STATION, nivo)
+    commit('map/' + mapMutationTypes.SET_SELECTED_NIVO_STATION, nivo)
+  },
+  [actionsTypes.SET_SELECTED_FLOWCAPT_STATION]({ commit }, flowcapt) {
+    commit(types.SET_SELECTED_FLOWCAPT_STATION, flowcapt)
+    commit('map/' + mapMutationTypes.SET_SELECTED_FLOWCAPT_STATION, flowcapt)
   },
   async fetchNivoRecordsByStationId({ commit }, nivoStationId) {
     commit(types.TOGGLE_NIVO_DATA_LOADING)
@@ -166,8 +190,7 @@ export const actions = {
         `${process.env.baseUrl}/flowcapt/stations`
       )
       commit(types.FLOWCAPT_STATION_LOADED, res.data)
-
-      commit(`map/${mapMutationTypes.ADD_RAW_GEOJSON}`, {
+      commit(`map/${mapMutationTypes.SET_RAW_GEOJSON}`, {
         layerName: 'flowcapt',
         geojson: res.data,
       })
@@ -200,8 +223,14 @@ export const actions = {
 
 export const getters = {
   braUrl(state) {
-    if (state.selectedBra) {
-      return `${process.env.baseUrl}/bra/html/${state.selectedBra.id}`
+    if (state.braData) {
+      return `${process.env.baseUrl}/bra/html/${state.braData.id}`
+    }
+    return null
+  },
+  braDate(state) {
+    if (state.braData) {
+      return moment(state.braData.production_date).format('YYYY-MM-DD')
     }
     return null
   },

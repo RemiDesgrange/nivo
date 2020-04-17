@@ -21,17 +21,17 @@
             <h2>
               <a :href="flowCaptData.url" target="_blank">liens ISAW</a>
             </h2>
-            <dl v-if="selectedStation">
+            <dl v-if="selectedFlowCaptStation">
               <dt>Station</dt>
-              <dd>{{ selectedStation.properties.fcs_id }}</dd>
+              <dd>{{ selectedFlowCaptStation.properties.fcs_id }}</dd>
               <dt>label</dt>
-              <dd>{{ selectedStation.properties.fcs_site }}</dd>
+              <dd>{{ selectedFlowCaptStation.properties.fcs_site }}</dd>
               <dt>pays</dt>
-              <dd>{{ selectedStation.properties.fcs_country }}</dd>
+              <dd>{{ selectedFlowCaptStation.properties.fcs_country }}</dd>
               <dt>Dernier relevé</dt>
               <dd v-if="oldLastData(flowCaptData.lastdata)">
                 {{ flowCaptData.lastdata }}
-                <font-awesome-icon
+                <b-icon
                   id="lastDataIndicatorKo"
                   :style="{ color: 'red' }"
                   icon="times"
@@ -39,7 +39,7 @@
               </dd>
               <dd v-else>
                 {{ flowCaptData.lastdata }}
-                <font-awesome-icon
+                <b-icon
                   id="lastDataIndicatorOk"
                   :style="{ color: 'green' }"
                   icon="check"
@@ -47,10 +47,10 @@
               </dd>
             </dl>
             <b-tooltip target="lastDataIndicatorOk" placement="right">
-              The sensor send his data at {{ flowCaptData.lastdata }}
+              Le capteur à envoyé ses données à {{ flowCaptData.lastdata }}
             </b-tooltip>
             <b-tooltip target="lastDataIndicatorKo" placement="right">
-              The sensor send his data more than 1 days ago at
+              Le capteur à envoyé ses données il y a plus d'une journée
               {{ flowCaptData.lastdata }}
             </b-tooltip>
           </div>
@@ -63,7 +63,11 @@
 <script>
 import { mapState } from 'vuex'
 import moment from 'moment'
-import { globalActionsTypes as actionsType } from '../../modules/stateTypes'
+import {
+  // globalMutationTypes as mutationsType,
+  globalActionsTypes as actionsType,
+  mapMutationTypes,
+} from '~/modules/stateTypes'
 import FlowCaptChart from '@/components/chart/FlowCaptChart'
 
 import FlowCaptMap from '@/components/map/FlowCaptMap'
@@ -76,20 +80,33 @@ export default {
     BaseMap,
   },
   async asyncData({ store, params }) {
+    store.commit('map/' + mapMutationTypes.SET_VISIBILITY, {
+      layerName: 'massifs',
+      visibility: false,
+    })
+    store.commit('map/' + mapMutationTypes.SET_VISIBILITY, {
+      layerName: 'flowcapt',
+      visibility: true,
+    })
+    store.commit('map/' + mapMutationTypes.SET_VISIBILITY, {
+      layerName: 'posteNivo',
+      visibility: false,
+    })
     await store.dispatch(actionsType.FETCH_FLOWCAPT_STATIONS)
     await store.dispatch(actionsType.FETCH_FLOWCAPT_DATA, params.id)
+    store.dispatch(
+      actionsType.SET_SELECTED_FLOWCAPT_STATION,
+      store.state.flowCaptStations.features.find(
+        (e) => e.properties.fcs_id === params.id
+      )
+    )
   },
   computed: {
-    ...mapState(['flowCaptData', 'flowCaptStations']),
-    // selectedStation() {
-    //   if (this.flowCaptData && this.flowCaptStations) {
-    //     return this.flowCaptStations.features.find(
-    //       (f) => this.flowCaptData.station === f.properties.fcs_id
-    //     )
-    //   } else {
-    //     return null
-    //   }
-    // },
+    ...mapState([
+      'flowCaptData',
+      'flowCaptStations',
+      'selectedFlowCaptStation',
+    ]),
   },
   methods: {
     oldLastData(dateAsStr) {

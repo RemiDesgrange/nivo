@@ -22,7 +22,10 @@
 </template>
 
 <script>
-import { globalActionsTypes as actionsTypes } from '~/modules/stateTypes'
+import {
+  globalActionsTypes as actionsTypes,
+  mapMutationTypes,
+} from '~/modules/stateTypes'
 
 import BaseMap from '~/components/map/BaseMap'
 import BraMap from '~/components/map/BraMap'
@@ -36,6 +39,18 @@ export default {
   },
   async asyncData({ store }) {
     await store.dispatch(actionsTypes.FETCH_MASSIFS)
+    store.commit('map/' + mapMutationTypes.SET_VISIBILITY, {
+      layerName: 'massifs',
+      visibility: true,
+    })
+    store.commit('map/' + mapMutationTypes.SET_VISIBILITY, {
+      layerName: 'flowcapt',
+      visibility: false,
+    })
+    store.commit('map/' + mapMutationTypes.SET_VISIBILITY, {
+      layerName: 'posteNivo',
+      visibility: false,
+    })
   },
 }
 </script>

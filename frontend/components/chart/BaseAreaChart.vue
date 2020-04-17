@@ -1,7 +1,5 @@
 <template>
-  <client-only>
-    <chart :options="chartOptions" />
-  </client-only>
+  <chart :options="chartOptions" />
 </template>
 
 <script>
@@ -22,7 +20,11 @@ export default {
       type: Number,
       default: moment().utc().valueOf(),
     },
-    pointInterval: { type: Number, default: 3600 * 1000 },
+    pointInterval: { type: Number, default: 3600 * 1000 }, // in milliseconds !!
+    pointIntervalUnit: {
+      type: String,
+      default: undefined,
+    },
     tooltip: {
       type: Object,
       default() {
@@ -58,6 +60,7 @@ export default {
           series: {
             pointStart: this.pointStart,
             pointInterval: this.pointInterval,
+            pointIntervalUnit: this.pointIntervalUnit,
             marker: {
               radius: 0,
             },

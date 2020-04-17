@@ -1,0 +1,1 @@
+recursive-include nivo_api *.geojson *.json *.xslt *.css *.js *.gif *.png

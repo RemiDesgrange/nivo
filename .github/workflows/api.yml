@@ -41,6 +41,11 @@ jobs:
         DB_URL: postgresql://nivo:nivo@localhost:5432/nivo
       run: |
         pytest
+    - name: Test types with mypy
+      working-directory: api/
+      run: |
+        mypy .
+
 
     - name: upload coverage
       working-directory: api/

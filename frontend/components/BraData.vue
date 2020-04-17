@@ -17,7 +17,7 @@
               <b-button :disabled="noPrevious">&raquo;</b-button>
             </b-button-group>
             <b-input-group class="mr1">
-              <b-form-input value="01/01/2019" type="date"></b-form-input>
+              <b-form-input :value="braDate" type="date"></b-form-input>
             </b-input-group>
           </b-button-toolbar>
         </div>
@@ -75,15 +75,7 @@ export default {
   },
   computed: {
     ...mapState(['braLoading']),
-    ...mapGetters(['braUrl']),
-  },
-  methods: {
-    getMassifsFeature(featureCollection) {
-      if (featureCollection) {
-        return featureCollection.features
-      }
-      return []
-    },
+    ...mapGetters(['braUrl', 'braDate']),
   },
 }
 </script>

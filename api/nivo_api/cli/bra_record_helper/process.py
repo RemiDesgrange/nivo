@@ -72,7 +72,9 @@ def _get_bra_record(bra_xml: _Element, bra_id: UUID, con: Connection) -> Dict:
     }
 
 
-def _get_risk(bra_xml: _Element, bra_id: UUID) -> Generator[Dict, None, None]:
+def _get_risk(
+    bra_xml: _Element, bra_id: UUID
+) -> Generator[Optional[Dict[Any, Any]], None, None]:
     """
     It could exist 2 risk, one belong a certain altitude, and one upper. If altitude is set, then below this altitude
     you have a risk and above you have another risk.
@@ -203,13 +205,11 @@ def _get_weather_forcast(bra_xml: _Element, bra_id: UUID) -> Dict:
 def _get_risk_forcast(bra_xml: _Element, bra_id: UUID) -> Generator[Dict, None, None]:
     for forcast in bra_xml.find("//TENDANCES").getchildren():
         evol = RiskEvolution(int(forcast.get("VALEUR")))
-        evol = str(evol).split(".")[
-            -1
-        ]  # TODO need to move RiskEvolution Enum to models, since sqlalchemy suport native enum !
+        evol_str = str(evol).split(".")[-1]
         yield {
             "rf_bra_record": bra_id,
             "rf_date": datetime.strptime(forcast.get("DATE"), "%Y-%m-%dT%H:%M:%S"),
-            "rf_evolution": evol,
+            "rf_evolution": evol_str,
         }
 
 

@@ -1,1 +1,1 @@
-from .routes import flowcapt_api
+from .namespace import flowcapt_api

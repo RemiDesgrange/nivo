@@ -5,15 +5,13 @@ from urllib.parse import urlencode
 
 import requests
 from flask import jsonify
-from flask_restx import Namespace, Resource, fields, abort
+from flask_restx import Resource, abort
 
 from nivo_api.core.api_schema.geojson import FeatureCollection
 from nivo_api.core.db.connection import connection_scope
 from nivo_api.core.db.models.sql.flowcapt import FlowCaptStationTable
+from nivo_api.namespaces.flowcapt import flowcapt_api
 from nivo_api.settings import Config
-
-flowcapt_api = Namespace("flowcapt-api", path="/flowcapt")
-flowcapt_api.add_model("FeatureCollection", FeatureCollection)
 
 
 @flowcapt_api.route("/stations")
@@ -39,7 +37,7 @@ class FlowCaptMeasureResource(Resource):
             res = requests.get(url).json()
             return res
         except JSONDecodeError:
-            abort(404, "Measure for this station_id cannot be found.")
+            return abort(404, "Measure for this station_id cannot be found.")
 
 
 @flowcapt_api.route("/measures/with_timestamp/<string:station_id>")
@@ -58,7 +56,7 @@ class FlowCaptMeasureWithTimestamp(Resource):
                 ]
             return res
         except JSONDecodeError as e:
-            abort(404, "Measure for this station_id cannot be found.")
+            return abort(404, "Measure for this station_id cannot be found.")
 
 
 def _build_query(station: str, duration: int) -> str:

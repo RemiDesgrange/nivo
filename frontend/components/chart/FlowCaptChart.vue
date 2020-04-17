@@ -1,13 +1,11 @@
 <template>
   <div>
     <div v-if="flowCaptData">
-      <client-only>
-        <chart :options="chartSnowLevelOptions" />
-        <chart :options="chartSnowDriftOptions" />
-        <chart :options="chartWindOptions" />
-        <chart :options="chartAirTempOptions" />
-        <chart :options="chartAirHumidityOptions" />
-      </client-only>
+      <chart :options="chartSnowLevelOptions" />
+      <chart :options="chartSnowDriftOptions" />
+      <chart :options="chartWindOptions" />
+      <chart :options="chartAirTempOptions" />
+      <chart :options="chartAirHumidityOptions" />
     </div>
     <div v-if="flowCaptLoading">
       <div class="d-flex justify-content-center mb-3">

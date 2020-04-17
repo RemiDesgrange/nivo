@@ -1,6 +1,6 @@
 import json
 from contextlib import contextmanager
-from datetime import datetime
+from datetime import datetime, date, timedelta
 
 import click
 import geojson
@@ -125,7 +125,7 @@ def import_nivo_sensor_station():
 @click.command()
 def import_last_bra():
     # Open data from meteo france via it's obscure rest api because they are not providing opendata for the current day
-    # They start providing the BRA one ay after it's been released, which makes the app useless.
+    # They start providing the BRA one day after it's been released, which makes the app useless.
     with connection_scope() as con:
         for dept in DepartmentTable.get(con):
             try:
@@ -146,32 +146,58 @@ def import_last_bra():
 @click.command()
 @click.argument("date", type=click.DateTime(["%Y-%m-%d"]))  # type: ignore
 @time_elapsed()
-def import_bra(date):
-    bra_dates = get_bra_date(date)
+def import_bra(bra_date):
+    """
+    * setup
+    * request https://donneespubliques.meteofrance.fr/donnees_libres/Pdf/BRA/bra.%Y%m%d.json with all the date from december 2016 to today
+    * if not 302 (302 means 404 at meteofrance 😭)
+    * for all the date in all the json, download the xml of bra
+    * process (download + post process)
+    * import
+    """
+    bra_dates = get_bra_date(bra_date)
     with connection_scope() as con:
-        for massif, date in bra_dates.items():
+        for massif, m_date in bra_dates.items():
             try:
-                if not check_bra_record_exist(con, massif, date):
-                    xml = get_bra_xml(massif, date)
+                if not check_bra_record_exist(con, massif, m_date):
+                    xml = get_bra_xml(massif, m_date)
                     processed_bra = process_xml(con, xml)
                     persist_bra(con, processed_bra)
                     click.echo(f"Persist {massif.capitalize()}")
             except Exception as e:
                 log.debug(e)
                 log.critical(
-                    f"an error occured when processing massif {massif} for date {date}"
+                    f"an error occured when processing massif {massif} for date {m_date}"
                 )
 
 
 @click.command()
+@time_elapsed()
 def import_all_bra():
-    # setup
-    # request https://donneespubliques.meteofrance.fr/donnees_libres/Pdf/BRA/bra.%Y%m%d.json with all the date from december 2016 to today
-    # if not 302 (302 means 404 at meteofrance 😭)
-    # for all the date in all the json, download the xml of bra
-    # process (download + post process)
-    # import
-    pass
+    """
+    Same as `import_bra` but we requst from
+    """
+    start_date = date(year=2016, month=3, day=10)
+    date_range = [
+        date.today() - timedelta(days=x)
+        for x in range(0, (date.today() - start_date).days + 1)
+    ]
+    for d in date_range:
+        massif = ""
+        try:
+            bra_dates = get_bra_date(d)
+            with connection_scope() as con:
+                for massif, m_date in bra_dates.items():
+                    if not check_bra_record_exist(con, massif, m_date):
+                        xml = get_bra_xml(massif, m_date)
+                        processed_bra = process_xml(con, xml)
+                        persist_bra(con, processed_bra)
+                        click.echo(f"Persist {massif.capitalize()}")
+        except Exception as e:
+            log.debug(e)
+            log.critical(
+                f"an error occured when processing massif {massif} for date {d}"
+            )
 
 
 @click.command()

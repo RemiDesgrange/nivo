@@ -57,7 +57,7 @@ export const state = () => ({
           layer: 'GEOGRAPHICALGRIDSYSTEMS.MAPS.SCAN-EXPRESS.STANDARD',
           matrixSet: 'PM',
           format: 'image/jpeg',
-          attribution: ['IGN-F/Géoportail'],
+          attributions: 'IGN-F/Géoportail',
           style: 'normal',
           projection: 'EPSG:3857',
           tileGrid: _getIgnTileGrid(),
@@ -71,7 +71,7 @@ export const state = () => ({
           url:
             'https://api.mapbox.com/styles/v1/brankgnol/ck05b5qfv08zp1cqxpcpmmuc5/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiYnJhbmtnbm9sIiwiYSI6IjNVUmliWG8ifQ.QfnRYCCoSPUqX0Z4tr_Rjg',
           label: 'Carte enrichie données station',
-          attribution: 'Brankgnol/Mapbox',
+          attributions: 'Brankgnol/Mapbox',
           layer: 'Outdoors winter web',
         }),
         name: 'brankgnol',
@@ -81,7 +81,7 @@ export const state = () => ({
       new TileLayer({
         source: new XYZ({
           url: 'https://b.tile.opentopomap.org/{z}/{x}/{y}.png',
-          attribution:
+          attributions:
             '© OpenStreetMap-Mitwirkende, SRTM | Kartendarstellung: © OpenTopoMap (CC-BY-SA)',
         }),
         visible: false,
@@ -96,7 +96,7 @@ export const state = () => ({
       layer: 'GEOGRAPHICALGRIDSYSTEMS.SLOPES.MOUNTAIN',
       matrixSet: 'PM',
       format: 'image/png',
-      attribution: ['IGN-F/Géoportail'],
+      attributions: 'IGN-F/Géoportail',
       style: 'normal',
       projection: 'EPSG:3857',
       tileGrid: _getIgnTileGrid(),
@@ -120,8 +120,6 @@ export const state = () => ({
   massifs: new VectorLayer({
     source: new VectorSource({
       name: 'massifsSource',
-      url: `${process.env.baseUrl}/bra/massifs`,
-      format: new GeoJSON(),
     }),
     name: 'massifsLayer',
     style: massifsStyleFunc,
@@ -131,14 +129,17 @@ export const state = () => ({
     flowcapt: {
       byHover: new Collection(),
       byClick: new Collection(),
+      byApp: new Collection(),
     },
     posteNivo: {
       byHover: new Collection(),
       byClick: new Collection(),
+      byApp: new Collection(),
     },
     massifs: {
       byHover: new Collection(),
       byClick: new Collection(),
+      byApp: new Collection(),
     },
   },
 })
@@ -159,6 +160,18 @@ export const getters = {
   },
   [getterTypes.SELECTED_MASSIF_HOVER](state) {
     return state.selectedFeatures.massifs.byHover.getArray()
+  },
+  [getterTypes.SELECTED_FLOWCAPT_STATION_CLICK](state) {
+    return state.selectedFeatures.flowcapt.byClick.getArray()
+  },
+  [getterTypes.SELECTED_FLOWCAPT_STATION_HOVER](state) {
+    return state.selectedFeatures.flowcapt.byHover.getArray()
+  },
+  [getterTypes.SELECTED_NIVO_STATION_HOVER](state) {
+    return state.selectedFeatures.posteNivo.byHover.getArray()
+  },
+  [getterTypes.SELECTED_NIVO_STATION_CLICK](state) {
+    return state.selectedFeatures.posteNivo.byClick.getArray()
   },
 }
 
@@ -191,9 +204,15 @@ export const actions = {
           condition: pointerMove,
         })
       )
-      state.selectedFeatures[e].byClick.on('add', (e) => {
-        console.log(e)
-      })
+      // we want to be able to select features programmaticaly
+      commit(
+        types.ADD_INTERACTION,
+        new Select({
+          features: state.selectedFeatures[e].byApp,
+          layers: [state[e]],
+          condition: null,
+        })
+      )
     })
   },
   [mapActionsTypes.ADD_FEATURES]({ commit }, { layer, features }) {
@@ -280,13 +299,13 @@ export const mutations = {
     }
   },
   [types.SET_RAW_GEOJSON](state, { layerName, geojson }) {
-    const layer = state.map
-      .getLayers()
-      .getArray()
-      .find((l) => l.get('name') === layerName)
-    if (layer instanceof VectorLayer) {
-      layer.getSource().clear()
-      layer.getSource().addFeatures(new GeoJSON().readFeatures(geojson))
+    try {
+      state[layerName].getSource().clear()
+      state[layerName]
+        .getSource()
+        .addFeatures(new GeoJSON().readFeatures(geojson))
+    } catch (e) {
+      console.warn(`cannot set geojson in ${layerName}`)
     }
   },
   [types.SET_SELECTED_BASE_LAYER](state, layerName) {
@@ -307,5 +326,42 @@ export const mutations = {
   },
   [types.SET_SLOPES_OPACITY](state, value) {
     state.slopes.setOpacity(value)
+  },
+  [types.SET_VISIBILITY](state, { layerName, visibility }) {
+    try {
+      state[layerName].setVisible(visibility)
+    } catch (ex) {
+      console.warn('cannot set visibility of layer ' + layerName)
+    }
+  },
+  [types.SET_SELECTED_MASSIF](state, massif) {
+    if (massif) {
+      const f = state.massifs
+        .getSource()
+        .getFeatures()
+        .find((f) => f.get('id') === massif.id)
+      state.selectedFeatures.massifs.byApp.clear()
+      state.selectedFeatures.massifs.byApp.push(f)
+    }
+  },
+  [types.SET_SELECTED_FLOWCAPT_STATION](state, flowcapt) {
+    if (flowcapt) {
+      const f = state.flowcapt
+        .getSource()
+        .getFeatures()
+        .find((f) => f.get('fcs_id') === flowcapt.properties.fcs_id)
+      state.selectedFeatures.flowcapt.byApp.clear()
+      state.selectedFeatures.flowcapt.byApp.push(f)
+    }
+  },
+  [types.SET_SELECTED_NIVO_STATION](state, station) {
+    if (station) {
+      const f = state.posteNivo
+        .getSource()
+        .getFeatures()
+        .find((f) => f.get('nss_id') === station.properties.nss_id)
+      state.selectedFeatures.posteNivo.byApp.clear()
+      state.selectedFeatures.posteNivo.byApp.push(f)
+    }
   },
 }

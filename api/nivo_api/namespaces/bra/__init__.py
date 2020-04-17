@@ -1,1 +1,1 @@
-from .routes import bra_api
+from .namespace import bra_api

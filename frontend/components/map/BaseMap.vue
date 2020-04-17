@@ -47,7 +47,7 @@
               :key="layer.get('name')"
               :value="layer.get('name')"
               name="baselayers-radio"
-              >{{ layer.get('label') }} {{ layer.getVisible() }}
+              >{{ layer.get('label') }}
             </b-form-radio>
           </b-form-radio-group>
         </b-form-group>
@@ -80,7 +80,7 @@ import {
   mapMutationTypes,
   mapGettersTypes,
   mapActionsTypes,
-} from '../../modules/stateTypes'
+} from '~/modules/stateTypes'
 import 'ol/ol.css'
 
 export default {
@@ -150,15 +150,21 @@ export default {
   background-color: white;
 }
 
-.map-panel {
-  position: absolute;
-  display: inline-block;
-  top: 2em;
-  right: 2em;
-  text-align: left;
+.ol-control button:hover,
+.ol-control button:focus {
+  color: black;
+  background-color: darkgray;
 }
 
-.captialize-text {
-  text-transform: capitalize;
-}
+/*.map-panel {*/
+/*  position: absolute;*/
+/*  display: inline-block;*/
+/*  top: 2em;*/
+/*  right: 2em;*/
+/*  text-align: left;*/
+/*}*/
+
+/*.captialize-text {*/
+/*  text-transform: capitalize;*/
+/*}*/
 </style>

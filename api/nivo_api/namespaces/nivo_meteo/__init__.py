@@ -1,1 +1,1 @@
-from .routes import nivo_meteo, NivoSensorStationResource, OneNivoSensorStationResource
+from .namespace import nivo_meteo
