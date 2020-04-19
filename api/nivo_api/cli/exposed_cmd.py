@@ -61,7 +61,7 @@ def import_last_nivo_data():
     # process it
     # import it.
     last_nivo = get_last_nivo_date()
-    if check_nivo_doesnt_exist(last_nivo):
+    if check_nivo_doesnt_exist(last_nivo.nivo_date):
         downloaded_nivo = download_nivo(last_nivo)
         import_nivo(downloaded_nivo)
 

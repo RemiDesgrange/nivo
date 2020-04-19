@@ -141,13 +141,13 @@ def create_new_unknown_nivo_sensor_station(
     return connection.execute(ins).first()
 
 
-def get_last_nivo_date() -> date:
+def get_last_nivo_date() -> "NivoDate":
     url = Config.METEO_FRANCE_LAST_NIVO_JS_URL
     res = requests.get(url, allow_redirects=False)
     if res.status_code != 200:
         raise AssertionError("Impossible to fetch last nivo data from meteofrance url")
     date_str = re.search("jour=(.*);", res.text).group(1)  # type: ignore
-    return datetime.strptime(date_str, "%Y%m%d").date()
+    return NivoDate(is_archive=False, nivo_date=datetime.strptime(date_str, "%Y%m%d").date())
 
 
 def check_nivo_doesnt_exist(nivo_date: date) -> bool:
