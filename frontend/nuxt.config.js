@@ -75,6 +75,10 @@ export default {
     icons: true,
   },
   sentry: {
+    config: {
+      environment: process.env.ENV || 'production',
+      release: process.env.COMMIT_REF || process.env.npm_package_version,
+    },
     publishRelease: true,
   },
 }

@@ -15,10 +15,19 @@ $ npm run dev
 
 # build for production and launch server
 $ npm run build
-$ npm run start
-
-# generate static project
-$ npm run generate
 ```
 
 For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
+
+## Sentry setup
+
+When [sentry](https://sentry.io) is used. `npm run build` will send the release to sentry.
+
+In order to do it properly you need several environment variables :
+
+* `SENTRY_DSN`: find in the sentry project settings
+* `SENTRY_PROJECT`: your project slug
+* `SENTRY_ORG`: your org slug
+* `SENTRY_AUTH_TOKEN`: you need to create a token [here](https://sentry.io/settings/account/api/auth-tokens/) and then fill it.
+
+

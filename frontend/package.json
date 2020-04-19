@@ -1,6 +1,6 @@
 {
   "name": "nivo-front",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Frontend of nivo application",
   "author": "Rémi Desgrange",
   "private": true,
