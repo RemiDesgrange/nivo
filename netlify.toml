@@ -2,4 +2,4 @@
 [build]
 base = "frontend/"
 publish = "dist/"
-command = "npm run generate"
+command = "npm run build"
