@@ -1,6 +1,6 @@
 #!/bin/bash
 
-init_db --drop
+init_db
 import_massifs
 import_nivo_sensor_station
 import_flowcapt_station
