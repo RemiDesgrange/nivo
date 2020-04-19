@@ -4,7 +4,7 @@ init_db
 import_massifs
 import_nivo_sensor_station
 import_flowcapt_station
-if [[ $ENV=="DEV" ]]; then
+if [[ $ENV == "DEV" ]]; then
     echo "Dev env importing last nivo data dn bra"
     import_last_nivo_data
     import_bra 2019-01-01

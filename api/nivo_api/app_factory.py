@@ -3,8 +3,8 @@ from flask import Flask
 from flask_restx import Api, Namespace
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
+from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.utils import find_modules, import_string
-from werkzeug.contrib.fixers import ProxyFix
 from flask_cors import CORS
 import logging
 
