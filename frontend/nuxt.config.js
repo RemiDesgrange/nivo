@@ -27,7 +27,7 @@ export default {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: [{ src: '@/plugins/highcharts', ssr: true }],
+  plugins: ['@/plugins/highcharts',],
   /*
    ** Nuxt.js dev-modules
    */
