@@ -15,4 +15,4 @@ for = "/*"
 [[redirects]]
 for = "/*"
 to = "/"
-status = "200"
+status = 200
