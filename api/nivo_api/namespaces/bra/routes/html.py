@@ -114,7 +114,9 @@ class GenerateBraHmlByDateResource(Resource):
                 )
             except ValueError:
                 # strptime fail
-                bra_api.abort(HTTPStatus.NOT_FOUND, "BRA for this date or name cannot be found.")
+                bra_api.abort(
+                    HTTPStatus.NOT_FOUND, "BRA for this date or name cannot be found."
+                )
 
     def _transform_bra(self, bra: _Element) -> str:
         try:
@@ -148,5 +150,5 @@ class ImagesResource(Resource):
         cur_dir = os.path.dirname(os.path.abspath(__file__))
         if massif:
             assets.replace(massif, "")
-        filename = resource_filename("nivo_api", "static/"+assets)
+        filename = resource_filename("nivo_api", "static/" + assets)
         return send_file(filename)

@@ -91,7 +91,7 @@ function _setOpacityInRGBA(color, opacity) {
  * @returns {Style}
  */
 export function massifsStyleFunc(feature) {
-  const risk = feature.get('latest_risk')
+  const risk = feature.get('latest_record').max_risk
   const color = {
     '5': 'rgba(254, 5, 0, 1)',
     '4': 'rgba(254, 35, 32, 1)',

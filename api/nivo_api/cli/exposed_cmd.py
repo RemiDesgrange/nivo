@@ -86,7 +86,6 @@ def import_all_nivo_data():
                 log.debug(e)
 
 
-
 @click.command()
 def import_nivo_sensor_station():
     # this need refactor
@@ -148,7 +147,7 @@ def import_last_bra():
 
 
 @click.command()
-@click.argument("date", type=click.DateTime(["%Y-%m-%d"]))  # type: ignore
+@click.argument("bra_date", type=click.DateTime(["%Y-%m-%d"]))  # type: ignore
 @time_elapsed()
 def import_bra(bra_date):
     """
@@ -179,7 +178,7 @@ def import_bra(bra_date):
 @time_elapsed()
 def import_all_bra():
     """
-    Same as `import_bra` but we requst from
+    Same as `import_bra` but we request from March 2016 to now.
     """
     start_date = date(year=2016, month=3, day=10)
     date_range = [

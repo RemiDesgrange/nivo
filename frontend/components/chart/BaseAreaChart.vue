@@ -16,6 +16,7 @@ export default {
       default: 'Inconnu',
     },
     yAxisText: { type: String, default: 'Inconnu' },
+    yAxisLabel: { type: String, default: '{value} m' },
     pointStart: {
       type: Number,
       default: moment().utc().valueOf(),
@@ -54,6 +55,9 @@ export default {
         yAxis: {
           title: {
             text: this.yAxisText,
+          },
+          labels: {
+            format: this.yAxisLabel,
           },
         },
         plotOptions: {

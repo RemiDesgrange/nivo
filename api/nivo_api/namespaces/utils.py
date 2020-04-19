@@ -20,7 +20,7 @@ class EnumField(fields.Raw):
     __schema_type__ = "string"
 
     def format(self, value: Enum) -> str:
-        return str(value).split(".")[-1]
+        return str(value)
 
 
 class GeometryField(fields.Raw):

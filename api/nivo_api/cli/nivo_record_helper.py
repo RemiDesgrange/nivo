@@ -1,4 +1,4 @@
-from  dataclasses import dataclass
+from dataclasses import dataclass
 import io
 import logging
 import re
@@ -51,6 +51,7 @@ class ANivoCsv(ABC):
         """
         Before importing to db, change invalid value
         """
+
         def remove_empty_column(line: Dict) -> Dict:
             return {k: v for k, v in line.items() if k != ""}
 
@@ -72,6 +73,7 @@ class ANivoCsv(ABC):
         def parse_date(line: Dict) -> Dict:
             line["nr_date"] = datetime.strptime(line["nr_date"], "%Y%m%d%H%M%S")
             return line
+
         filtered_csv = map(remove_empty_column, self.nivo_csv)
         filtered_csv = map(remove_unvalid_int, filtered_csv)
         filtered_csv = map(change_column_name, filtered_csv)
@@ -147,7 +149,9 @@ def get_last_nivo_date() -> "NivoDate":
     if res.status_code != 200:
         raise AssertionError("Impossible to fetch last nivo data from meteofrance url")
     date_str = re.search("jour=(.*);", res.text).group(1)  # type: ignore
-    return NivoDate(is_archive=False, nivo_date=datetime.strptime(date_str, "%Y%m%d").date())
+    return NivoDate(
+        is_archive=False, nivo_date=datetime.strptime(date_str, "%Y%m%d").date()
+    )
 
 
 def check_nivo_doesnt_exist(nivo_date: date) -> bool:
@@ -190,22 +194,26 @@ class NivoDate:
     is_archive: bool
     nivo_date: date
 
+
 def get_all_nivo_date() -> List["NivoDate"]:
     """
     create nivo date to downloads programmaticaly
     """
+
     def generate_archive_date_range():
         first_archived_record = date(year=2010, month=12, day=1)
         last_archived_record = date.today() - timedelta(days=15)
         total_months = lambda dt: dt.month + 12 * dt.year
         months_list = []
-        for tot_m in range(total_months(first_archived_record)-1, total_months(last_archived_record)):
+        for tot_m in range(
+            total_months(first_archived_record) - 1, total_months(last_archived_record)
+        ):
             y, m = divmod(tot_m, 12)
-            months_list.append(NivoDate(is_archive=True, nivo_date=date(y, m+1, 1)))
+            months_list.append(NivoDate(is_archive=True, nivo_date=date(y, m + 1, 1)))
         return months_list
 
     nivo_list_archived = generate_archive_date_range()
-    start_date = date.today()-timedelta(days=15)
+    start_date = date.today() - timedelta(days=15)
     nivo_list = [
         NivoDate(is_archive=False, nivo_date=(date.today() - timedelta(days=x)))
         for x in range(0, (date.today() - start_date).days + 1)

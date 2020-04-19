@@ -1,4 +1,3 @@
-import json
 from typing import Optional, Dict, List, Union
 from uuid import UUID
 
@@ -6,7 +5,7 @@ from flask import jsonify
 from flask_restx import Resource, marshal
 from flask_restx._http import HTTPStatus
 from geojson import FeatureCollection, Feature
-from sqlalchemy import select, Date, func, desc, text
+from sqlalchemy import select, Date, func, true
 from sqlalchemy.orm import subqueryload
 
 from nivo_api.core.api_schema.geojson import (
@@ -14,9 +13,15 @@ from nivo_api.core.api_schema.geojson import (
 )
 from nivo_api.core.db.connection import connection_scope, session_scope
 from nivo_api.core.db.models.orm.bra import Massif, Department, Zone, BraRecord
+from nivo_api.core.db.models.sql.bra import (
+    DepartmentTable,
+    BraRecordTable,
+    MassifTable,
+    RiskTable,
+)
 from nivo_api.namespaces.bra.models import bra_model, zone_model, department_model
 from nivo_api.namespaces.bra.namespace import bra_api
-
+from nivo_api.namespaces.utils import GeometryField
 
 massif_record_parser = bra_api.parser()
 massif_record_parser.add_argument("limit", type=int, required=False, default=50)
@@ -34,7 +39,7 @@ class MassifsRecordRessource(Resource):
             res = (
                 sess.query(BraRecord)
                 .filter(BraRecord.br_massif == massif_id)
-                .order_by(desc(BraRecord.br_production_date))
+                .order_by(BraRecord.br_production_date.desc())
                 .limit(args["limit"])
                 .options(subqueryload(BraRecord.risks))
                 .options(subqueryload(BraRecord.snow_records))
@@ -81,7 +86,7 @@ class LastBraRecordResource(Resource):
             s = (
                 sess.query(BraRecord)
                 .filter(BraRecord.br_massif == massif_id)
-                .order_by(desc(BraRecord.br_production_date))
+                .order_by(BraRecord.br_production_date.desc())
                 .limit(1)
                 .options(subqueryload(BraRecord.risks))
                 .options(subqueryload(BraRecord.snow_records))
@@ -135,47 +140,71 @@ class MassifResource(Resource):
     @bra_api.response(HTTPStatus.OK, "OK", FeatureCollectionSchema)
     def get(self, massif_id: UUID = None) -> Dict:
         with connection_scope() as con:
-            whereclause = ""
-            if massif_id:
-                whereclause = f"m_id = {massif_id}"
+            # alias of table for better reading
+            br = BraRecordTable.alias("br")
+            m = MassifTable.alias("m")
+            d = DepartmentTable.alias("d")
 
-            # no idea how to do this in sqlalchemy
-            query = text(
-                f"""
-            SELECT result.* FROM bra.massif m
-                JOIN LATERAL (
-                    SELECT ST_AsGeoJSON(m.the_geom) as the_geom, 
-m.m_id, 
-m.m_name, 
-d.d_id, 
-d.d_name, 
-d.d_number,
-r.br_max_risk, 
-r.br_production_date::date,
-r.br_dangerous_slopes
-FROM bra.record r
-                        join bra.department d on (d.d_id=m_department)
-                        where (m.m_id=r.br_massif)
-                    ORDER BY r.br_production_date DESC limit 1
-                    ) result on true
-                {whereclause}
-                ORDER BY m.m_id, result.br_production_date DESC
-            """
+            # column we want in the lateral
+            lateral_column = [
+                m.c.m_id,
+                m.c.m_name,
+                m.c.the_geom,
+                br.c.br_id,
+                br.c.br_production_date,
+                br.c.br_expiration_date,
+                br.c.br_is_amended,
+                br.c.br_max_risk,
+                br.c.br_risk_comment,
+                br.c.br_dangerous_slopes,
+                br.c.br_dangerous_slopes_comment,
+                br.c.br_opinion,
+                br.c.br_snow_quality,
+                br.c.br_snow_stability,
+                br.c.br_last_snowfall_date,
+                br.c.br_snowlimit_south,
+                br.c.br_snowlimit_north,
+            ]
+            # select the records by production date (desc mean latest).
+            lateral = (
+                select(lateral_column)
+                .where(m.c.m_id == br.c.br_massif)
+                .order_by(br.c.br_production_date.desc())
+                .limit(1)
+                .lateral()
             )
+            # selecting everything wrapped up. Also joining on department
+            query = (
+                select([lateral, d.c.d_id, d.c.d_name, d.c.d_number,]).select_from(
+                    m.join(lateral, true()).join(d, d.c.d_id == m.c.m_department)
+                )
+                .order_by(m.c.m_id, lateral.c.br_production_date.desc())
+            )
+            # if any
+            if massif_id:
+                query = query.where(m.c.m_id == massif_id)
+            lateral_results = con.execute(query).fetchall()
 
             features = list()
-            for res in con.execute(query):
+            for res in lateral_results:
                 features.append(
                     Feature(
-                        geometry=json.loads(res.the_geom),
+                        geometry=GeometryField().format(res.the_geom),
                         properties={
                             "id": res.m_id,
                             "name": res.m_name,
-                            "latest_risk": res.br_max_risk,
-                            "latest_date": res.br_production_date,
-                            "latest_dangerous_slopes": res.br_dangerous_slopes[
-                                1:-1
-                            ].split(","),
+                            "latest_record": {
+                                "max_risk": res.br_max_risk,
+                                "date": res.br_production_date,
+                                "dangerous_slopes": [
+                                    str(ds) for ds in res.br_dangerous_slopes
+                                ],
+                                "snowlimit_south": res.br_snowlimit_south,
+                                "snowlimit_north": res.br_snowlimit_north,
+                                "risks": [
+
+                                ]
+                            },
                             "department": {
                                 "id": res.d_id,
                                 "name": res.d_name,

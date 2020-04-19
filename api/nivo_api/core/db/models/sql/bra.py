@@ -34,6 +34,9 @@ class Direction(Enum):
     N = "N"
     ALL = "_"
 
+    def __str__(self) -> str:
+        return self.value
+
 
 # impl for dangerous slopes direction. Cannot subclass Enum
 DangerousSlopes = Direction
@@ -62,12 +65,18 @@ class WeatherType(IntEnum):
     FREEZING = 17
     SEA_OF_CLOUDS = 18
 
+    def __str__(self) -> str:
+        return str(self.value)
+
 
 class RiskEvolution(IntEnum):
     STABLE = 0
     UP = 1
     DOWN = -1
     UNKNOWN = -2
+
+    def __str__(self) -> str:
+        return str(self.value)
 
 
 # french department. The polygon is extracted from OSM.

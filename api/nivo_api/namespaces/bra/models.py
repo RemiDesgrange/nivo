@@ -4,6 +4,15 @@ from nivo_api.core.api_schema.geojson import (
     Feature as FeatureSchema,
     FeatureCollection as FeatureCollectionSchema,
 )
+            #             SELECT result.* FROM bra.massif m
+            #                 JOIN LATERAL (
+            #                     SELECT ST_AsGeoJSON(m.the_geom) as the_geom,
+            # m.m_id,
+            # m.m_name,
+            # d.d_id,
+            # d.d_name,
+            # d.d_number,
+            # r.br_max_risk,
 from nivo_api.namespaces.utils import UUIDField, EnumField
 from .namespace import bra_api
 

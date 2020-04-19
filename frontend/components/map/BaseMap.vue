@@ -1,5 +1,5 @@
 <template>
-  <div id="map-container">
+  <div>
     <!--      <vl-map-->
     <!--        id="map"-->
     <!--        ref="map"-->
@@ -137,7 +137,7 @@ export default {
 
 #map {
   width: 100%;
-  height: 500px;
+  height: 50vh;
 }
 
 .ol-control-layer-switcher {
