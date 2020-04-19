@@ -11,7 +11,7 @@ both for nivo data and for BRA. So grab the last one if you develop (or a partic
 
 ### Start the db with docker (+ the app)
 
-This command will start the app and the db with port exposed. the app is started but we 
+This command will start the app and the db with port exposed. the app is started, but we 
 won't use it. You can kill it if you want.
 ```bash
 docker-compose  -f docker-compose.dev.yml -f docker-compose.yml -d up

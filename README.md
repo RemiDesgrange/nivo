@@ -22,7 +22,7 @@ We aim to display three type of data.
 
 ## API
 
-openapi, powered by python(3). Tested on python3.7 and 3.6.
+openapi, powered by python(3). Tested on python3.7 and 3.8.
 
 ### Dev
 
@@ -59,3 +59,5 @@ See [README.md](frontend) in frontend folder
 
 Docker. But it's quite standard python. So you can run it with anything that can run WSGI server
 (Apache, gunicorn, uwsgi, waitress, etc...).
+
+Frontend is hosted on Netlify. But anything that is able to serve HTML/CSS/JS file throught HTTP can host the frontend. 

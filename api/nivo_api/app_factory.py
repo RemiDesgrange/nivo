@@ -4,6 +4,7 @@ from flask_restx import Api, Namespace
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 from werkzeug.utils import find_modules, import_string
+from werkzeug.contrib.fixers import ProxyFix
 from flask_cors import CORS
 import logging
 
@@ -12,6 +13,8 @@ from nivo_api.core.helpers import UUIDEncoder
 
 def create_app() -> Flask:
     app = Flask(__name__)
+    # this patch fix problem with reverse proxy and take into account X-Forward-* headers
+    app.wsgi_app = ProxyFix(app.wsgi_app)
     return app
 
 
