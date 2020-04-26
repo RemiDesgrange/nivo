@@ -34,7 +34,8 @@
                 <b-icon
                   id="lastDataIndicatorKo"
                   :style="{ color: 'red' }"
-                  icon="times"
+                  icon="x"
+                  font-scale="2"
                 />
               </dd>
               <dd v-else>
@@ -43,6 +44,7 @@
                   id="lastDataIndicatorOk"
                   :style="{ color: 'green' }"
                   icon="check"
+                  font-scale="1.5"
                 />
               </dd>
             </dl>

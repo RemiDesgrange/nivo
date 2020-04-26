@@ -1,4 +1,3 @@
-import json
 from datetime import timedelta, datetime
 from json import JSONDecodeError
 from urllib.parse import urlencode
@@ -11,6 +10,7 @@ from nivo_api.core.api_schema.geojson import FeatureCollection
 from nivo_api.core.db.connection import connection_scope
 from nivo_api.core.db.models.sql.flowcapt import FlowCaptStationTable
 from nivo_api.namespaces.flowcapt import flowcapt_api
+from nivo_api.namespaces.flowcapt.models import FlowCaptRssToJSON
 from nivo_api.settings import Config
 
 
@@ -34,8 +34,8 @@ class FlowCaptMeasureResource(Resource):
     def get(self, station_id: str) -> dict:
         url = _build_query(station_id, 168)
         try:
-            res = requests.get(url).json()
-            return res
+            res = FlowCaptRssToJSON(url)
+            return res()
         except JSONDecodeError:
             return abort(404, "Measure for this station_id cannot be found.")
 
@@ -61,5 +61,5 @@ class FlowCaptMeasureWithTimestamp(Resource):
 
 def _build_query(station: str, duration: int) -> str:
     url = Config.FLOWCAPT_MEASURE_URL
-    qs = urlencode({"d": duration, "s": station})
-    return f"{url}&{qs}"
+    qs = urlencode({"d": duration, "s": station, "f": "rss"})
+    return f"{url}?{qs}"

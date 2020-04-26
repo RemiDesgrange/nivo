@@ -1,21 +1,25 @@
 <template>
   <div>
-    <base-area-chart
-      :point-start="lastData()"
-      :series="chartSnowLevelOptions"
-      title="Hauteur de neige"
-    />
-    <base-area-chart
-      :point-start="lastData()"
-      :series="chartWindOptions"
-      title="Données vent"
-    />
-    <base-area-chart :options="chartAirTempOptions" />
-    <div v-if="nivoDataLoading || nivoStationLoading">
-      <div class="d-flex justify-content-center mb-3">
-        <b-spinner style="width: 8rem; height: 8rem;" type="grow"></b-spinner>
-      </div>
-    </div>
+    <b-overlay :show="show">
+      <base-area-chart
+        :point-start="lastData()"
+        :series="chartSnowLevelOptions"
+        title="Hauteur de neige"
+      />
+    </b-overlay>
+    <b-overlay :show="show">
+      <base-area-chart
+        :point-start="lastData()"
+        :series="chartWindOptions"
+        title="Données vent"
+      />
+    </b-overlay>
+    <b-overlay :show="show">
+      <base-area-chart
+        :point-start="lastData()"
+        :series="chartAirTempOptions"
+      />
+    </b-overlay>
   </div>
 </template>
 
@@ -29,6 +33,9 @@ export default {
     BaseAreaChart,
   },
   computed: {
+    show() {
+      return this.nivoDataLoading || this.nivoStationLoading
+    },
     ...mapState([
       'nivoData',
       'nivoStations',

@@ -1,75 +1,8 @@
 <template>
   <div>
-    <!--      <vl-map-->
-    <!--        id="map"-->
-    <!--        ref="map"-->
-    <!--        :load-tiles-while-animating="true"-->
-    <!--        :load-tiles-while-interacting="true"-->
-    <!--        data-projection="EPSG:4326"-->
-    <!--      >-->
-    <!--        <vl-view-->
-    <!--          :zoom.sync="zoom"-->
-    <!--          :center.sync="center"-->
-    <!--          :rotation.sync="rotation"-->
-    <!--        ></vl-view>-->
-    <!--        <vl-layer-group id="mapBaseLayersGroup">-->
-    <!--          <vl-layer-tile-->
-    <!--            v-for="layer in baseLayers"-->
-    <!--            :key="layer.layerName"-->
-    <!--            :visible="layer.visible"-->
-    <!--          >-->
-    <!--            <component :is="layer.cmp" v-bind="layer" />-->
-    <!--          </vl-layer-tile>-->
-    <!--        </vl-layer-group>-->
-
-    <!--        <vl-layer-group id="mapSlopesLayerGroup">-->
-    <!--          <vl-layer-tile :opacity="slopesOpacity" :visible="slopes.visible">-->
-    <!--            <component :is="slopes.cmp" v-bind="slopes" />-->
-    <!--          </vl-layer-tile>-->
-    <!--        </vl-layer-group>-->
-
-    <!--        <vl-layer-group id="mapFeaturesLayersGroup">-->
-    <!--          <slot></slot>-->
-    <!--        </vl-layer-group>-->
-    <!--      </vl-map>-->
     <div id="map"></div>
     <slot></slot>
-    <div class="ol-control ol-control-layer-switcher">
-      <b-button v-b-toggle.collapse-layer-tree variant="light" size="sm">
-        <!--                  <font-awesome-icon icon="layer-group" />-->
-        <b-icon-layers />
-      </b-button>
-      <b-collapse id="collapse-layer-tree">
-        <b-form-group label="Fond de plan">
-          <b-form-radio-group v-model="selectBaseLayer" stacked>
-            <b-form-radio
-              v-for="layer in GET_BASE_LAYERS"
-              :key="layer.get('name')"
-              :value="layer.get('name')"
-              name="baselayers-radio"
-              >{{ layer.get('label') }}
-            </b-form-radio>
-          </b-form-radio-group>
-        </b-form-group>
-        <hr />
-        <p>Pentes</p>
-        <b-form-checkbox v-model="slopesVisibility" name="slopes" switch>
-          IGN 30°/40°/45°
-        </b-form-checkbox>
-        <b-form-input
-          v-model="slopesOpacity"
-          type="range"
-          min="0"
-          max="1"
-          step="0.1"
-        ></b-form-input>
-        <hr />
-        <p>Couche</p>
-        <b-form-checkbox switch>
-          test
-        </b-form-checkbox>
-      </b-collapse>
-    </div>
+    <ol-layer-tree />
   </div>
 </template>
 
@@ -82,8 +15,12 @@ import {
   mapActionsTypes,
 } from '~/modules/stateTypes'
 import 'ol/ol.css'
+import OlLayerTree from '~/components/map/OlLayerTree'
 
 export default {
+  components: {
+    OlLayerTree,
+  },
   computed: {
     ...mapGetters('map', [
       mapGettersTypes.GET_BASE_LAYERS,

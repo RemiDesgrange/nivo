@@ -25,6 +25,7 @@ export default {
       overlay: new Overlay({
         autoPan: true,
         autoPanAnimation: false,
+        positioning: 'center-right',
       }),
     }
   },

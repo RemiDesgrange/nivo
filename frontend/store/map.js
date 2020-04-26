@@ -42,11 +42,12 @@ function _getIgnTileGrid() {
 }
 
 export const state = () => ({
-  map: null, // a new map is created everytime you reload the basemap component.
+  map: new OlMap(),
   view: new View({
-    projection: 'EPSG:4326',
-    center: [2.438, 46.528],
-    zoom: 5,
+    projection: 'EPSG:3857',
+    // center: [2.438, 46.528],
+    center: [465455.0376565846, 6020157.832574354],
+    zoom: 5.8,
   }),
   baseLayers: new LayerGroup({
     name: 'baselayers',
@@ -177,14 +178,11 @@ export const getters = {
 
 export const actions = {
   [mapActionsTypes.INIT_MAP]({ commit, state }) {
-    commit(types.CREATE_MAP)
-    commit(types.SET_TARGET, 'map')
-    commit(types.SET_VIEW, state.view)
     commit(types.ADD_LAYER, state.baseLayers)
-    commit(types.ADD_LAYER, state.slopes)
-    commit(types.ADD_LAYER, state.massifs)
-    commit(types.ADD_LAYER, state.flowcapt)
-    commit(types.ADD_LAYER, state.posteNivo)
+    commit(types.SET_LAYER, state.slopes)
+    commit(types.SET_LAYER, state.massifs)
+    commit(types.SET_LAYER, state.flowcapt)
+    commit(types.SET_LAYER, state.posteNivo)
     // interactions
     const layersWithInteratcions = ['flowcapt', 'posteNivo', 'massifs']
     layersWithInteratcions.forEach((e) => {
@@ -214,6 +212,8 @@ export const actions = {
         })
       )
     })
+    commit(types.SET_TARGET, document.getElementById('map'))
+    commit(types.SET_VIEW, state.view)
   },
   [mapActionsTypes.ADD_FEATURES]({ commit }, { layer, features }) {
     commit('ADD_FEATURES', { layer, features })
@@ -221,9 +221,6 @@ export const actions = {
 }
 
 export const mutations = {
-  [types.CREATE_MAP](state) {
-    state.map = new OlMap()
-  },
   [types.SET_TARGET](state, target) {
     state.map.setTarget(target)
   },
@@ -238,6 +235,9 @@ export const mutations = {
     if (!isAlreadyExist) {
       state.map.addLayer(layer)
     }
+  },
+  [types.SET_LAYER](state, layer) {
+    layer.setMap(state.map)
   },
   [types.REMOVE_LAYER](state, layer) {
     state.map.removeLayer(layer)
@@ -301,9 +301,12 @@ export const mutations = {
   [types.SET_RAW_GEOJSON](state, { layerName, geojson }) {
     try {
       state[layerName].getSource().clear()
-      state[layerName]
-        .getSource()
-        .addFeatures(new GeoJSON().readFeatures(geojson))
+      state[layerName].getSource().addFeatures(
+        new GeoJSON().readFeatures(geojson, {
+          dataProjection: 'EPSG:4326',
+          featureProjection: 'EPSG:3857',
+        })
+      )
     } catch (e) {
       console.warn(`cannot set geojson in ${layerName}`)
     }
@@ -321,8 +324,22 @@ export const mutations = {
         }
       })
   },
+  // TODO need to be actions that go fetch the data if they don't exist !!
+  [types.SET_MASSIFS_VISIBILITY](state, value) {
+    state.massifs.setVisible(value)
+    state.map.render()
+  },
+  [types.SET_FLOWCAPT_VISIBILITY](state, value) {
+    state.flowcapt.setVisible(value)
+    state.map.render()
+  },
+  [types.SET_NIVO_STATION_VISIBILITY](state, value) {
+    state.posteNivo.setVisible(value)
+    state.map.render()
+  },
   [types.SET_SLOPES_VISIBILITY](state, value) {
     state.slopes.setVisible(value)
+    state.map.render() // it seems that render needs to be trigger in case of visible no idea why.
   },
   [types.SET_SLOPES_OPACITY](state, value) {
     state.slopes.setOpacity(value)
