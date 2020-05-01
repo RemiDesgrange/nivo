@@ -14,7 +14,7 @@ from nivo_api.core.helpers import UUIDEncoder
 def create_app() -> Flask:
     app = Flask(__name__)
     # this patch fix problem with reverse proxy and take into account X-Forward-* headers
-    app.wsgi_app = ProxyFix(app.wsgi_app) # type: ignore
+    app.wsgi_app = ProxyFix(app.wsgi_app)  # type: ignore
     return app
 
 

@@ -175,7 +175,8 @@ class MassifResource(Resource):
             )
             # selecting everything wrapped up. Also joining on department
             query = (
-                select([lateral, d.c.d_id, d.c.d_name, d.c.d_number,]).select_from(
+                select([lateral, d.c.d_id, d.c.d_name, d.c.d_number,])
+                .select_from(
                     m.join(lateral, true()).join(d, d.c.d_id == m.c.m_department)
                 )
                 .order_by(m.c.m_id, lateral.c.br_production_date.desc())
@@ -201,9 +202,7 @@ class MassifResource(Resource):
                                 ],
                                 "snowlimit_south": res.br_snowlimit_south,
                                 "snowlimit_north": res.br_snowlimit_north,
-                                "risks": [
-
-                                ]
+                                "risks": [],
                             },
                             "department": {
                                 "id": res.d_id,

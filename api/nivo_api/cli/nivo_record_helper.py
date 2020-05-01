@@ -5,7 +5,6 @@ import re
 from abc import ABC
 from csv import DictReader
 from datetime import datetime, date, timedelta
-from ftplib import FTP
 from typing import List, Dict
 
 import requests
@@ -42,7 +41,7 @@ class ANivoCsv(ABC):
         logger.debug(f"requests : {self.download_url}")
         res = requests.get(self.download_url, allow_redirects=False)
         if res.status_code == 302:
-            requests.HTTPError("Cannot found Nivo record", response=res)
+            raise requests.HTTPError("Cannot found Nivo record", response=res)
         res.raise_for_status()
         self.nivo_csv = DictReader(io.StringIO(res.text), delimiter=";")
         return self.nivo_csv

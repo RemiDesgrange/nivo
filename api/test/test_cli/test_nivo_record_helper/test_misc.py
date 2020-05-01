@@ -1,4 +1,5 @@
 import os
+from csv import DictReader
 from datetime import date
 from uuid import uuid4, UUID
 
@@ -11,7 +12,7 @@ from nivo_api.cli import get_last_nivo_date, check_nivo_doesnt_exist, download_n
 from nivo_api.cli.nivo_record_helper import (
     ArchiveNivoCss,
     NivoCsv,
-    create_new_unknown_nivo_sensor_station,
+    create_new_unknown_nivo_sensor_station, NivoDate,
 )
 from nivo_api.core.db.connection import connection_scope
 from nivo_api.core.db.models.sql.nivo import SensorStationTable, NivoRecordTable
@@ -60,7 +61,7 @@ class TestGetLastNivoDate:
             responses.GET, Config.METEO_FRANCE_LAST_NIVO_JS_URL, body="jour=20190101;"
         )
         res = get_last_nivo_date()
-        assert date(2019, 1, 1) == res
+        assert NivoDate(False, date(2019, 1, 1)) == res
 
 
 class TestCheckNivoDoesntExist:
@@ -103,7 +104,7 @@ class TestDownloadNivo:
             responses.add(
                 responses.GET, url, body=f.read(), content_type="application/x-gzip"
             )
-        r = download_nivo(date(2017, 1, 1), is_archive=True)
+        r = download_nivo(NivoDate(is_archive=True, nivo_date=date(2017, 1, 1)))
         assert isinstance(r, ArchiveNivoCss)
         assert r.nivo_date == date(2017, 1, 1)
 
@@ -112,7 +113,7 @@ class TestDownloadNivo:
         url = f"{Config.METEO_FRANCE_NIVO_BASE_URL}/nivo.20190812.csv"
         with open(os.path.join(CURRENT_DIR, "test_data/nivo.20190812.csv")) as f:
             responses.add(responses.GET, url, body=f.read(), content_type="text/plain")
-        r = download_nivo(date(2019, 8, 12))
+        r = download_nivo(NivoDate(is_archive=False, nivo_date=date(2019, 8, 12)))
         assert isinstance(r, NivoCsv)
         assert r.nivo_date == date(2019, 8, 12)
 
@@ -121,18 +122,17 @@ class TestDownloadNivo:
         url = f"{Config.METEO_FRANCE_NIVO_BASE_URL}/nivo.20190812.csv"
         responses.add(responses.GET, url, status=503)
         with pytest.raises(HTTPError):
-            download_nivo(date(2019, 8, 12))
+            download_nivo(NivoDate(is_archive=False, nivo_date=date(2019, 8, 12)))
 
 
 class TestImportNivo:
+    # if this function fail we don't care. It just normalize and find the pk of the station.
     def test_import_nivo(self):
-        raise NotImplementedError()
+        with open(os.path.join(CURRENT_DIR, "test_data/nivo.20190812.csv")) as f:
+            nivo_csv = DictReader(f, delimiter=";")
+            n = NivoCsv(NivoDate(is_archive=False, nivo_date=date(2019, 8, 12)))
+            n.nivo_csv = nivo_csv
 
-    def test_normalize_fail(self):
-        raise NotImplementedError()
-
-    def test_find_fk_fail(self):
-        raise NotImplementedError()
 
 
 class TestCreateNewUnknownNivoSensorStation:
@@ -152,8 +152,3 @@ class TestCreateNewUnknownNivoSensorStation:
                 r = create_new_unknown_nivo_sensor_station(10, con)
                 assert isinstance(r.nss_id, UUID)
                 create_new_unknown_nivo_sensor_station(10, con)
-
-
-def test_get_all_nivo_date():
-    # need to mock FTP in order to do that.
-    raise NotImplementedError()

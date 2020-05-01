@@ -12,31 +12,34 @@ class FlowCaptRssToJSON:
     """
     JSON from isaw is broken
     """
+
     def __init__(self, url: str) -> None:
         self.url = url
 
     def __call__(self, *args, **kwargs) -> dict:
         req = feedparser.parse(self.url)
-        print(req.keys())
-        data = self._parse_headers(req['feed'])
-        measures = self._parse_measures(req['entries'])
-        data['measures'] = measures
-        return data
+        try:
+            data = self._parse_headers(req["feed"])
+            measures = self._parse_measures(req["entries"])
+            data["measures"] = measures
+            return data
+        except KeyError:
+            raise AssertionError("Wrong data source, cannot parse data")
 
     def _parse_measures(self, entries: list) -> dict:
         measures = dict()
         for entry in entries:
-            measures[entry['title']] = self._parse_numeric(entry['data'].split(','))
+            measures[entry["title"]] = self._parse_numeric(entry["data"].split(","))
         return measures
 
     def _parse_headers(self, feed: dict) -> dict:
         return {
-            "station": feed['title'],
-            "url": feed['link'],
-            "description": feed['subtitle'],
-            "lastdata": feed['lastdata'],
-            "generation": feed['generation'],
-            "generator": feed['generator']
+            "station": feed["title"],
+            "url": feed["link"],
+            "description": feed["subtitle"],
+            "lastdata": feed["lastdata"],
+            "generation": feed["generation"],
+            "generator": feed["generator"],
         }
 
     def _parse_numeric(self, data: List[str]) -> List[Union[float, int]]:
