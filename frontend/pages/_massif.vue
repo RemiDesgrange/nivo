@@ -1,23 +1,23 @@
 <template>
   <div id="app">
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-lg-6 col-md-12 col-sm-12">
+    <b-container fluid>
+      <b-row>
+        <b-col lg="6" md="12" sm="12">
           <bra-data />
-        </div>
-        <div class="col-lg-6 col-md-12 col-sm-12">
-          <div class="col">
+        </b-col>
+        <b-col lg="6" md="12" sm="12">
+          <b-col>
             <base-map>
               <bra-map />
             </base-map>
-          </div>
+          </b-col>
           <div class="w-100"></div>
-          <div class="col">
+          <b-col>
             <bra-chart />
-          </div>
-        </div>
-      </div>
-    </div>
+          </b-col>
+        </b-col>
+      </b-row>
+    </b-container>
   </div>
 </template>
 

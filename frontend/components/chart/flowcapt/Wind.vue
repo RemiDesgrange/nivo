@@ -3,7 +3,11 @@
 </template>
 
 <script>
+import Highcharts from 'highcharts'
+import WindbarbHighcharts from 'highcharts/modules/windbarb'
+
 import FlowCaptChartMixin from '~/components/chart/flowcapt/FlowCaptChartMixin'
+WindbarbHighcharts(Highcharts)
 
 export default {
   mixins: [FlowCaptChartMixin],

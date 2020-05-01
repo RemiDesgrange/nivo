@@ -48,7 +48,7 @@ export default {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ['@/plugins/highcharts'],
+  plugins: [],
   /*
    ** Nuxt.js dev-modules
    */
@@ -59,7 +59,7 @@ export default {
   /*
    ** Nuxt.js modules
    */
-  modules: ['bootstrap-vue/nuxt', '@nuxtjs/axios', '@nuxtjs/sentry'],
+  modules: ['bootstrap-vue/nuxt', '@nuxtjs/axios', '@nuxtjs/moment'], //, '@nuxtjs/sentry'],
   /*
    ** Build configuration
    */
@@ -93,7 +93,43 @@ export default {
     progress: true,
   },
   bootstrapVue: {
-    icons: true,
+    icons: false,
+    componentPlugins: [],
+    directivePlugins: [],
+    components: [
+      'BContainer',
+      'BCol',
+      'BRow',
+      'BFormGroup',
+      'BFormCheckbox',
+      'BFormInput',
+      'BFormRadio',
+      'BFormRadioGroup',
+      'BNavbar',
+      'BNavbarBrand',
+      'BCollapse',
+      'BNavbarNav',
+      'BNavItem',
+      'BJumbotron',
+      'BButton',
+      'BIconLayers',
+      'BCard',
+      'BCardTitle',
+      'BCardText',
+      'BCardBody',
+      'BButtonGroup',
+      'BButtonToolbar',
+      'BInputGroup',
+      'BEmbed',
+      'BLink',
+      'BSpinner',
+      'BTooltip',
+      'BIcon',
+      'BOverlay',
+      'BIconX',
+      'BIconCheck',
+    ],
+    directives: ['VBToggle'],
   },
   sentry: {
     config: {

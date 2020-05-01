@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid">
+  <b-container fluid>
     Texte explicatif de la démarche.
-  </div>
+  </b-container>
 </template>

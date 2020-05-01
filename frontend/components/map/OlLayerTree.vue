@@ -1,7 +1,6 @@
 <template>
   <div class="ol-control ol-control-layer-switcher">
     <b-button v-b-toggle.collapse-layer-tree variant="light" size="sm">
-      <!--                  <font-awesome-icon icon="layer-group" />-->
       <b-icon-layers />
     </b-button>
     <b-collapse id="collapse-layer-tree">
