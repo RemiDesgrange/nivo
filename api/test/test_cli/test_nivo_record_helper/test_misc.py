@@ -12,7 +12,8 @@ from nivo_api.cli import get_last_nivo_date, check_nivo_doesnt_exist, download_n
 from nivo_api.cli.nivo_record_helper import (
     ArchiveNivoCss,
     NivoCsv,
-    create_new_unknown_nivo_sensor_station, NivoDate,
+    create_new_unknown_nivo_sensor_station,
+    NivoDate,
 )
 from nivo_api.core.db.connection import connection_scope
 from nivo_api.core.db.models.sql.nivo import SensorStationTable, NivoRecordTable
@@ -132,7 +133,6 @@ class TestImportNivo:
             nivo_csv = DictReader(f, delimiter=";")
             n = NivoCsv(NivoDate(is_archive=False, nivo_date=date(2019, 8, 12)))
             n.nivo_csv = nivo_csv
-
 
 
 class TestCreateNewUnknownNivoSensorStation:

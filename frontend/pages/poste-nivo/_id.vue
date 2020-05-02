@@ -33,6 +33,47 @@
               <dt>Altitude Station</dt>
               <dd>{{ altitudeStation }}</dd>
             </dl>
+            <hr />
+            <p>Ajouter ou enlever des données</p>
+            <b-overlay :show="nivoDataLoading">
+              <b-button-toolbar key-nav aria-label="Toolbar with button groups">
+                <b-button-group class="mr-1">
+                  <b-button
+                    v-b-tooltip.hover
+                    title="Enlever 30 jours"
+                    @click="remove30days"
+                    >--</b-button
+                  >
+                  <b-button
+                    v-b-tooltip.hover
+                    title="Enlever 1 jours"
+                    @click="remove1day"
+                    >-</b-button
+                  >
+                </b-button-group>
+                <b-input-group class="mr1">
+                  <b-form-input
+                    :value="nivoStationDayLimit"
+                    type="number"
+                    @change="setDays"
+                  />
+                </b-input-group>
+                <b-button-group class="mr-1">
+                  <b-button
+                    v-b-tooltip.hover
+                    title="Ajouter 1 jours"
+                    @click="add1day"
+                    >+</b-button
+                  >
+                  <b-button
+                    v-b-tooltip.hover
+                    title="Ajouter 30 jours"
+                    @click="add30days"
+                    >++</b-button
+                  >
+                </b-button-group>
+              </b-button-toolbar>
+            </b-overlay>
           </div>
         </div>
       </div>
@@ -41,7 +82,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 import moment from 'moment'
 import NivoDataChart from '~/components/chart/NivoDataChart'
 
@@ -49,7 +90,7 @@ import NivoMap from '~/components/map/NivoMap'
 import BaseMap from '~/components/map/BaseMap'
 import {
   globalActionsTypes as actionTypes,
-  // globalMutationTypes as types,
+  globalMutationTypes as types,
   mapGettersTypes,
   mapMutationTypes,
 } from '@/modules/stateTypes'
@@ -88,23 +129,57 @@ export default {
     )
   },
   computed: {
-    ...mapState(['nivoData', 'nivoStations', 'selectedNivoStation']),
-    ...mapState('map', [
+    ...mapState([
+      'nivoData',
+      'nivoStations',
+      'selectedNivoStation',
+      'nivoStationDayLimit',
+      'nivoDataLoading',
+    ]),
+    ...mapGetters('map', [
       mapGettersTypes.SELECTED_NIVO_STATION_HOVER,
       mapGettersTypes.SELECTED_NIVO_STATION_CLICK,
     ]),
     lastData() {
-      const lastData = this.nivoData
-        .map((n) => moment(n.date))
-        .sort()
-        .reverse()
-      if (lastData.length > 0) {
-        return lastData[0].format('DD MM YYYY, hh:mm:ss')
+      const lastDate = this.nivoData.slice().reverse().pop()
+      if (lastDate) {
+        return moment(lastDate.date).format('DD MM YYYY, hh:mm:ss')
       }
       return 'Inconnu'
     },
     altitudeStation() {
       return this.selectedNivoStation.geometry.coordinates[2]
+    },
+  },
+  methods: {
+    async setDays(val) {
+      const nivoStationId = this.selectedNivoStation.properties.nss_id
+      this.$store.commit(types.SET_NIVO_STATION_DAY_LIMIT, Number(val))
+      const dayLimit = Number(val)
+      await this.$store.dispatch('fetchNivoRecordsByStationIdWithDayLimit', {
+        nivoStationId,
+        dayLimit,
+      })
+    },
+    async remove30days() {
+      let rem = this.nivoStationDayLimit - 30
+      if (rem < 1) {
+        rem = 1
+      }
+      await this.setDays(rem)
+    },
+    async remove1day() {
+      let rem = this.nivoStationDayLimit - 1
+      if (rem < 1) {
+        rem = 1
+      }
+      await this.setDays(rem)
+    },
+    async add1day() {
+      await this.setDays(this.nivoStationDayLimit + 1)
+    },
+    async add30days() {
+      await this.setDays(this.nivoStationDayLimit + 30)
     },
   },
 }

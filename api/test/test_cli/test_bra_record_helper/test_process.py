@@ -18,7 +18,7 @@ from nivo_api.cli.bra_record_helper.process import (
     _get_risk,
 )
 from nivo_api.core.db.connection import connection_scope
-from nivo_api.core.db.models.sql.bra import DangerousSlopes, WindDirection
+from nivo_api.core.db.models.sql.bra import DangerousSlopes, WindDirection, WeatherType
 from test.pytest_fixtures import setup_db
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -139,46 +139,46 @@ def test_get_fresh_snow_record(bra_xml_parsed):
     res = _get_fresh_snow_record(bra_xml_parsed, bra_id)
     test_data = [
         {
-            "bfsr_bra_record": bra_id,
-            "bfsr_date": datetime(2018, 12, 28, 00, 00, 00),
-            "bfsr_altitude": 1800,
-            "bsfr_massif_snowfall": 0,
-            "bfsr_second_massif_snowfall": -1,
+            "fsr_bra_record": bra_id,
+            "fsr_date": datetime(2018, 12, 28, 00, 00, 00),
+            "fsr_altitude": 1800,
+            "sfr_massif_snowfall": 0,
+            "fsr_second_massif_snowfall": -1,
         },
         {
-            "bfsr_bra_record": bra_id,
-            "bfsr_date": datetime(2018, 12, 29, 00, 00, 00),
-            "bfsr_altitude": 1800,
-            "bsfr_massif_snowfall": 0,
-            "bfsr_second_massif_snowfall": -1,
+            "fsr_bra_record": bra_id,
+            "fsr_date": datetime(2018, 12, 29, 00, 00, 00),
+            "fsr_altitude": 1800,
+            "sfr_massif_snowfall": 0,
+            "fsr_second_massif_snowfall": -1,
         },
         {
-            "bfsr_bra_record": bra_id,
-            "bfsr_date": datetime(2018, 12, 30, 00, 00, 00),
-            "bfsr_altitude": 1800,
-            "bsfr_massif_snowfall": 0,
-            "bfsr_second_massif_snowfall": -1,
+            "fsr_bra_record": bra_id,
+            "fsr_date": datetime(2018, 12, 30, 00, 00, 00),
+            "fsr_altitude": 1800,
+            "sfr_massif_snowfall": 0,
+            "fsr_second_massif_snowfall": -1,
         },
         {
-            "bfsr_bra_record": bra_id,
-            "bfsr_date": datetime(2018, 12, 31, 00, 00, 00),
-            "bfsr_altitude": 1800,
-            "bsfr_massif_snowfall": 0,
-            "bfsr_second_massif_snowfall": -1,
+            "fsr_bra_record": bra_id,
+            "fsr_date": datetime(2018, 12, 31, 00, 00, 00),
+            "fsr_altitude": 1800,
+            "sfr_massif_snowfall": 0,
+            "fsr_second_massif_snowfall": -1,
         },
         {
-            "bfsr_bra_record": bra_id,
-            "bfsr_date": datetime(2019, 1, 1, 00, 00, 00),
-            "bfsr_altitude": 1800,
-            "bsfr_massif_snowfall": 2,
-            "bfsr_second_massif_snowfall": -1,
+            "fsr_bra_record": bra_id,
+            "fsr_date": datetime(2019, 1, 1, 00, 00, 00),
+            "fsr_altitude": 1800,
+            "sfr_massif_snowfall": 2,
+            "fsr_second_massif_snowfall": -1,
         },
         {
-            "bfsr_bra_record": bra_id,
-            "bfsr_date": datetime(2019, 1, 2, 00, 00, 00),
-            "bfsr_altitude": 1800,
-            "bsfr_massif_snowfall": 3,
-            "bfsr_second_massif_snowfall": -1,
+            "fsr_bra_record": bra_id,
+            "fsr_date": datetime(2019, 1, 2, 00, 00, 00),
+            "fsr_altitude": 1800,
+            "sfr_massif_snowfall": 3,
+            "fsr_second_massif_snowfall": -1,
         },
     ]
     for i, fsr in enumerate(res):
@@ -190,7 +190,7 @@ class TestGetWeatherForcastAtAltitude:
     def test_get_weather_forcast_at_altitude_work(self, bra_xml_parsed):
         wf_id = uuid4()
         res = _get_weather_forcast_at_altitude(bra_xml_parsed, wf_id)
-        assert isinstance(res, Generator)
+        assert isinstance(res, list)
         for i, data in enumerate(res):
             assert data["wfaa_wind_altitude"] == (2000, 2500)[i % 2]
             assert data["wfaa_wf_id"] == wf_id
@@ -211,14 +211,47 @@ class TestGetWeatherForcastAtAltitude:
 class TestGetWeatherForcast:
     def test_get_weather_forcast_work(self, bra_xml_parsed):
         bra_id = uuid4()
-        wf_id = uuid4()
-        res = _get_weather_forcast(bra_xml_parsed, bra_id, wf_id)
-        assert isinstance(res, Generator)
-        for wf in res:
-            assert isinstance(wf, dict)
-            assert wf["wf_bra_record"] == bra_id
-            assert isinstance(wf["wf_expected_date"], datetime)
-            assert wf["wf_id"] == wf_id
+        res = _get_weather_forcast(bra_xml_parsed, bra_id)
+        assert isinstance(res, dict)
+
+        assert isinstance(res["weather_forcast"], list)
+        assert len(res["weather_forcast"]) == 3
+
+        expected_dict = [
+            {
+                "wf_bra_record": bra_id,
+                "wf_expected_date": datetime(2019, 1, 2, 0, 0),
+                "wf_weather_type": WeatherType(11),
+                "wf_sea_of_clouds": -1,
+                "wf_rain_snow_limit": 500,
+                "wf_iso0": 800,
+                "wf_iso_minus_10": 4000,
+            },
+            {
+                "wf_bra_record": bra_id,
+                "wf_expected_date": datetime(2019, 1, 2, 6, 0),
+                "wf_weather_type": WeatherType(11),
+                "wf_sea_of_clouds": -1,
+                "wf_rain_snow_limit": 600,
+                "wf_iso0": 800,
+                "wf_iso_minus_10": 3400,
+            },
+            {
+                "wf_bra_record": bra_id,
+                "wf_expected_date": datetime(2019, 1, 2, 12, 0),
+                "wf_weather_type": WeatherType(11),
+                "wf_sea_of_clouds": -1,
+                "wf_rain_snow_limit": 600,
+                "wf_iso0": 900,
+                "wf_iso_minus_10": 2900,
+            },
+        ]
+
+        for index, wf in enumerate(res["weather_forcast"]):
+            keys = expected_dict[index].keys()
+            for k in keys:
+                assert wf[k] == expected_dict[index][k]
+        assert "weather_forcast_at_altitude" in res
 
 
 class TestProcessXML:

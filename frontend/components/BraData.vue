@@ -2,7 +2,7 @@
   <div>
     <div v-if="braUrl">
       <div class="row my-3 justify-content-md-center">
-        <div class="col">
+        <b-col>
           <b-button-toolbar key-nav aria-label="Toolbar with button groups">
             <b-button-group class="mr-1">
               <b-button :disabled="noFollowed">&laquo;</b-button>
@@ -20,25 +20,20 @@
               <b-form-input :value="braDate" type="date"></b-form-input>
             </b-input-group>
           </b-button-toolbar>
-        </div>
+        </b-col>
       </div>
-      <div class="row">
-        <div class="col">
-          <div class="text-center">
-            <b-spinner
-              v-if="braLoading"
-              type="grow"
-              label="Spinning"
-            ></b-spinner>
-          </div>
-          <b-embed
-            id="bra-iframe"
-            :src="braUrl"
-            type="iframe"
-            aspect="1by1"
-          ></b-embed>
-        </div>
-      </div>
+      <b-row>
+        <b-col>
+          <b-overlay :show="braLoading">
+            <b-embed
+              id="bra-iframe"
+              :src="braUrl"
+              type="iframe"
+              aspect="1by1"
+            />
+          </b-overlay>
+        </b-col>
+      </b-row>
     </div>
     <div v-else>
       <div class="container">

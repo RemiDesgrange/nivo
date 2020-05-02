@@ -55,11 +55,12 @@ export default {
   buildModules: [
     // Doc: https://github.com/nuxt-community/eslint-module
     '@nuxtjs/eslint-module',
+    '@nuxtjs/moment',
   ],
   /*
    ** Nuxt.js modules
    */
-  modules: ['bootstrap-vue/nuxt', '@nuxtjs/axios', '@nuxtjs/moment'], //, '@nuxtjs/sentry'],
+  modules: ['bootstrap-vue/nuxt', '@nuxtjs/axios', '@nuxtjs/sentry'],
   /*
    ** Build configuration
    */
@@ -128,8 +129,10 @@ export default {
       'BOverlay',
       'BIconX',
       'BIconCheck',
+      'BProgress',
+      'BAlert',
     ],
-    directives: ['VBToggle'],
+    directives: ['VBToggle', 'VBTooltip'],
   },
   sentry: {
     config: {
@@ -137,5 +140,9 @@ export default {
       release: process.env.COMMIT_REF || process.env.npm_package_version,
     },
     publishRelease: true,
+  },
+  moment: {
+    defaultLocale: 'fr',
+    locales: ['fr'],
   },
 }

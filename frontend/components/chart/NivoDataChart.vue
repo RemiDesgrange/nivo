@@ -1,24 +1,10 @@
 <template>
   <div>
     <b-overlay :show="show">
-      <base-area-chart
-        :point-start="lastData()"
-        :series="chartSnowLevelOptions"
-        title="Hauteur de neige"
-      />
+      <snow />
     </b-overlay>
     <b-overlay :show="show">
-      <base-area-chart
-        :point-start="lastData()"
-        :series="chartWindOptions"
-        title="Données vent"
-      />
-    </b-overlay>
-    <b-overlay :show="show">
-      <base-area-chart
-        :point-start="lastData()"
-        :series="chartAirTempOptions"
-      />
+      <wind />
     </b-overlay>
   </div>
 </template>
@@ -26,11 +12,13 @@
 <script>
 import { mapState } from 'vuex'
 import moment from 'moment'
-import BaseAreaChart from '~/components/chart/BaseAreaChart'
+import Wind from '~/components/chart/nivo_station/Wind'
+import Snow from '~/components/chart/nivo_station/Snow'
 
 export default {
   components: {
-    BaseAreaChart,
+    Wind,
+    Snow,
   },
   computed: {
     show() {
@@ -43,34 +31,6 @@ export default {
       'nivoStationLoading',
       'nivoDataLoading',
     ]),
-    chartSnowLevelOptions() {
-      return [
-        {
-          type: 'area',
-          name: 'Hauteur de neige',
-          data: this.nivoData.map((n) => n.ht_neige * 100), // eslint-disable
-        },
-        {
-          type: 'area',
-          name: 'Hauteur de neige fraiche',
-          data: this.nivoData.map((n) => n.ssfrai),
-        },
-      ]
-    },
-    chartWindOptions() {
-      return [
-        {
-          type: 'area',
-          name: 'Vitesse',
-          data: this.nivoData.map((n) => n.ff),
-        },
-        {
-          type: 'area',
-          name: 'Direction',
-          data: this.nivoData.map((n) => n.dd),
-        },
-      ]
-    },
     chartAirTempOptions() {
       return [
         {
@@ -94,10 +54,8 @@ export default {
         .map((n) => moment(n.date))
         .sort()
         .reverse()
-      if (lastData.length > 0) {
-        return lastData[0].utc().valueOf()
-      }
-      return moment().utc().valueOf()
+        .pop()
+      return lastData.utc().valueOf()
     },
   },
 }

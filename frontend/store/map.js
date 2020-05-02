@@ -15,6 +15,7 @@ import { get as getProjection } from 'ol/proj'
 import { getWidth } from 'ol/extent'
 import {
   massifsStyleFunc,
+  nivoStationStyleFunc,
   // selectionStyleBasedOnExisting,
 } from '~/modules/mapUtils'
 import {
@@ -117,6 +118,7 @@ export const state = () => ({
       name: 'posteNivoSource',
     }),
     name: 'posteNivoLayer',
+    style: nivoStationStyleFunc,
   }),
   massifs: new VectorLayer({
     source: new VectorSource({

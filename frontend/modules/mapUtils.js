@@ -4,6 +4,7 @@ import Stroke from 'ol/style/Stroke'
 import Point from 'ol/geom/Point'
 import pointOnFeature from '@turf/point-on-feature'
 import Circle from 'ol/geom/Circle'
+import CircleStyle from 'ol/style/Circle'
 
 /**
  * @param {number|number[]} lonOrCoordinates
@@ -114,6 +115,26 @@ export function massifsStyleFunc(feature) {
     stroke: new Stroke({
       color: currentRiskColor,
       width: 2,
+    }),
+  })
+}
+
+/**
+ *
+ * @param {Feature} feature
+ * @returns {Style}
+ */
+export function nivoStationStyleFunc(feature) {
+  return new Style({
+    image: new CircleStyle({
+      radius: 5,
+      fill: new Fill({
+        color: 'rgba(255, 255, 255, 0.3)',
+      }),
+      stroke: new Stroke({
+        color: 'rgba(254, 5, 0, 1)',
+        width: 2,
+      }),
     }),
   })
 }

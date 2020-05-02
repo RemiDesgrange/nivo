@@ -77,7 +77,6 @@ class ANivoCsv(ABC):
         filtered_csv = map(remove_unvalid_int, filtered_csv)
         filtered_csv = map(change_column_name, filtered_csv)
         filtered_csv = map(parse_date, filtered_csv)
-
         self.cleaned_csv = list(filtered_csv)
         return self.cleaned_csv
 

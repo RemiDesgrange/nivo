@@ -2,10 +2,17 @@ from nivo_api.core.api_schema.geojson import Feature, FeatureCollection
 from nivo_api.namespaces.nivo_meteo import nivo_meteo
 
 from nivo_api.namespaces.utils import UUIDField
-from flask_restx import fields
+from flask_restx import fields, reqparse
 
 nivo_meteo.add_model("Feature", Feature)
 nivo_meteo.add_model("FeatureCollection", FeatureCollection)
+
+record_limit_parser = reqparse.RequestParser()
+record_limit_parser.add_argument("limit", type=int, help="Number or record to return")
+record_limit_parser.add_argument(
+    "day_limit", type=int, help="Number of day from last record to return"
+)
+
 
 records_model = nivo_meteo.model(
     "RecordsModel",

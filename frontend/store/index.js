@@ -23,6 +23,7 @@ export const state = () => ({
   nivoDataLoading: false,
   flowCaptLoading: false,
   braLoading: false,
+  nivoStationDayLimit: 30,
 })
 
 export const mutations = {
@@ -93,6 +94,9 @@ export const mutations = {
   [types.TOGGLE_FLOWCAPT_LOADING](state) {
     state.flowCaptLoading = !state.flowCaptLoading
   },
+  [types.SET_NIVO_STATION_DAY_LIMIT](state, dayLimit) {
+    state.nivoStationDayLimit = dayLimit
+  },
 }
 
 export const actions = {
@@ -157,11 +161,14 @@ export const actions = {
     commit(types.SET_SELECTED_FLOWCAPT_STATION, flowcapt)
     commit('map/' + mapMutationTypes.SET_SELECTED_FLOWCAPT_STATION, flowcapt)
   },
-  async fetchNivoRecordsByStationId({ commit }, nivoStationId) {
+  async fetchNivoRecordsByStationIdWithDayLimit(
+    { commit, state },
+    { nivoStationId, dayLimit }
+  ) {
     commit(types.TOGGLE_NIVO_DATA_LOADING)
     try {
       const res = await this.$axios.get(
-        `${process.env.baseUrl}/nivo/stations/${nivoStationId}/records`
+        `${process.env.baseUrl}/nivo/stations/${nivoStationId}/records?day_limit=${dayLimit}`
       )
       commit(types.NIVO_DATA_LOADED, res.data)
     } catch (e) {
@@ -169,6 +176,16 @@ export const actions = {
     } finally {
       commit(types.TOGGLE_NIVO_DATA_LOADING)
     }
+  },
+  async fetchNivoRecordsByStationId(
+    { commit, dispatch, state },
+    nivoStationId
+  ) {
+    const nivoStationDayLimit = state.nivoStationDayLimit
+    await dispatch('fetchNivoRecordsByStationIdWithDayLimit', {
+      nivoStationId,
+      dayLimit: nivoStationDayLimit,
+    })
   },
   async fetchLastNivoById({ commit }, nivoStationId) {
     commit(types.TOGGLE_NIVO_DATA_LOADING)

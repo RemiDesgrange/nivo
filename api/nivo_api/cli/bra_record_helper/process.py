@@ -205,11 +205,10 @@ def _get_weather_forcast(bra_xml: _Element, bra_id: UUID) -> Dict:
 def _get_risk_forcast(bra_xml: _Element, bra_id: UUID) -> Generator[Dict, None, None]:
     for forcast in bra_xml.find("//TENDANCES").getchildren():
         evol = RiskEvolution(int(forcast.get("VALEUR")))
-        evol_str = str(evol).split(".")[-1]
         yield {
             "rf_bra_record": bra_id,
             "rf_date": datetime.strptime(forcast.get("DATE"), "%Y-%m-%dT%H:%M:%S"),
-            "rf_evolution": evol_str,
+            "rf_evolution": evol,
         }
 
 
