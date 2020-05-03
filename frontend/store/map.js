@@ -14,6 +14,7 @@ import WMTSTileGrid from 'ol/tilegrid/WMTS'
 import { get as getProjection } from 'ol/proj'
 import { getWidth } from 'ol/extent'
 import {
+  flowcaptStyleFunc,
   massifsStyleFunc,
   nivoStationStyleFunc,
   // selectionStyleBasedOnExisting,
@@ -112,6 +113,7 @@ export const state = () => ({
       name: 'flowcaptSource',
     }),
     name: 'flowcaptLayer',
+    style: flowcaptStyleFunc,
   }),
   posteNivo: new VectorLayer({
     source: new VectorSource({

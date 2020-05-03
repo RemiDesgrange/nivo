@@ -119,6 +119,21 @@ export function massifsStyleFunc(feature) {
   })
 }
 
+export function flowcaptStyleFunc(feature) {
+  return new Style({
+    image: new CircleStyle({
+      radius: 5,
+      fill: new Fill({
+        color: 'rgba(40,254,0,0.5)',
+      }),
+      stroke: new Stroke({
+        color: 'rgba(255, 255, 255, 1)',
+        width: 2,
+      }),
+    }),
+  })
+}
+
 /**
  *
  * @param {Feature} feature
@@ -129,10 +144,10 @@ export function nivoStationStyleFunc(feature) {
     image: new CircleStyle({
       radius: 5,
       fill: new Fill({
-        color: 'rgba(255, 255, 255, 0.3)',
+        color: 'rgba(254, 5, 0, 0.5)',
       }),
       stroke: new Stroke({
-        color: 'rgba(254, 5, 0, 1)',
+        color: 'rgba(255, 255, 255, 1)',
         width: 2,
       }),
     }),

@@ -29,14 +29,10 @@ export default {
       }),
     }
   },
-  watch: {
-    position(val) {
-      this.overlay.setPosition(findPointOnSurface(val.getGeometry()))
-    },
-  },
   mounted() {
     this.overlay.setElement(document.getElementById(this.id))
     this.$store.commit('map/ADD_OVERLAY', this.overlay)
+    this.overlay.setPosition(findPointOnSurface(this.position.getGeometry()))
   },
   beforeDestroy() {
     this.$store.commit('map/REMOVE_OVERLAY', this.overlay)

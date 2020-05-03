@@ -13,6 +13,14 @@ for = "/*"
   X-XSS-Protection = "1; mode=block"
 
 [[redirects]]
-for = "/*"
+for = "/:id"
 to = "/"
+status = 200
+
+for = '/flowcapt/:id'
+to = '/flowcapt'
+status = 200
+
+for = '/poste-nivo/:id'
+to = '/poste-nivo'
 status = 200
