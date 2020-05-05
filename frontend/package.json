@@ -15,7 +15,7 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.10.3",
     "@nuxtjs/moment": "^1.6.0",
-    "@nuxtjs/sentry": "^4.0.2",
+    "@nuxtjs/sentry": "^4.0.3",
     "@turf/point-on-feature": "latest",
     "@turf/turf": "^5.1.6",
     "axios": "^0.19.2",
