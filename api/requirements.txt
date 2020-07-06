@@ -5,7 +5,7 @@ flask-restx>=0.2,<0.3
 click>=7,<8
 geoalchemy2>=0.6,<0.9
 requests>=2,<3
-sentry-sdk>=0.11,<0.16
+sentry-sdk>=0.11,<0.17
 gunicorn>19,<21
 lxml>=4.4,<4.6
 geojson>=2.5,<2.6
