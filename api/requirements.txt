@@ -13,4 +13,4 @@ shapely[vectorized]>=1.6,<1.8
 beautifulsoup4>=4.8,<4.10
 flask-cors>=3.0,<3.1
 blinker>=1.4,<1.5
-feedparser>=5.2,<5.3
+feedparser>=5.2,<6.1
