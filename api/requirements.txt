@@ -7,7 +7,7 @@ geoalchemy2>=0.6,<0.9
 requests>=2,<3
 sentry-sdk>=0.11,<0.20
 gunicorn>19,<21
-lxml>=4.4,<4.6
+lxml>=4.4,<4.7
 geojson>=2.5,<2.6
 shapely[vectorized]>=1.6,<1.8
 beautifulsoup4>=4.8,<4.10
