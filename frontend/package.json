@@ -26,7 +26,7 @@
     "highcharts-vue": "^1.3.5",
     "moment": "^2.29.1",
     "nuxt": "^2.14.10",
-    "ol": "^6.4.3"
+    "ol": "^6.5.0"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^2.0.2",
