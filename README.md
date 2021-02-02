@@ -60,4 +60,3 @@ See [README.md](frontend) in frontend folder
 Docker. But it's quite standard python. So you can run it with anything that can run WSGI server
 (Apache, gunicorn, uwsgi, waitress, etc...).
 
-Frontend is hosted on Netlify. But anything that is able to serve HTML/CSS/JS file throught HTTP can host the frontend. 
