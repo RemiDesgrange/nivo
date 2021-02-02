@@ -1,5 +1,5 @@
 name: Python test and build
-on: 
+on:
   push:
     branches:
       - master
@@ -10,10 +10,10 @@ jobs:
     strategy:
       max-parallel: 2
       matrix:
-        python-version: [3.7, 3.8]
+        python-version: [3.7, 3.8, 3.9]
     services:
       postgis:
-        image: mdillon/postgis:11-alpine
+        image: camptocamp/postgres:13
         ports:
           - 5432:5432
         # needed because the postgres container does not provide a healthcheck
