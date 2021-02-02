@@ -32,7 +32,7 @@ from nivo_api.cli.nivo_record_helper import (
     get_last_nivo_date,
     get_all_nivo_date,
 )
-from nivo_api.core.db.connection import connection_scope
+from nivo_api.core.db.connection import connection_scope, create_database_connections
 from nivo_api.core.db.models.sql.bra import DepartmentTable
 from nivo_api.core.db.models.sql.nivo import SensorStationTable
 from nivo_api.settings import Config
@@ -60,10 +60,12 @@ def import_last_nivo_data():
     # get last nivo data if needed
     # process it
     # import it.
-    last_nivo = get_last_nivo_date()
-    if check_nivo_doesnt_exist(last_nivo.nivo_date):
-        downloaded_nivo = download_nivo(last_nivo)
-        import_nivo(downloaded_nivo)
+    db = create_database_connections().engine
+    with connection_scope(db) as con:
+        last_nivo = get_last_nivo_date()
+        if check_nivo_doesnt_exist(con, last_nivo.nivo_date):
+            downloaded_nivo = download_nivo(last_nivo, con)
+            import_nivo(con, downloaded_nivo)
 
 
 @click.command()
@@ -75,15 +77,19 @@ def import_all_nivo_data():
     # import it
     all_nivo_date = get_all_nivo_date()
     log.info(f"Need to process {len(all_nivo_date)}")
-    for nivo_date in all_nivo_date:
-        if check_nivo_doesnt_exist(nivo_date.nivo_date):
-            try:
-                log.info(f"Processing for {nivo_date.nivo_date.strftime('%d-%m-%Y')}")
-                downloaded_nivo = download_nivo(nivo_date)
-                import_nivo(downloaded_nivo)
-            except Exception as e:
-                click.echo("Something bad append")
-                log.debug(e)
+    db = create_database_connections().engine
+    with connection_scope(db) as con:
+        for nivo_date in all_nivo_date:
+            if check_nivo_doesnt_exist(con, nivo_date.nivo_date):
+                try:
+                    log.info(
+                        f"Processing for {nivo_date.nivo_date.strftime('%d-%m-%Y')}"
+                    )
+                    downloaded_nivo = download_nivo(nivo_date, con)
+                    import_nivo(con, downloaded_nivo)
+                except Exception as e:
+                    click.echo("Something bad append")
+                    log.debug(e)
 
 
 @click.command()
@@ -91,7 +97,8 @@ def import_nivo_sensor_station():
     # this need refactor
     res = requests.get(f"{Config.METEO_FRANCE_NIVO_BASE_URL}/postesNivo.json")
     res.raise_for_status()
-    with connection_scope() as con:
+    db = create_database_connections().engine
+    with connection_scope(db) as con:
         with con.begin():
             for feature in res.json()["features"]:
                 pointz = feature["geometry"]
@@ -127,9 +134,9 @@ def import_nivo_sensor_station():
 
 @click.command()
 def import_last_bra():
-    # Open data from meteo france via it's obscure rest api because they are not providing opendata for the current day
-    # They start providing the BRA one day after it's been released, which makes the app useless.
-    with connection_scope() as con:
+    # This is obsolete.
+    db = create_database_connections().engine
+    with connection_scope(db) as con:
         for dept in DepartmentTable.get(con):
             try:
                 dept = get_bra_by_dept_from_mf_rpc_api(dept.d_number)
@@ -139,11 +146,13 @@ def import_last_bra():
                     persist_bra(con, processed_bra)
             except HTTPError as e:
                 log.critical(f"dept {dept.d_name} cannot be fetch no BRA")
+                log.debug(e)
                 continue
             except Exception as e:
                 log.critical(
                     f"an error occured when processing dept {dept.d_name} for today"
                 )
+                log.debug(e)
 
 
 @click.command()
@@ -158,8 +167,9 @@ def import_bra(bra_date):
     * process (download + post process)
     * import
     """
+    db = create_database_connections().engine
     bra_dates = get_bra_date(bra_date)
-    with connection_scope() as con:
+    with connection_scope(db) as con:
         for massif, m_date in bra_dates.items():
             try:
                 if not check_bra_record_exist(con, massif, m_date):
@@ -180,6 +190,7 @@ def import_all_bra():
     """
     Same as `import_bra` but we request from March 2016 to now.
     """
+    db = create_database_connections().engine
     start_date = date(year=2016, month=3, day=10)
     date_range = [
         date.today() - timedelta(days=x)
@@ -189,7 +200,7 @@ def import_all_bra():
         massif = ""
         try:
             bra_dates = get_bra_date(d)
-            with connection_scope() as con:
+            with connection_scope(db) as con:
                 for massif, m_date in bra_dates.items():
                     if not check_bra_record_exist(con, massif, m_date):
                         xml = get_bra_xml(massif, m_date)
@@ -206,7 +217,8 @@ def import_all_bra():
 @click.command()
 def import_massifs():
     massif_json = requests.get(Config.BRA_BASE_URL + "/massifs.json").json()
-    with connection_scope() as con:
+    db = create_database_connections().engine
+    with connection_scope(db) as con:
         # the 4th element of the massif is useless, and there are no BRA for it.
         for zone in massif_json[:4]:
             for dept in zone["departements"]:
@@ -225,7 +237,8 @@ def import_massifs():
 
 @click.command()
 def import_flowcapt_station():
-    with connection_scope() as con:
+    db = create_database_connections().engine
+    with connection_scope(db) as con:
         with resource_stream("nivo_api", "cli/data/flowcapt.geojson") as fp:
             gj = geojson.load(fp)
             for station in gj.features:

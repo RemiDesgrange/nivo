@@ -13,7 +13,7 @@ services:
       - "traefik.enable=true"
       - "traefik.frontend.rule=Host:api.nivo.example.com"
   db:
-    image: camptocamp/postgres:13
+    image: camptocamp/postgres:13-postgis-3
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nivo}
       POSTGRES_USER: nivo

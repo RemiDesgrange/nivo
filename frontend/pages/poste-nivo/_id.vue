@@ -84,16 +84,16 @@
 <script>
 import { mapState, mapGetters } from 'vuex'
 import moment from 'moment'
-import NivoDataChart from '~/components/chart/NivoDataChart'
-
-import NivoMap from '~/components/map/NivoMap'
-import BaseMap from '~/components/map/BaseMap'
 import {
   globalActionsTypes as actionTypes,
   globalMutationTypes as types,
   mapGettersTypes,
   mapMutationTypes,
 } from '@/modules/stateTypes'
+import NivoDataChart from '~/components/chart/NivoDataChart'
+
+import NivoMap from '~/components/map/NivoMap'
+import BaseMap from '~/components/map/BaseMap'
 
 export default {
   components: {

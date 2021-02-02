@@ -11,8 +11,6 @@ import requests
 from sqlalchemy import select, exists, Date, cast
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.engine import Connection, RowProxy
-
-from nivo_api.core.db.connection import connection_scope
 from nivo_api.core.db.models.sql.nivo import NivoRecordTable, SensorStationTable
 from nivo_api.settings import Config
 
@@ -33,9 +31,12 @@ class ANivoCsv(ABC):
     nivo_csv: DictReader
     cleaned_csv: List[Dict]
 
-    def __init__(self, nivo_date: "NivoDate", download_url: str = None):
+    def __init__(
+        self, nivo_date: "NivoDate", db_connection: Connection, download_url: str = None
+    ):
         self.nivo_date = nivo_date.nivo_date
         self.cleaned_csv = list()
+        self.db_connection = db_connection
 
     def fetch_and_parse(self) -> DictReader:
         logger.debug(f"requests : {self.download_url}")
@@ -98,17 +99,20 @@ class ANivoCsv(ABC):
             line["nr_nivo_sensor"] = res.nss_id
             return line
 
-        with connection_scope() as con:
-            replaced_csv = list()
-            for line in self.cleaned_csv:
-                replaced_csv.append(replace_num_sta_by_column_name(line, con))
+        replaced_csv = list()
+        for line in self.cleaned_csv:
+            replaced_csv.append(
+                replace_num_sta_by_column_name(line, self.db_connection)
+            )
         self.cleaned_csv = replaced_csv
         return self.cleaned_csv
 
 
 class NivoCsv(ANivoCsv):
-    def __init__(self, nivo_date: "NivoDate", download_url: str = None):
-        super().__init__(nivo_date, download_url)
+    def __init__(
+        self, nivo_date: "NivoDate", db_connection: Connection, download_url: str = None
+    ):
+        super().__init__(nivo_date, db_connection, download_url)
         download_date = date.strftime(nivo_date.nivo_date, "%Y%m%d")
         self.download_url = (
             download_url
@@ -117,8 +121,10 @@ class NivoCsv(ANivoCsv):
 
 
 class ArchiveNivoCss(ANivoCsv):
-    def __init__(self, nivo_date: "NivoDate", download_url: str = None):
-        super().__init__(nivo_date, download_url)
+    def __init__(
+        self, nivo_date: "NivoDate", db_connection: Connection, download_url: str = None
+    ):
+        super().__init__(nivo_date, db_connection, download_url)
         download_date = date.strftime(nivo_date.nivo_date, "%Y%m")
         self.download_url = (
             download_url
@@ -152,39 +158,37 @@ def get_last_nivo_date() -> "NivoDate":
     )
 
 
-def check_nivo_doesnt_exist(nivo_date: date) -> bool:
-    with connection_scope() as con:
-        s = exists([NivoRecordTable.c.nr_date]).where(
-            cast(NivoRecordTable.c.nr_date, Date) == nivo_date
-        )
-        s = select([s.label("exists")])
-        does_nivo_already_exist = con.execute(s).first().exists
-        logger.debug(
-            f"does nivo for date {nivo_date.strftime('%d-%m-%Y')} already exist : {does_nivo_already_exist}"
-        )
-        return not does_nivo_already_exist
+def check_nivo_doesnt_exist(con: Connection, nivo_date: date) -> bool:
+    s = exists([NivoRecordTable.c.nr_date]).where(
+        cast(NivoRecordTable.c.nr_date, Date) == nivo_date
+    )
+    s = select([s.label("exists")])
+    does_nivo_already_exist = con.execute(s).first().exists
+    logger.debug(
+        f"does nivo for date {nivo_date.strftime('%d-%m-%Y')} already exist : {does_nivo_already_exist}"
+    )
+    return not does_nivo_already_exist
 
 
-def download_nivo(nivo_date: "NivoDate") -> "ANivoCsv":
+def download_nivo(nivo_date: "NivoDate", db_connection: Connection) -> "ANivoCsv":
     nivo_csv: ANivoCsv
     if nivo_date.is_archive:
-        nivo_csv = ArchiveNivoCss(nivo_date)
+        nivo_csv = ArchiveNivoCss(nivo_date, db_connection)
     else:
-        nivo_csv = NivoCsv(nivo_date)
+        nivo_csv = NivoCsv(nivo_date, db_connection)
 
     nivo_csv.fetch_and_parse()
     return nivo_csv
 
 
-def import_nivo(csv_file: ANivoCsv) -> None:
+def import_nivo(con: Connection, csv_file: ANivoCsv) -> None:
     csv_file.normalize()
     csv_file.find_and_replace_foreign_key_value()
-    with connection_scope() as con:
-        with con.begin():
-            ins = insert(NivoRecordTable).values(
-                csv_file.cleaned_csv
-            )  # .on_conflict_do_nothing(index_elements=['nss_name'])
-            con.execute(ins)
+    with con.begin():
+        ins = insert(NivoRecordTable).values(
+            csv_file.cleaned_csv
+        )  # .on_conflict_do_nothing(index_elements=['nss_name'])
+        con.execute(ins)
 
 
 @dataclass

@@ -6,19 +6,17 @@ from sqlalchemy import select, bindparam
 from nivo_api.cli.bra_record_helper.persist import persist_zone, persist_massif
 from nivo_api.core.db.connection import connection_scope
 from nivo_api.core.db.models.sql.bra import ZoneTable, DepartmentTable, MassifTable
-from test.pytest_fixtures import setup_db
 
+from test.pytest_fixtures import database
 
 class TestPersistZone:
-    @setup_db()
-    def test_insert_zone(self):
-        with connection_scope() as con:
+    def test_insert_zone(self, database):
+        with connection_scope(database.engine) as con:
             r = persist_zone(con, "this_is_a_test")
             assert isinstance(r, UUID)
 
-    @setup_db()
-    def test_multi_insert(self):
-        with connection_scope() as con:
+    def test_multi_insert(self, database):
+        with connection_scope(database.engine) as con:
             uuid_list = list()
             for _ in range(5):
                 uuid_list.append(persist_zone(con, "this_is_a_test"))
@@ -28,9 +26,8 @@ class TestPersistZone:
 
 
 class TestPersistMassif:
-    @setup_db()
-    def test_massif(self):
-        with connection_scope() as con:
+    def test_massif(self,database):
+        with connection_scope(database.engine) as con:
             r = persist_massif(
                 con,
                 "CHABLAIS",
@@ -39,9 +36,8 @@ class TestPersistMassif:
             )
             assert isinstance(r, UUID)
 
-    @setup_db()
-    def test_multi_massif(self):
-        with connection_scope() as con:
+    def test_multi_massif(self, database):
+        with connection_scope(database.engine) as con:
             r1 = persist_massif(
                 con,
                 "CHABLAIS",

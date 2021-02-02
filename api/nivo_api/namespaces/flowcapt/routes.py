@@ -27,6 +27,7 @@ class FlowCaptStationRessource(Resource):
 class FlowCaptMeasureResource(Resource):
     """
     ISAW does not respond to CORS. So proxying request to their website.
+    + their JSON is broken.
     """
 
     @flowcapt_api.response(200, "OK")

@@ -13,7 +13,7 @@ jobs:
         python-version: [3.7, 3.8, 3.9]
     services:
       postgis:
-        image: camptocamp/postgres:13
+        image: camptocamp/postgres:13-postgis-3
         ports:
           - 5432:5432
         # needed because the postgres container does not provide a healthcheck

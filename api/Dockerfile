@@ -1,4 +1,4 @@
-FROM python:3.8-slim
+FROM python:3.9-slim
 
 # create a user with a home dir. home dir is needed by pip cache.
 RUN useradd -r -m apprunner

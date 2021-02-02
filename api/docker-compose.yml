@@ -11,7 +11,7 @@ services:
     depends_on:
       - db
   db:
-    image: mdillon/postgis:11
+    image: camptocamp/postgres:13-postgis-3
     environment:
       POSTGRES_PASSWORD: nivo
       POSTGRES_USER: nivo

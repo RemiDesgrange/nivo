@@ -9,8 +9,8 @@ import pytest
 import responses
 from freezegun import freeze_time
 from unittest.mock import patch, mock_open
-
 from sqlalchemy.engine import Connection
+from test.pytest_fixtures import database
 
 from nivo_api.cli.bra_record_helper.miscellaneous import (
     get_last_bra_date,
@@ -27,7 +27,6 @@ from nivo_api.core.db.models.sql.bra import (
 )
 
 from nivo_api.settings import Config
-from test.pytest_fixtures import setup_db
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -228,19 +227,17 @@ class TestCheckBraRecordExist:
             )
         )
 
-    @setup_db()
-    def test_empty_db(self):
+    def test_empty_db(self, database):
         """
         an empty db should return false
         """
-        with connection_scope() as con:
+        with connection_scope(database.engine) as con:
             r = check_bra_record_exist(con, "CHABLAIS", datetime.now())
         assert r is False
 
-    @setup_db()
     @freeze_time("2019-01-01")
-    def test_already_exist_record(self):
-        with connection_scope() as con:
+    def test_already_exist_record(self, database):
+        with connection_scope(database.engine) as con:
             self.load_data(con, datetime.now())
             r = check_bra_record_exist(con, "test", datetime.now())
         assert r is True

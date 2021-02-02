@@ -10,7 +10,7 @@ flowcapt_api.add_model("FeatureCollection", FeatureCollection)
 
 class FlowCaptRssToJSON:
     """
-    JSON from isaw is broken
+    JSON from isaw is broken, so using the RSS feed, which is converted back to JSON. Yup.
     """
 
     def __init__(self, url: str) -> None:

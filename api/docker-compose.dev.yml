@@ -4,6 +4,8 @@ services:
     environment:
       ENV: DEV
   db:
+    # disable fsync on dev db speed up a lot tests.
+    command: -c fsync=off
     ports:
       - 5432:5432
 

@@ -38,9 +38,7 @@
     <div v-else>
       <div class="container">
         <b-jumbotron>
-          <template slot="header">
-            Bienvenue sur Nivo !
-          </template>
+          <template slot="header"> Bienvenue sur Nivo ! </template>
           <template slot="lead">
             Pour consulter les données d'un massifs, cliquez sur celui-ci dans
             la carte à droite.

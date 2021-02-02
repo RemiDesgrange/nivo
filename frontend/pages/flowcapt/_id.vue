@@ -65,15 +65,15 @@
 <script>
 import { mapState } from 'vuex'
 import moment from 'moment'
+import FlowCaptChart from '@/components/chart/FlowCaptChart'
+
+import FlowCaptMap from '@/components/map/FlowCaptMap'
+import BaseMap from '@/components/map/BaseMap'
 import {
   // globalMutationTypes as mutationsType,
   globalActionsTypes as actionsType,
   mapMutationTypes,
 } from '~/modules/stateTypes'
-import FlowCaptChart from '@/components/chart/FlowCaptChart'
-
-import FlowCaptMap from '@/components/map/FlowCaptMap'
-import BaseMap from '@/components/map/BaseMap'
 
 export default {
   components: {

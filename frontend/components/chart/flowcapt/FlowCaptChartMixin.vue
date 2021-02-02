@@ -12,7 +12,10 @@ export default {
   computed: {
     ...mapState(['flowCaptData']),
     lastData() {
-      return moment(this.flowCaptData.lastdata).utc().valueOf()
+      return moment(this.flowCaptData.lastdata)
+        .subtract(168, 'hours')
+        .utc()
+        .valueOf()
     },
   },
 }

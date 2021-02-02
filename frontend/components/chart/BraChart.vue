@@ -20,7 +20,7 @@
       />
       <div v-if="loadingData && braLoading">
         <div class="d-flex justify-content-center mb-3">
-          <b-spinner style="width: 8rem; height: 8rem;" type="grow"></b-spinner>
+          <b-spinner style="width: 8rem; height: 8rem" type="grow"></b-spinner>
         </div>
       </div>
     </div>

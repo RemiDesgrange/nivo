@@ -14,15 +14,15 @@ import WMTSTileGrid from 'ol/tilegrid/WMTS'
 import { get as getProjection } from 'ol/proj'
 import { getWidth } from 'ol/extent'
 import {
+  mapMutationTypes as types,
+  mapGettersTypes as getterTypes,
+} from '@/modules/stateTypes'
+import {
   flowcaptStyleFunc,
   massifsStyleFunc,
   nivoStationStyleFunc,
   // selectionStyleBasedOnExisting,
 } from '~/modules/mapUtils'
-import {
-  mapMutationTypes as types,
-  mapGettersTypes as getterTypes,
-} from '@/modules/stateTypes'
 import { mapActionsTypes } from '~/modules/stateTypes'
 
 function _getIgnTileGrid() {

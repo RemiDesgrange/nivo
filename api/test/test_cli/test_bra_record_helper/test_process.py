@@ -6,6 +6,7 @@ from uuid import uuid4
 
 import lxml.etree as ET
 import pytest
+from test.pytest_fixtures import database
 
 from nivo_api.cli.bra_record_helper.process import (
     process_xml,
@@ -19,7 +20,6 @@ from nivo_api.cli.bra_record_helper.process import (
 )
 from nivo_api.core.db.connection import connection_scope
 from nivo_api.core.db.models.sql.bra import DangerousSlopes, WindDirection, WeatherType
-from test.pytest_fixtures import setup_db
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -76,9 +76,8 @@ class TestGetRisk:
 
 
 class TestGetMassifEntity:
-    @setup_db()
-    def test_no_massif(self):
-        with connection_scope() as con:
+    def test_no_massif(self, database):
+        with connection_scope(database.engine) as con:
             with pytest.raises(ValueError) as e:
                 _get_massif_id("CHABLAIS", con)
             assert e.value.args[0] == "Cannot found massif CHABLAIS in the db"
@@ -259,9 +258,8 @@ class TestProcessXML:
         # insert massifs chablais + zone.
         pass
 
-    @setup_db()
-    def test_process_xml_work(self, bra_xml_parsed):
+    def test_process_xml_work(self, bra_xml_parsed, database):
         self._setup_test()
-        with connection_scope() as c:
+        with connection_scope(database.engine) as c:
             p = process_xml(c, bra_xml_parsed)
             assert isinstance(p, list)

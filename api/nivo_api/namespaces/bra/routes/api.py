@@ -124,11 +124,11 @@ class DepartmentResource(Resource):
     @bra_api.response(HTTPStatus.NOT_FOUND, "department for this id cannot be found.")
     @bra_api.response(HTTPStatus.OK, "OK", department_model)
     @bra_api.marshal_with(department_model)
-    def get(self, departement_id: Optional[UUID] = None) -> Dict:
+    def get(self, department_id: Optional[UUID] = None) -> Dict:
         with session_scope() as sess:
             query = sess.query(Department).options(subqueryload(Department.massifs))
-            if departement_id:
-                query.filter(Department.d_id == departement_id)
+            if department_id:
+                query.filter(Department.d_id == department_id)
             return query.all()
 
 
@@ -136,7 +136,7 @@ class DepartmentResource(Resource):
 @bra_api.route("/massifs/<uuid:massif_id>")
 class MassifResource(Resource):
     @bra_api.response(HTTPStatus.INTERNAL_SERVER_ERROR, "Something went wrong")
-    @bra_api.response(HTTPStatus.NOT_FOUND, "department for this id cannot be found.")
+    @bra_api.response(HTTPStatus.NOT_FOUND, "massif for this id cannot be found.")
     @bra_api.response(HTTPStatus.OK, "OK", FeatureCollectionSchema)
     def get(self, massif_id: UUID = None) -> Dict:
         with connection_scope() as con:
@@ -144,6 +144,11 @@ class MassifResource(Resource):
             br = BraRecordTable.alias("br")
             m = MassifTable.alias("m")
             d = DepartmentTable.alias("d")
+
+            # Here we want, for each massifs, the last BRA associated.
+            # This require some advanced quering (lateral join).
+            # the downside is that if you db have no BRA loaded,
+            # then this endpoint will return an empty geojson.
 
             # column we want in the lateral
             lateral_column = [

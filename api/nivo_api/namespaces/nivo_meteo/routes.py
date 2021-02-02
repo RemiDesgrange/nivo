@@ -51,8 +51,15 @@ class NivoRecordsBySensorStationResource(Resource):
                 .order_by(NivoRecord.nr_date.desc())
             )
             if limit_by_day:
-                last_date = sess.query(func.max(NivoRecord.nr_date).label('max')).filter(NivoRecord.nr_nivo_sensor == station_id).subquery('last_date')
-                req = req.filter(func.age(last_date.c.max, NivoRecord.nr_date) < timedelta(days=limit_by_day))
+                last_date = (
+                    sess.query(func.max(NivoRecord.nr_date).label("max"))
+                    .filter(NivoRecord.nr_nivo_sensor == station_id)
+                    .subquery("last_date")
+                )
+                req = req.filter(
+                    func.age(last_date.c.max, NivoRecord.nr_date)
+                    < timedelta(days=limit_by_day)
+                )
             if limit:
                 req = req.limit(limit)
             return req.all()

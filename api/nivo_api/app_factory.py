@@ -9,6 +9,7 @@ from flask_cors import CORS
 import logging
 
 from nivo_api.core.helpers import UUIDEncoder
+from nivo_api.core.db.connection import create_database_connections
 
 
 def create_app() -> Flask:
@@ -48,11 +49,17 @@ def init_sentry():
     sentry_sdk.init(integrations=[FlaskIntegration(), SqlalchemyIntegration()],)
 
 
+def init_db(app: Flask) -> None:
+    app.extensions["db"] = create_database_connections()
+
+
 def init_app() -> Flask:
     init_sentry()
     app = create_app()
     CORS(app)
     api = create_api(app)
     load_config(app)
+
     setup_logging(app)
+    init_db(app)
     return api.app

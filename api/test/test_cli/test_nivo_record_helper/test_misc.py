@@ -6,6 +6,7 @@ from uuid import uuid4, UUID
 import pytest
 import responses
 from requests import HTTPError
+from sqlalchemy.engine import Engine
 from sqlalchemy.exc import IntegrityError
 
 from nivo_api.cli import get_last_nivo_date, check_nivo_doesnt_exist, download_nivo
@@ -18,7 +19,7 @@ from nivo_api.cli.nivo_record_helper import (
 from nivo_api.core.db.connection import connection_scope
 from nivo_api.core.db.models.sql.nivo import SensorStationTable, NivoRecordTable
 from nivo_api.settings import Config
-from test.pytest_fixtures import setup_db
+from test.pytest_fixtures import database
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -66,13 +67,13 @@ class TestGetLastNivoDate:
 
 
 class TestCheckNivoDoesntExist:
-    @setup_db()
-    def test_check_nivo_doesnt_exist(self):
-        r = check_nivo_doesnt_exist(date(2019, 1, 1))
-        assert r is True
+    def test_check_nivo_doesnt_exist(self, database):
+        with connection_scope(database.engine) as con:
+            r = check_nivo_doesnt_exist(con, date(2019, 1, 1))
+            assert r is True
 
-    def _inject_test_data(self):
-        with connection_scope() as con:
+    def _inject_test_data(self, engine: Engine):
+        with connection_scope(engine) as con:
             nss_id = uuid4()
             con.execute(
                 SensorStationTable.insert().values(
@@ -90,64 +91,66 @@ class TestCheckNivoDoesntExist:
                 )
             )
 
-    @setup_db()
-    def test_check_nivo_exist(self):
-        self._inject_test_data()
-        r = check_nivo_doesnt_exist(date(2019, 1, 1))
+    def test_check_nivo_exist(self, database):
+        self._inject_test_data(database.engine)
+        with connection_scope(database.engine) as con:
+            r = check_nivo_doesnt_exist(con, date(2019, 1, 1))
         assert r is False
 
 
 class TestDownloadNivo:
     @responses.activate
-    def test_archive_download(self):
+    def test_archive_download(self, database):
         url = f"{Config.METEO_FRANCE_NIVO_BASE_URL}/Archive/nivo.201701.csv.gz"
         with open(os.path.join(CURRENT_DIR, "test_data/nivo.201701.csv.gz"), "rb") as f:
             responses.add(
                 responses.GET, url, body=f.read(), content_type="application/x-gzip"
             )
-        r = download_nivo(NivoDate(is_archive=True, nivo_date=date(2017, 1, 1)))
-        assert isinstance(r, ArchiveNivoCss)
-        assert r.nivo_date == date(2017, 1, 1)
+        with connection_scope(database.engine) as con:
+            r = download_nivo(NivoDate(is_archive=True, nivo_date=date(2017, 1, 1)), con)
+            assert isinstance(r, ArchiveNivoCss)
+            assert r.nivo_date == date(2017, 1, 1)
 
     @responses.activate
-    def test_recent_nivo_download(self):
+    def test_recent_nivo_download(self, database):
         url = f"{Config.METEO_FRANCE_NIVO_BASE_URL}/nivo.20190812.csv"
         with open(os.path.join(CURRENT_DIR, "test_data/nivo.20190812.csv")) as f:
             responses.add(responses.GET, url, body=f.read(), content_type="text/plain")
-        r = download_nivo(NivoDate(is_archive=False, nivo_date=date(2019, 8, 12)))
-        assert isinstance(r, NivoCsv)
-        assert r.nivo_date == date(2019, 8, 12)
+        with connection_scope(database.engine) as con:
+            r = download_nivo(NivoDate(is_archive=False, nivo_date=date(2019, 8, 12)), con)
+            assert isinstance(r, NivoCsv)
+            assert r.nivo_date == date(2019, 8, 12)
 
     @responses.activate
-    def test_download_fail(self):
+    def test_download_fail(self, database):
         url = f"{Config.METEO_FRANCE_NIVO_BASE_URL}/nivo.20190812.csv"
         responses.add(responses.GET, url, status=503)
-        with pytest.raises(HTTPError):
-            download_nivo(NivoDate(is_archive=False, nivo_date=date(2019, 8, 12)))
+        with connection_scope(database.engine) as con:
+            with pytest.raises(HTTPError):
+                download_nivo(NivoDate(is_archive=False, nivo_date=date(2019, 8, 12)), con)
 
 
 class TestImportNivo:
     # if this function fail we don't care. It just normalize and find the pk of the station.
-    def test_import_nivo(self):
+    def test_import_nivo(self, database):
         with open(os.path.join(CURRENT_DIR, "test_data/nivo.20190812.csv")) as f:
-            nivo_csv = DictReader(f, delimiter=";")
-            n = NivoCsv(NivoDate(is_archive=False, nivo_date=date(2019, 8, 12)))
-            n.nivo_csv = nivo_csv
+            with connection_scope(database.engine) as con:
+                nivo_csv = DictReader(f, delimiter=";")
+                n = NivoCsv(NivoDate(is_archive=False, nivo_date=date(2019, 8, 12)), con)
+                n.nivo_csv = nivo_csv
 
 
 class TestCreateNewUnknownNivoSensorStation:
-    @setup_db()
-    def test_create_new_unknown_nivo_sensor_station(self):
-        with connection_scope() as con:
+    def test_create_new_unknown_nivo_sensor_station(self, database):
+        with connection_scope(database.engine) as con:
             r = create_new_unknown_nivo_sensor_station(10, con)
         assert isinstance(r.nss_id, UUID)
 
-    @setup_db()
-    def test_create_new_sensor_station_fail(self):
+    def test_create_new_sensor_station_fail(self, database):
         """
         It should fail when two unknown station have the same name. non-idempotency is assumed (tech debt FTW)
         """
-        with connection_scope() as con:
+        with connection_scope(database.engine) as con:
             with pytest.raises(IntegrityError):
                 r = create_new_unknown_nivo_sensor_station(10, con)
                 assert isinstance(r.nss_id, UUID)

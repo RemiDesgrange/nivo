@@ -1,23 +1,20 @@
-from contextlib import contextmanager
-
-
 from click.testing import CliRunner
-from sqlalchemy import text
 from uuid import UUID
 from sqlalchemy.engine import RowProxy
 
 from nivo_api.cli import init_db
 from nivo_api.cli.nivo_record_helper import create_new_unknown_nivo_sensor_station
-from nivo_api.core.db.connection import db_engine, connection_scope
+from nivo_api.core.db.connection import connection_scope, create_database_connections
 
 # populate metadata
 from nivo_api.core.db.models.sql.nivo import metadata
-from test.pytest_fixtures import setup_db
+from test.pytest_fixtures import database
 
 
 class TestInitDb:
     def test_init_db(self):
-        metadata.drop_all(db_engine)
+        db_con = create_database_connections()
+        metadata.drop_all(db_con.engine)
         runner = CliRunner()
         result = runner.invoke(init_db)
         assert result.exit_code == 0
@@ -41,9 +38,8 @@ class TestInitDb:
         assert r.exit_code == 0
 
 
-@setup_db()
-def test_create_new_unkown_nivo_sensor_station():
-    with connection_scope() as con:
+def test_create_new_unkown_nivo_sensor_station(database):
+    with connection_scope(database.engine) as con:
         res = create_new_unknown_nivo_sensor_station(123456, con)
         assert isinstance(res, RowProxy)
         assert isinstance(res.nss_id, UUID)

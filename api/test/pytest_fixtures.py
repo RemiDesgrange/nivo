@@ -1,23 +1,15 @@
-from contextlib import contextmanager
+import pytest
 
-from sqlalchemy import create_engine
-
-from nivo_api.core.db.connection import metadata, db_engine
-
+from nivo_api.core.db.connection import create_database_connections, metadata
 
 schema = ["bra", "nivo", "flowcapt"]
 
 
-@contextmanager
-def setup_db():
-    test_engine = create_engine("postgresql://nivo:nivo@localhost:5432/nivo_test")
-    global db_engine
-    [test_engine.execute(f"DROP SCHEMA IF EXISTS {s} CASCADE") for s in schema]
-    [test_engine.execute(f"CREATE SCHEMA IF NOT EXISTS {s}") for s in schema]
-    metadata.bind = test_engine
-    metadata.create_all(test_engine)
-    original_engine = db_engine
-    db_engine = test_engine
-    yield
-    db_engine = original_engine
-    [test_engine.execute(f"DROP SCHEMA IF EXISTS {s} CASCADE") for s in schema]
+@pytest.fixture
+def database():
+    db_con = create_database_connections()
+    [db_con.engine.execute(f"DROP SCHEMA IF EXISTS {s} CASCADE") for s in schema]
+    [db_con.engine.execute(f"CREATE SCHEMA IF NOT EXISTS {s}") for s in schema]
+    metadata.create_all(db_con.engine)
+    yield db_con
+    [db_con.engine.execute(f"DROP SCHEMA IF EXISTS {s} CASCADE") for s in schema]

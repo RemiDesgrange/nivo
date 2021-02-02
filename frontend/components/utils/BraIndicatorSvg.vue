@@ -3,12 +3,12 @@
   <div class="value-bra-container">
     <svg viewBox="0 0 100 100" width="120" height="120">
       <polygon
-        style="fill: none; stroke: #000; stroke-miterlimit: 10;"
+        style="fill: none; stroke: #000; stroke-miterlimit: 10"
         points="2.2,89.5 97.5,89.5 62.7,11.9 48,32.9 31.8,25.5 "
       />
       <line
         v-if="isDifferent"
-        style="fill: none; stroke: #000; stroke-miterlimit: 10;"
+        style="fill: none; stroke: #000; stroke-miterlimit: 10"
         x1="15"
         y1="61.5"
         x2="85"
