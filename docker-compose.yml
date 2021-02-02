@@ -13,13 +13,14 @@ services:
       - "traefik.enable=true"
       - "traefik.frontend.rule=Host:api.nivo.example.com"
   db:
-    image: mdillon/postgis:11
+    image: camptocamp/postgres:13
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nivo}
       POSTGRES_USER: nivo
       POSTGRES_DB: nivo
     labels:
       - "traefik.enable=false"
+
   front:
     build:
       context: frontend
@@ -35,7 +36,7 @@ services:
       - "traefik.enable=true"
       - "traefik.frontend.rule=Host:nivo.example.com"
   proxy:
-    image: traefik
+    image: traefik:2
     command:
       - "--api"
       - "--entrypoints=Name:http Address::80"
