@@ -107,7 +107,9 @@ class TestDownloadNivo:
                 responses.GET, url, body=f.read(), content_type="application/x-gzip"
             )
         with connection_scope(database.engine) as con:
-            r = download_nivo(NivoDate(is_archive=True, nivo_date=date(2017, 1, 1)), con)
+            r = download_nivo(
+                NivoDate(is_archive=True, nivo_date=date(2017, 1, 1)), con
+            )
             assert isinstance(r, ArchiveNivoCss)
             assert r.nivo_date == date(2017, 1, 1)
 
@@ -117,7 +119,9 @@ class TestDownloadNivo:
         with open(os.path.join(CURRENT_DIR, "test_data/nivo.20190812.csv")) as f:
             responses.add(responses.GET, url, body=f.read(), content_type="text/plain")
         with connection_scope(database.engine) as con:
-            r = download_nivo(NivoDate(is_archive=False, nivo_date=date(2019, 8, 12)), con)
+            r = download_nivo(
+                NivoDate(is_archive=False, nivo_date=date(2019, 8, 12)), con
+            )
             assert isinstance(r, NivoCsv)
             assert r.nivo_date == date(2019, 8, 12)
 
@@ -127,7 +131,9 @@ class TestDownloadNivo:
         responses.add(responses.GET, url, status=503)
         with connection_scope(database.engine) as con:
             with pytest.raises(HTTPError):
-                download_nivo(NivoDate(is_archive=False, nivo_date=date(2019, 8, 12)), con)
+                download_nivo(
+                    NivoDate(is_archive=False, nivo_date=date(2019, 8, 12)), con
+                )
 
 
 class TestImportNivo:
@@ -136,7 +142,9 @@ class TestImportNivo:
         with open(os.path.join(CURRENT_DIR, "test_data/nivo.20190812.csv")) as f:
             with connection_scope(database.engine) as con:
                 nivo_csv = DictReader(f, delimiter=";")
-                n = NivoCsv(NivoDate(is_archive=False, nivo_date=date(2019, 8, 12)), con)
+                n = NivoCsv(
+                    NivoDate(is_archive=False, nivo_date=date(2019, 8, 12)), con
+                )
                 n.nivo_csv = nivo_csv
 
 

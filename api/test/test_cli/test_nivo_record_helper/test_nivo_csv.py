@@ -11,6 +11,7 @@ from requests import HTTPError
 from nivo_api.cli.nivo_record_helper import NivoCsv, NivoDate
 from test.pytest_fixtures import database
 
+
 class TestNivoCsv:
     @responses.activate
     def test_fetch_wrong_file(self, database):
@@ -19,7 +20,7 @@ class TestNivoCsv:
         )
         date = NivoDate(False, datetime.now())
         with connection_scope(database.engine) as con:
-            a = NivoCsv(date, con,"http://example.com")
+            a = NivoCsv(date, con, "http://example.com")
             assert a.download_url == "http://example.com"
             assert a.nivo_date == date.nivo_date
             with pytest.raises(HTTPError) as ex:
@@ -36,7 +37,7 @@ class TestNivoCsv:
             )
             with connection_scope(database.engine) as con:
                 date = NivoDate(False, datetime.now())
-                a = NivoCsv(date, con,"http://test")
+                a = NivoCsv(date, con, "http://test")
                 assert a.download_url == "http://test"
                 assert a.nivo_date == date.nivo_date
 
@@ -46,7 +47,7 @@ class TestNivoCsv:
         )
         with connection_scope(database.engine) as con:
             date = NivoDate(False, datetime.now())
-            a = NivoCsv(date, con,"http://test")
+            a = NivoCsv(date, con, "http://test")
             a.nivo_csv = DictReader(file, delimiter=";")
             with pytest.raises(KeyError) as e:
                 a.normalize()

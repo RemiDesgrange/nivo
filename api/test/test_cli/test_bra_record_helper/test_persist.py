@@ -9,6 +9,7 @@ from nivo_api.core.db.models.sql.bra import ZoneTable, DepartmentTable, MassifTa
 
 from test.pytest_fixtures import database
 
+
 class TestPersistZone:
     def test_insert_zone(self, database):
         with connection_scope(database.engine) as con:
@@ -26,7 +27,7 @@ class TestPersistZone:
 
 
 class TestPersistMassif:
-    def test_massif(self,database):
+    def test_massif(self, database):
         with connection_scope(database.engine) as con:
             r = persist_massif(
                 con,

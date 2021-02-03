@@ -29,9 +29,11 @@
             <div class="bra-risk-indicator">
               <bra-indicator-svg
                 :risk="feature.get('latest_record').max_risk"
-                :risk-high="feature.get('riskHigh')"
-                :risk-low="feature.get('riskLow')"
-                :altitude-thresold="feature.get('threshold')"
+                :risk-high="getRiskHigh(feature.get('latest_record').risks)"
+                :risk-low="getRiskLow(feature.get('latest_record').risks)"
+                :altitude-thresold="
+                  getAltitudeThreshold(feature.get('latest_record').risks)
+                "
               />
             </div>
           </b-col>
@@ -72,6 +74,29 @@ export default {
   methods: {
     formatDateStr(dateStr) {
       return moment(new Date(dateStr)).format('DD/MM/YYYY')
+    },
+    getRiskHigh(risks) {
+      console.log(risks)
+      if (risks.length === 1) {
+        return null
+      }
+      const riskHigh = risks.find((r) => r.altitude.charAt(0) === '>')
+      if (riskHigh) return riskHigh.risk
+    },
+    getRiskLow(risks) {
+      if (risks.length === 1) {
+        return null
+      }
+      const riskLow = risks.find((r) => r.altitude.charAt(0) === '<')
+      if (riskLow) return riskLow.risk
+    },
+    getAltitudeThreshold(risks) {
+      if (risks) {
+        if (risks.length === 1) {
+          return null
+        }
+        return parseInt(risks[0].altitude.substring(1))
+      }
     },
   },
 }

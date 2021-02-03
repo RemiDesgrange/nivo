@@ -96,8 +96,7 @@ export default {
   },
   bootstrapVue: {
     icons: false,
-    componentPlugins: [],
-    directivePlugins: [],
+    directivePlugins: ["VBTooltipPlugin", "VBTogglePlugin"],
     components: [
       'BContainer',
       'BCol',
@@ -133,7 +132,6 @@ export default {
       'BProgress',
       'BAlert',
     ],
-    directives: ['VBToggle', 'VBTooltip'],
   },
   sentry: {
     config: {

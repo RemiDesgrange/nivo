@@ -193,6 +193,9 @@ class MassifResource(Resource):
 
             features = list()
             for res in lateral_results:
+                risks = con.execute(
+                    RiskTable.select(RiskTable.c.r_record_id == res.br_id)
+                ).fetchall()
                 features.append(
                     Feature(
                         geometry=GeometryField().format(res.the_geom),
@@ -200,6 +203,7 @@ class MassifResource(Resource):
                             "id": res.m_id,
                             "name": res.m_name,
                             "latest_record": {
+                                "id": res.br_id,
                                 "max_risk": res.br_max_risk,
                                 "date": res.br_production_date,
                                 "dangerous_slopes": [
@@ -207,7 +211,14 @@ class MassifResource(Resource):
                                 ],
                                 "snowlimit_south": res.br_snowlimit_south,
                                 "snowlimit_north": res.br_snowlimit_north,
-                                "risks": [],
+                                "risks": [
+                                    {
+                                        "id": r.r_id,
+                                        "risk": r.r_risk,
+                                        "altitude": r.r_altitude_limit,
+                                    }
+                                    for r in risks
+                                ],
                             },
                             "department": {
                                 "id": res.d_id,
