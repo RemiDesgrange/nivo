@@ -65,6 +65,7 @@ export default {
    ** Build configuration
    */
   build: {
+    analyze: true,
     /*
      ** You can extend webpack config here
      */
@@ -140,6 +141,7 @@ export default {
       release: process.env.COMMIT_REF || process.env.npm_package_version,
     },
     publishRelease: true,
+    disabled: true
   },
   moment: {
     defaultLocale: 'fr',
