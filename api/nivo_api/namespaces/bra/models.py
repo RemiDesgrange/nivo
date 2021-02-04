@@ -4,16 +4,6 @@ from nivo_api.core.api_schema.geojson import (
     Feature as FeatureSchema,
     FeatureCollection as FeatureCollectionSchema,
 )
-
-#             SELECT result.* FROM bra.massif m
-#                 JOIN LATERAL (
-#                     SELECT ST_AsGeoJSON(m.the_geom) as the_geom,
-# m.m_id,
-# m.m_name,
-# d.d_id,
-# d.d_name,
-# d.d_number,
-# r.br_max_risk,
 from nivo_api.namespaces.utils import UUIDField, EnumField
 from .namespace import bra_api
 
@@ -159,5 +149,39 @@ bra_model = bra_api.model(
                 )
             )
         ),
+    },
+)
+
+
+massifs_model = bra_api.model(
+    "MassifsModel",
+    {
+        "id": UUIDField(attribute="m_id"),
+        "name": fields.String(attribute="m_name"),
+        "department": {
+                    "id": UUIDField(attribute="d_id"),
+                    "name": fields.String(attribute="d_name"),
+                    "number": fields.Integer(attribute="d_number"),
+                },
+        "latest_record": {
+            "id": UUIDField(attribute="br_id"),
+            "max_risk": fields.Integer(attribute="br_max_risk"),
+            "date": fields.DateTime(attribute="br_production_date"),
+            "dangerous_slopes": fields.List(EnumField, attribute="br_dangerous_slopes"),
+            "snowlimit_south": fields.Integer(attribute="br_snowlimit_south"),
+            "snowlimit_north": fields.Integer(attribute="br_snowlimit_north"),
+            "risks": fields.List(
+                fields.Nested(
+                    bra_api.model(
+                        "MassifsLastestRecordRisks",
+                        {
+                            "id": UUIDField(attribute="r_id"),
+                            "risk": fields.Integer(attribute="r_risk"),
+                            "altitude": fields.String(attribute="r_altitude_limit"),
+                        },
+                    )
+                )
+            ),
+        },
     },
 )

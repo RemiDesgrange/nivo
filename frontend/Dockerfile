@@ -1,11 +1,11 @@
-FROM node:slim
+FROM node:14-slim
 
 ENV NODE_ENV=build
 WORKDIR /app
 RUN chown node:node /app
 
 USER node
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json /app/
 RUN npm install
 
 ENV NODE_ENV=production

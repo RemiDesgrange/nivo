@@ -7,6 +7,9 @@ from flask_restx._http import HTTPStatus
 from geojson import FeatureCollection, Feature
 from sqlalchemy import select, Date, func, true
 from sqlalchemy.orm import subqueryload
+from sqlalchemy import func
+from sqlalchemy.dialects.postgresql import INTERVAL
+from sqlalchemy.sql.functions import concat
 
 from nivo_api.core.api_schema.geojson import (
     FeatureCollection as FeatureCollectionSchema,
@@ -19,7 +22,7 @@ from nivo_api.core.db.models.sql.bra import (
     MassifTable,
     RiskTable,
 )
-from nivo_api.namespaces.bra.models import bra_model, zone_model, department_model
+from nivo_api.namespaces.bra.models import bra_model, zone_model, department_model, massifs_model
 from nivo_api.namespaces.bra.namespace import bra_api
 from nivo_api.namespaces.utils import GeometryField
 
@@ -32,15 +35,15 @@ class MassifsRecordRessource(Resource):
     @bra_api.expect(massif_record_parser)
     def get(self, massif_id: UUID) -> List[Dict]:
         """
-        Return a list of records for a massif. Limit to last 50 records (last 50 bra)
+        Return a list of records for a massif. Limit to last 50 days by default.
         """
         args = massif_record_parser.parse_args()
         with session_scope() as sess:
             res = (
                 sess.query(BraRecord)
                 .filter(BraRecord.br_massif == massif_id)
+                .filter(BraRecord.br_production_date > (func.now() - func.cast(concat(args["limit"], 'DAYS'), INTERVAL)))
                 .order_by(BraRecord.br_production_date.desc())
-                .limit(args["limit"])
                 .options(subqueryload(BraRecord.risks))
                 .options(subqueryload(BraRecord.snow_records))
                 .options(subqueryload(BraRecord.fresh_snow_records))
@@ -162,7 +165,6 @@ class MassifResource(Resource):
                 br.c.br_max_risk,
                 br.c.br_risk_comment,
                 br.c.br_dangerous_slopes,
-                br.c.br_dangerous_slopes_comment,
                 br.c.br_opinion,
                 br.c.br_snow_quality,
                 br.c.br_snow_stability,
@@ -190,44 +192,25 @@ class MassifResource(Resource):
             if massif_id:
                 query = query.where(m.c.m_id == massif_id)
             lateral_results = con.execute(query).fetchall()
-
+            # transform into json
+            results_in_json = marshal(lateral_results, massifs_model)
             features = list()
-            for res in lateral_results:
+            for i, result in enumerate(results_in_json):
                 risks = con.execute(
-                    RiskTable.select(RiskTable.c.r_record_id == res.br_id)
-                ).fetchall()
-                features.append(
-                    Feature(
-                        geometry=GeometryField().format(res.the_geom),
-                        properties={
-                            "id": res.m_id,
-                            "name": res.m_name,
-                            "latest_record": {
-                                "id": res.br_id,
-                                "max_risk": res.br_max_risk,
-                                "date": res.br_production_date,
-                                "dangerous_slopes": [
-                                    str(ds) for ds in res.br_dangerous_slopes
-                                ],
-                                "snowlimit_south": res.br_snowlimit_south,
-                                "snowlimit_north": res.br_snowlimit_north,
-                                "risks": [
+                        RiskTable.select(RiskTable.c.r_record_id == result["latest_record"]["id"])
+                    ).fetchall()
+                result["latest_record"]["risks"] = [
                                     {
                                         "id": r.r_id,
                                         "risk": r.r_risk,
                                         "altitude": r.r_altitude_limit,
                                     }
                                     for r in risks
-                                ],
-                            },
-                            "department": {
-                                "id": res.d_id,
-                                "name": res.d_name,
-                                "number": res.d_number,
-                            },
-                        },
-                    )
-                )
+                                ]
+                features.append(Feature(
+                    geometry=GeometryField().format(lateral_results[i].the_geom),
+                    properties=result
+                ))
             if len(features) == 1:
                 return jsonify(features[0])
             return jsonify(FeatureCollection(features))

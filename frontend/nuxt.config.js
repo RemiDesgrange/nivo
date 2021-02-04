@@ -65,7 +65,6 @@ export default {
    ** Build configuration
    */
   build: {
-    analyze: true,
     /*
      ** You can extend webpack config here
      */
@@ -96,7 +95,7 @@ export default {
   },
   bootstrapVue: {
     icons: false,
-    directivePlugins: ["VBTooltipPlugin", "VBTogglePlugin"],
+    directivePlugins: ['VBTooltipPlugin', 'VBTogglePlugin'],
     components: [
       'BContainer',
       'BCol',
@@ -139,7 +138,7 @@ export default {
       release: process.env.COMMIT_REF || process.env.npm_package_version,
     },
     publishRelease: true,
-    disabled: true
+    disabled: true,
   },
   moment: {
     defaultLocale: 'fr',

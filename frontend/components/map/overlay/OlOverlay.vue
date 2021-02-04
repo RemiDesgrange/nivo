@@ -31,8 +31,8 @@ export default {
   },
   mounted() {
     this.overlay.setElement(document.getElementById(this.id))
-    this.$store.commit('map/ADD_OVERLAY', this.overlay)
     this.overlay.setPosition(findPointOnSurface(this.position.getGeometry()))
+    this.$store.commit('map/ADD_OVERLAY', this.overlay)
   },
   beforeDestroy() {
     this.$store.commit('map/REMOVE_OVERLAY', this.overlay)

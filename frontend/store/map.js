@@ -47,7 +47,6 @@ export const state = () => ({
   map: new OlMap(),
   view: new View({
     projection: 'EPSG:3857',
-    // center: [2.438, 46.528],
     center: [465455.0376565846, 6020157.832574354],
     zoom: 5.8,
   }),
@@ -165,6 +164,9 @@ export const getters = {
   },
   [getterTypes.SELECTED_MASSIF_HOVER](state) {
     return state.selectedFeatures.massifs.byHover.getArray()
+  },
+  [getterTypes.SELECTED_MASSIF](state) {
+    return state.selectedFeatures.massifs.byApp.getArray()
   },
   [getterTypes.SELECTED_FLOWCAPT_STATION_CLICK](state) {
     return state.selectedFeatures.flowcapt.byClick.getArray()
