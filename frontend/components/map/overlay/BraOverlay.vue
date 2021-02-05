@@ -26,7 +26,7 @@
         </div>
       </b-col>
     </b-row>
-    <b-row no-gutters v-if="displayLink">
+    <b-row v-if="displayLink" no-gutters>
       <b-card-body>
         <b-button :to="name.toLowerCase()">Voir le BRA</b-button>
       </b-card-body>

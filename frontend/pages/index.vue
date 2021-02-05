@@ -22,9 +22,11 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import {
   globalActionsTypes as actionsTypes,
   mapMutationTypes,
+  mapGettersTypes,
 } from '~/modules/stateTypes'
 
 import BaseMap from '~/components/map/BaseMap'
@@ -51,6 +53,21 @@ export default {
       layerName: 'posteNivo',
       visibility: false,
     })
+  },
+  computed: {
+    ...mapGetters('map', [mapGettersTypes.SELECTED_MASSIF_CLICK]),
+    selectedMassif() {
+      return this.SELECTED_MASSIF_CLICK
+    },
+  },
+  watch: {
+    selectedMassif(newMassif) {
+      if (newMassif.length > 0) {
+        this.$router.push(`/${newMassif[0].get('name').toLowerCase()}`)
+      } else {
+        this.$router.push('/')
+      }
+    },
   },
 }
 </script>

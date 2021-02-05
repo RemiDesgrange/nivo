@@ -22,6 +22,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import BaseMap from '~/components/map/BaseMap'
 import BraMap from '~/components/map/BraMap'
 import BraData from '~/components/BraData'
@@ -31,6 +32,7 @@ import {
   globalMutationTypes as types,
   globalActionsTypes as actionsTypes,
   mapMutationTypes,
+  mapGettersTypes,
 } from '~/modules/stateTypes'
 
 export default {
@@ -75,6 +77,21 @@ export default {
       // )
       // store.dispatch(actionsTypes.SET_SELECTED_BRA, selectedBra)
     }
+  },
+  computed: {
+    ...mapGetters('map', [mapGettersTypes.SELECTED_MASSIF_CLICK]),
+    selectedMassif() {
+      return this.SELECTED_MASSIF_CLICK
+    },
+  },
+  watch: {
+    selectedMassif(newMassif) {
+      if (newMassif.length > 0) {
+        this.$router.push(`/${newMassif[0].get('name').toLowerCase()}`)
+      } else {
+        this.$router.push('/')
+      }
+    },
   },
 }
 </script>
