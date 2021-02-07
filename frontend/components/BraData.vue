@@ -5,16 +5,8 @@
         <b-col>
           <b-button-toolbar key-nav aria-label="Toolbar with button groups">
             <b-button-group class="mr-1">
-              <b-button :disabled="noFollowed">&laquo;</b-button>
-              <b-button :disabled="noFollowed">&lsaquo;</b-button>
-            </b-button-group>
-            <b-button-group class="mr-1">
               <b-button :disabled="noFollowed">Jour suivant</b-button>
               <b-button :disabled="noPrevious">Jour précédent</b-button>
-            </b-button-group>
-            <b-button-group class="mr-1">
-              <b-button :disabled="noPrevious">&rsaquo;</b-button>
-              <b-button :disabled="noPrevious">&raquo;</b-button>
             </b-button-group>
             <b-input-group class="mr1">
               <b-form-input :value="braDate" type="date"></b-form-input>

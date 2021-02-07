@@ -47,7 +47,7 @@ export const state = () => ({
   map: new OlMap(),
   view: new View({
     projection: 'EPSG:3857',
-    center: [465455.0376565846, 6020157.832574354],
+    center: [453408.9918842213, 5461004.166551998],
     zoom: 5.8,
   }),
   baseLayers: new LayerGroup({
@@ -330,7 +330,6 @@ export const mutations = {
         }
       })
   },
-  // TODO need to be actions that go fetch the data if they don't exist !!
   [types.SET_MASSIFS_VISIBILITY](state, value) {
     state.massifs.setVisible(value)
     state.map.render()

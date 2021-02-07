@@ -13,7 +13,7 @@
           </b-col>
           <div class="w-100"></div>
           <b-col>
-            <bra-chart />
+            <bra-chart v-if="braData" />
           </b-col>
         </b-col>
       </b-row>
@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import BaseMap from '~/components/map/BaseMap'
 import BraMap from '~/components/map/BraMap'
 import BraData from '~/components/BraData'
@@ -43,6 +43,7 @@ export default {
     BraChart,
   },
   async asyncData({ store, params }) {
+    console.log(params)
     // set map visibility
     store.commit('map/' + mapMutationTypes.SET_VISIBILITY, {
       layerName: 'massifs',
@@ -59,26 +60,29 @@ export default {
     // fetch massif
     await store.dispatch(actionsTypes.FETCH_MASSIFS)
     // select the fetched massif
-    const massif = store.state.massifs.features.find(
-      (massif) => params.massif.toUpperCase() === massif.properties.name
-    )
-    if (!massif) {
-      store.commit(types.SET_ALERT, {
-        level: alertTypes.DANGER,
-        message: 'Massifs cannot be found',
-      })
-    } else {
-      await store.dispatch(
-        actionsTypes.FETCH_LAST_BRA_DATA,
-        massif.properties.id
+    if (params.massif !== undefined) {
+      const massif = store.state.massifs.features.find(
+        (massif) => params.massif.toUpperCase() === massif.properties.name
       )
-      // const selectedBra = store.state.braData.find(
-      //   (b) => b.massif.id === massif.properties.id
-      // )
-      // store.dispatch(actionsTypes.SET_SELECTED_BRA, selectedBra)
+      if (!massif) {
+        store.commit(types.SET_ALERT, {
+          level: alertTypes.DANGER,
+          message: 'Massifs cannot be found',
+        })
+      } else {
+        await store.dispatch(
+          actionsTypes.FETCH_LAST_BRA_DATA,
+          massif.properties.id
+        )
+        // const selectedBra = store.state.braData.find(
+        //   (b) => b.massif.id === massif.properties.id
+        // )
+        // store.dispatch(actionsTypes.SET_SELECTED_BRA, selectedBra)
+      }
     }
   },
   computed: {
+    ...mapState(['braData']),
     ...mapGetters('map', [mapGettersTypes.SELECTED_MASSIF_CLICK]),
     selectedMassif() {
       return this.SELECTED_MASSIF_CLICK
