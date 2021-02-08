@@ -18,6 +18,10 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nivo}
       POSTGRES_USER: nivo
       POSTGRES_DB: nivo
+    healthcheck:
+      interval: 30s
+      timeout: 30s
+      test: ["CMD",  "pg_isready",  "-U" ,"nivo"]
     labels:
       - "traefik.enable=false"
 
