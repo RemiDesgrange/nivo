@@ -250,7 +250,6 @@ def import_flowcapt_station():
 def init_db(drop):
     # create the table if not exist. Assume the db is already here.
     # the command is idem potent
-    logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
     if drop:
         click.echo(
             "/!\\ Warning /!\\ you specify drop. Your db will be erased before creation"
