@@ -89,7 +89,7 @@ DepartmentTable = AbstractSpatialTable(
     Column("d_zone", UUID(as_uuid=True), ForeignKey("bra.zone.z_id"), nullable=False),
     schema="bra",
 )
-# "North Alps", "Souith Alps" etc...
+# "North Alps", "South Alps" etc...
 ZoneTable = AbstractSpatialTable(
     "zone",
     metadata,
@@ -207,8 +207,8 @@ _PGWeatherType = ENUM(
     WeatherType, name="weather_type_t", metadata=metadata, schema="bra"
 )
 
-WeatherForcastTable = AbstractTable(
-    "weather_forcast",
+WeatherForecastTable = AbstractTable(
+    "weather_forecast",
     metadata,
     Column("wf_id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
     Column(
@@ -238,14 +238,14 @@ _PGWindDirection = ENUM(
     WindDirection, name="wind_direction_t", metadata=metadata, schema="bra"
 )
 
-WeatherForcastAtAltitudeTable = AbstractTable(
-    "weather_forcast_at_altitude",
+WeatherForecastAtAltitudeTable = AbstractTable(
+    "weather_forecast_at_altitude",
     metadata,
     Column("wfaa_id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
     Column(
         "wfaa_wf_id",
         UUID(as_uuid=True),
-        ForeignKey("bra.weather_forcast.wf_id"),
+        ForeignKey("bra.weather_forecast.wf_id"),
         nullable=False,
     ),
     Column(
@@ -269,8 +269,8 @@ _PGRiskEvolution = ENUM(
     RiskEvolution, name="risk_evolution_t", metadata=metadata, schema="bra"
 )
 
-RiskForcastTable = AbstractTable(
-    "risk_forcast",
+RiskForecastTable = AbstractTable(
+    "risk_forecast",
     metadata,
     Column("rf_id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
     Column("rf_bra_record", UUID(as_uuid=True), ForeignKey("bra.record.br_id")),

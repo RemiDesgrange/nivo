@@ -156,13 +156,13 @@ export default {
         y: e.max_risk,
       }))
       this.iso0Evolution = this.records.flatMap((r) => {
-        return r.weather_forcasts.map((wf) => ({
+        return r.weather_forecasts.map((wf) => ({
           x: moment(wf.expected_date).toDate(),
           y: wf.iso0,
         }))
       })
       this.isoMinus10Evolution = this.records.flatMap((r) => {
-        return r.weather_forcasts.map((wf) => ({
+        return r.weather_forecasts.map((wf) => ({
           x: moment(wf.expected_date).toDate(),
           y: wf.iso_minus_10,
         }))

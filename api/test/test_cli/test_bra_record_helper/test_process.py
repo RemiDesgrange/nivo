@@ -14,8 +14,8 @@ from nivo_api.cli.bra_record_helper.process import (
     _get_dangerous_slopes,
     _get_bra_snow_records,
     _get_fresh_snow_record,
-    _get_weather_forcast_at_altitude,
-    _get_weather_forcast,
+    _get_weather_forecast_at_altitude,
+    _get_weather_forecast,
     _get_risk,
 )
 from nivo_api.core.db.connection import connection_scope
@@ -185,10 +185,10 @@ def test_get_fresh_snow_record(bra_xml_parsed):
         assert fsr == test_data[i]
 
 
-class TestGetWeatherForcastAtAltitude:
-    def test_get_weather_forcast_at_altitude_work(self, bra_xml_parsed):
+class TestGetWeatherForecastAtAltitude:
+    def test_get_weather_forecast_at_altitude_work(self, bra_xml_parsed):
         wf_id = uuid4()
-        res = _get_weather_forcast_at_altitude(bra_xml_parsed, wf_id)
+        res = _get_weather_forecast_at_altitude(bra_xml_parsed, wf_id)
         assert isinstance(res, list)
         for i, data in enumerate(res):
             assert data["wfaa_wind_altitude"] == (2000, 2500)[i % 2]
@@ -207,14 +207,14 @@ class TestGetWeatherForcastAtAltitude:
             assert data["wfaa_wind_force"] == (20, 50, 40, 60, 60, 70)[i]
 
 
-class TestGetWeatherForcast:
-    def test_get_weather_forcast_work(self, bra_xml_parsed):
+class TestGetWeatherForecast:
+    def test_get_weather_forecast_work(self, bra_xml_parsed):
         bra_id = uuid4()
-        res = _get_weather_forcast(bra_xml_parsed, bra_id)
+        res = _get_weather_forecast(bra_xml_parsed, bra_id)
         assert isinstance(res, dict)
 
-        assert isinstance(res["weather_forcast"], list)
-        assert len(res["weather_forcast"]) == 3
+        assert isinstance(res["weather_forecast"], list)
+        assert len(res["weather_forecast"]) == 3
 
         expected_dict = [
             {
@@ -246,11 +246,11 @@ class TestGetWeatherForcast:
             },
         ]
 
-        for index, wf in enumerate(res["weather_forcast"]):
+        for index, wf in enumerate(res["weather_forecast"]):
             keys = expected_dict[index].keys()
             for k in keys:
                 assert wf[k] == expected_dict[index][k]
-        assert "weather_forcast_at_altitude" in res
+        assert "weather_forecast_at_altitude" in res
 
 
 class TestProcessXML:

@@ -19,12 +19,12 @@ from nivo_api.core.db.models.sql.bra import (
     BraRecordTable,
     SnowRecordTable,
     FreshSnowRecordTable,
-    WeatherForcastTable,
-    RiskForcastTable,
+    WeatherForecastTable,
+    RiskForecastTable,
     WindDirection,
     WeatherType,
     RiskEvolution,
-    WeatherForcastAtAltitudeTable,
+    WeatherForecastAtAltitudeTable,
 )
 
 log = logging.getLogger(__name__)
@@ -149,9 +149,9 @@ def _get_fresh_snow_record(bra_xml: _Element, bra_id) -> Generator[Dict, None, N
             }
 
 
-def _get_weather_forcast_at_altitude(bra_xml: _Element, wf_id: UUID) -> List:
+def _get_weather_forecast_at_altitude(bra_xml: _Element, wf_id: UUID) -> List:
     """
-    for exach altitude of the forcast return the wind direction and force
+    for exach altitude of the forecast return the wind direction and force
     """
     altitudes = [int(v) for _, v in bra_xml.find("//METEO").attrib.items()]
     wfaa_final = list()
@@ -172,13 +172,13 @@ def _get_weather_forcast_at_altitude(bra_xml: _Element, wf_id: UUID) -> List:
     return wfaa_final
 
 
-def _get_weather_forcast(bra_xml: _Element, bra_id: UUID) -> Dict:
-    weather_forcasts = list()
-    weather_forcasts_at_altitude = list()
+def _get_weather_forecast(bra_xml: _Element, bra_id: UUID) -> Dict:
+    weather_forecasts = list()
+    weather_forecasts_at_altitude = list()
     for record in bra_xml.find("//METEO").getchildren():
         if record.tag == "ECHEANCE":
             wf_id = uuid4()
-            weather_forcasts.append(
+            weather_forecasts.append(
                 {
                     "wf_id": wf_id,
                     "wf_bra_record": bra_id,
@@ -192,22 +192,22 @@ def _get_weather_forcast(bra_xml: _Element, bra_id: UUID) -> Dict:
                     "wf_iso_minus_10": int(record.get("ISO-10")),
                 }
             )
-            weather_forcasts_at_altitude += _get_weather_forcast_at_altitude(
+            weather_forecasts_at_altitude += _get_weather_forecast_at_altitude(
                 bra_xml, wf_id
             )
 
     return {
-        "weather_forcast": weather_forcasts,
-        "weather_forcast_at_altitude": weather_forcasts_at_altitude,
+        "weather_forecast": weather_forecasts,
+        "weather_forecast_at_altitude": weather_forecasts_at_altitude,
     }
 
 
-def _get_risk_forcast(bra_xml: _Element, bra_id: UUID) -> Generator[Dict, None, None]:
-    for forcast in bra_xml.find("//TENDANCES").getchildren():
-        evol = RiskEvolution(int(forcast.get("VALEUR")))
+def _get_risk_forecast(bra_xml: _Element, bra_id: UUID) -> Generator[Dict, None, None]:
+    for forecast in bra_xml.find("//TENDANCES").getchildren():
+        evol = RiskEvolution(int(forecast.get("VALEUR")))
         yield {
             "rf_bra_record": bra_id,
-            "rf_date": datetime.strptime(forcast.get("DATE"), "%Y-%m-%dT%H:%M:%S"),
+            "rf_date": datetime.strptime(forecast.get("DATE"), "%Y-%m-%dT%H:%M:%S"),
             "rf_evolution": evol,
         }
 
@@ -215,17 +215,17 @@ def _get_risk_forcast(bra_xml: _Element, bra_id: UUID) -> Generator[Dict, None, 
 def process_xml(con: Connection, bra_xml: ET._Element) -> List[Dict]:
     # split the XML in multiple entity object before merging them.
     bra_id = uuid4()
-    weather_forcasts = _get_weather_forcast(bra_xml, bra_id)
+    weather_forecasts = _get_weather_forecast(bra_xml, bra_id)
     return [
         {BraRecordTable: _get_bra_record(bra_xml, bra_id, con)},
         {RiskTable: _get_risk(bra_xml.find("//RISQUE"), bra_id)},
         {SnowRecordTable: _get_bra_snow_records(bra_xml, bra_id)},
         {FreshSnowRecordTable: _get_fresh_snow_record(bra_xml, bra_id)},
-        {WeatherForcastTable: weather_forcasts["weather_forcast"]},
+        {WeatherForecastTable: weather_forecasts["weather_forecast"]},
         {
-            WeatherForcastAtAltitudeTable: weather_forcasts[
-                "weather_forcast_at_altitude"
+            WeatherForecastAtAltitudeTable: weather_forecasts[
+                "weather_forecast_at_altitude"
             ]
         },
-        {RiskForcastTable: _get_risk_forcast(bra_xml, bra_id)},
+        {RiskForecastTable: _get_risk_forecast(bra_xml, bra_id)},
     ]

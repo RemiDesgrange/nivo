@@ -9,9 +9,9 @@ from nivo_api.core.db.models.sql.bra import (
     BraRecordTable,
     SnowRecordTable,
     FreshSnowRecordTable,
-    WeatherForcastTable,
-    WeatherForcastAtAltitudeTable,
-    RiskForcastTable,
+    WeatherForecastTable,
+    WeatherForecastAtAltitudeTable,
+    RiskForecastTable,
 )
 
 
@@ -41,8 +41,8 @@ class BraRecord(Base):
     risks = relationship("Risk", back_populates="bra_record")
     snow_records = relationship("SnowRecord", back_populates="bra_record")
     fresh_snow_records = relationship("FreshSnowRecord", back_populates="bra_record")
-    weather_forcasts = relationship("WeatherForcast", back_populates="bra_record")
-    risk_forcasts = relationship("RiskForcast", back_populates="bra_record")
+    weather_forecasts = relationship("WeatherForecast", back_populates="bra_record")
+    risk_forecasts = relationship("RiskForecast", back_populates="bra_record")
     massif = relationship("Massif")
 
 
@@ -56,21 +56,21 @@ class FreshSnowRecord(Base):
     bra_record = relationship("BraRecord", back_populates="fresh_snow_records")
 
 
-class WeatherForcast(Base):
-    __table__ = WeatherForcastTable
-    bra_record = relationship("BraRecord", back_populates="weather_forcasts")
-    weather_forcasts_at_altitude = relationship(
-        "WeatherForcastAtAltitude", back_populates="weather_forcast"
+class WeatherForecast(Base):
+    __table__ = WeatherForecastTable
+    bra_record = relationship("BraRecord", back_populates="weather_forecasts")
+    weather_forecasts_at_altitude = relationship(
+        "WeatherForecastAtAltitude", back_populates="weather_forecast"
     )
 
 
-class WeatherForcastAtAltitude(Base):
-    __table__ = WeatherForcastAtAltitudeTable
-    weather_forcast = relationship(
-        "WeatherForcast", back_populates="weather_forcasts_at_altitude"
+class WeatherForecastAtAltitude(Base):
+    __table__ = WeatherForecastAtAltitudeTable
+    weather_forecast = relationship(
+        "WeatherForecast", back_populates="weather_forecasts_at_altitude"
     )
 
 
-class RiskForcast(Base):
-    __table__ = RiskForcastTable
-    bra_record = relationship("BraRecord", back_populates="risk_forcasts")
+class RiskForecast(Base):
+    __table__ = RiskForecastTable
+    bra_record = relationship("BraRecord", back_populates="risk_forecasts")

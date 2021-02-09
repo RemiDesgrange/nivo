@@ -119,10 +119,10 @@ bra_model = bra_api.model(
                 )
             )
         ),
-        "weather_forcasts": fields.List(
+        "weather_forecasts": fields.List(
             fields.Nested(
                 bra_api.model(
-                    "WeatherForcastsRecordModel",
+                    "WeatherForecastsRecordModel",
                     {
                         "id": UUIDField(attribute="wf_id"),
                         "expected_date": fields.DateTime(attribute="wf_expected_date"),
@@ -137,10 +137,10 @@ bra_model = bra_api.model(
                 )
             )
         ),
-        "risk_forcasts": fields.List(
+        "risk_forecasts": fields.List(
             fields.Nested(
                 bra_api.model(
-                    "RiskForcastsRecordModel",
+                    "RiskForecastsRecordModel",
                     {
                         "id": UUIDField(attribute="rf_id"),
                         "date": fields.Date(attribute="rf_date"),
