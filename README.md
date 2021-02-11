@@ -20,9 +20,22 @@ The idea of this portal is to share meteo france opendata because :
 
 We aim to display three type of data.
 
+## Run it locally
+
+Make an entry in `/etc/hosts`
+```
+127.0.1.1 nivo.test api.nivo.test
+```
+
+```
+docker-compose up -d
+```
+
+Go to `http://nivo.test` in your browser
+
 ## API
 
-openapi, powered by python(3). Tested on python3.7 and 3.8.
+openapi, powered by python(3). Tested on python3.7 and 3.8 and 3.9.
 
 ### Dev
 
