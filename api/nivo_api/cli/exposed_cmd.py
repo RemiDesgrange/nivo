@@ -194,8 +194,9 @@ def import_all_bra():
     start_date = date(year=2016, month=3, day=10)
     date_range = [
         date.today() - timedelta(days=x)
-        for x in range(0, (date.today() - start_date).days + 1)
+        for x in range((date.today() - start_date).days + 1)
     ]
+
     for d in date_range:
         massif = ""
         try:

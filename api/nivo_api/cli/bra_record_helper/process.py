@@ -117,11 +117,11 @@ def _get_massif_id(massif: str, con: Connection) -> UUID:
 
 
 def _get_dangerous_slopes(xml: _Element) -> List[DangerousSlopes]:
-    dangerous_slopes_list = list()
-    for k, v in xml.find("//PENTE").items():
-        if v == "true" and k != "COMMENTAIRE":
-            dangerous_slopes_list.append(DangerousSlopes(k))
-    return dangerous_slopes_list
+    return [
+        DangerousSlopes(k)
+        for k, v in xml.find("//PENTE").items()
+        if v == "true" and k != "COMMENTAIRE"
+    ]
 
 
 def _get_bra_snow_records(
@@ -154,7 +154,7 @@ def _get_weather_forecast_at_altitude(bra_xml: _Element, wf_id: UUID) -> List:
     for exach altitude of the forecast return the wind direction and force
     """
     altitudes = [int(v) for _, v in bra_xml.find("//METEO").attrib.items()]
-    wfaa_final = list()
+    wfaa_final = []
     for record in bra_xml.find("//METEO").getchildren():
         if record.tag == "ECHEANCE":
             for alt_index, alt in enumerate(altitudes, 1):
@@ -174,7 +174,7 @@ def _get_weather_forecast_at_altitude(bra_xml: _Element, wf_id: UUID) -> List:
 
 def _get_weather_forecast(bra_xml: _Element, bra_id: UUID) -> Dict:
     weather_forecasts = list()
-    weather_forecasts_at_altitude = list()
+    weather_forecasts_at_altitude = []
     for record in bra_xml.find("//METEO").getchildren():
         if record.tag == "ECHEANCE":
             wf_id = uuid4()

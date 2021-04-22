@@ -125,13 +125,13 @@ def get_bra_by_dept_from_mf_rpc_api(dept_number: int) -> Dict:
     if dept_number < 10:
         # check if the dept number is < 10, then add a 0 in front of it
         dept_number_as_str = f"0{dept_number}"
-    if dept_number == 99:
-        # special case for andorre
-        dept_number_as_str = "ANDORRE"
-        dept = ""
     if dept_number == 20:
         # special case for corsica
         dept_number_as_str = "2A"
+    elif dept_number == 99:
+        # special case for andorre
+        dept_number_as_str = "ANDORRE"
+        dept = ""
     req = requests.get(
         f"https://www.meteofrance.com/mf3-rpc-portlet/rest/enneigement/bulletins/bulletinbra/AV{dept}{dept_number_as_str}"
     )
