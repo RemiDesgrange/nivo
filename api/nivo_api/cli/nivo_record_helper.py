@@ -35,7 +35,7 @@ class ANivoCsv(ABC):
         self, nivo_date: "NivoDate", db_connection: Connection, download_url: str = None
     ):
         self.nivo_date = nivo_date.nivo_date
-        self.cleaned_csv = list()
+        self.cleaned_csv = []
         self.db_connection = db_connection
 
     def fetch_and_parse(self) -> DictReader:
@@ -63,9 +63,7 @@ class ANivoCsv(ABC):
             return line
 
         def change_column_name(line: Dict) -> Dict:
-            new_line = dict()
-            for title, _ in line.items():
-                new_line[f"nr_{title}"] = line[title]
+            new_line = {f"nr_{title}": line[title] for title, _ in line.items()}
             # special case : the foreign key
             new_line["nr_nivo_sensor"] = new_line.pop("nr_numer_sta")
             return new_line

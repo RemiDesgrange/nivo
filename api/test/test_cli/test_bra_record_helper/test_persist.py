@@ -18,9 +18,7 @@ class TestPersistZone:
 
     def test_multi_insert(self, database):
         with connection_scope(database.engine) as con:
-            uuid_list = list()
-            for _ in range(5):
-                uuid_list.append(persist_zone(con, "this_is_a_test"))
+            uuid_list = [persist_zone(con, "this_is_a_test") for _ in range(5)]
             for x in uuid_list:
                 assert isinstance(x, UUID)
                 assert all(x == uuid_list[0] for x in uuid_list)

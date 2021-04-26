@@ -27,10 +27,10 @@ class FlowCaptRssToJSON:
             raise AssertionError("Wrong data source, cannot parse data")
 
     def _parse_measures(self, entries: list) -> dict:
-        measures = dict()
-        for entry in entries:
-            measures[entry["title"]] = self._parse_numeric(entry["data"].split(","))
-        return measures
+        return {
+            entry["title"]: self._parse_numeric(entry["data"].split(","))
+            for entry in entries
+        }
 
     def _parse_headers(self, feed: dict) -> dict:
         return {

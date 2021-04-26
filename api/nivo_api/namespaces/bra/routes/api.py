@@ -194,7 +194,7 @@ class MassifResource(Resource):
             lateral_results = con.execute(query).fetchall()
             # transform into json
             results_in_json = marshal(lateral_results, massifs_model)
-            features = list()
+            features = []
             for i, result in enumerate(results_in_json):
                 risks = con.execute(
                         RiskTable.select(RiskTable.c.r_record_id == result["latest_record"]["id"])

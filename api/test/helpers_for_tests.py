@@ -11,4 +11,4 @@ class FakeRowProxy(dict):
 
     def has_key(self, key: Any) -> bool:
         k = self.get(key)
-        return True if k else False
+        return bool(k)

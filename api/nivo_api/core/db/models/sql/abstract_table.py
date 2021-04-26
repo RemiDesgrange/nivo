@@ -26,7 +26,7 @@ class AbstractTable(Table):
         return a list of rows or a row if the entity_id (the pk) is not null. limit to 500 rows max by default to avoid
         problems
         """
-        fields = fields if fields else self.columns
+        fields = fields or self.columns
         req = (
             select(fields).where(self._get_pk() == entity_id)
             if entity_id
@@ -59,7 +59,7 @@ class AbstractSpatialTable(AbstractTable):
         Replace the geom column by a geojson one.
         :return:
         """
-        cols = list()
+        cols = []
         for c in self.columns:
             if isinstance(c.type, Geometry):
                 cols.append(

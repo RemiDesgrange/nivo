@@ -23,10 +23,7 @@ def persist_bra(con: Connection, bra: List[Dict]):
                 if isinstance(data, Generator):
                     # execute is not capable of understanding a generator. But it understand list.
                     # behind the scene, the DBAPI `executemany` is called.
-                    intermediate_data = list()
-                    for x in data:
-                        if x:
-                            intermediate_data.append(x)
+                    intermediate_data = [x for x in data if x]
                     data = intermediate_data
                 # data can be null (generator yield None) then no need to execute
                 if data:

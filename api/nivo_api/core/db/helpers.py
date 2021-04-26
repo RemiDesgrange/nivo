@@ -10,11 +10,8 @@ def _build_feature(db_row: RowProxy, geom_field: str) -> Feature:
         raise KeyError(f"geometry {geom_field} field is not present")
     fields = [f for f in db_row.keys() if f != geom_field]
     geom = db_row[geom_field]
-    properties = {}
-    for field in fields:
-        properties[field] = db_row[field]
-    feature = Feature(geometry=geom, properties=properties)
-    return feature
+    properties = {field: db_row[field] for field in fields}
+    return Feature(geometry=geom, properties=properties)
 
 
 def _build_featurecollection(
