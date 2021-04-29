@@ -32,7 +32,7 @@ services:
         API_HOST: api.nivo.test
         API_PREFIX: http
         API_PORT: 80
-        SENTRY_DISABLED: "true"
+        SENTRY_DISABLED: "false"
         SENTRY_DSN: ${SENTRY_DSN:-}
     depends_on:
       - api

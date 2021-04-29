@@ -131,6 +131,22 @@ export const actions = {
       commit(types.TOGGLE_BRA_LOADING)
     }
   },
+  async [actionsTypes.FETCH_BRA_DATA]({ commit, dispatch }, recordId) {
+    commit(types.TOGGLE_BRA_LOADING)
+    try {
+      const res = await this.$axios.get(
+        `${process.env.baseUrl}/bra/record/${recordId}`
+      )
+      dispatch(actionsTypes.SET_SELECTED_BRA, res.data)
+    } catch (e) {
+      commit(types.SET_ALERT, {
+        level: alertTypes.DANGER,
+        message: e,
+      })
+    } finally {
+      commit(types.TOGGLE_BRA_LOADING)
+    }
+  },
   async [actionsTypes.FETCH_NIVO_STATIONS]({ commit }) {
     commit(types.TOGGLE_NIVO_STATION_LOADING)
     try {

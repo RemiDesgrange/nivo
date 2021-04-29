@@ -13,7 +13,6 @@
           </b-col>
           <div class="w-100"></div>
           <b-col>
-            <pre>{{ braData }}</pre>
             <bra-chart v-if="braData" />
           </b-col>
         </b-col>
@@ -60,24 +59,18 @@ export default {
     // fetch massif
     await store.dispatch(actionsTypes.FETCH_MASSIFS)
     // select the fetched massif
-    if (params.massif !== undefined) {
+    if (params.massif !== undefined && !params.record_id !== undefined) {
       const massif = store.state.massifs.features.find(
         (massif) => params.massif.toUpperCase() === massif.properties.name
       )
-      if (!massif) {
+      const recordId = params.record_id
+      if (!massif && !recordId) {
         store.commit(types.SET_ALERT, {
           level: alertTypes.DANGER,
-          message: 'Massifs cannot be found',
+          message: 'Massifs for that date cannot be found',
         })
       } else {
-        await store.dispatch(
-          actionsTypes.FETCH_LAST_BRA_DATA,
-          massif.properties.id
-        )
-        // const selectedBra = store.state.braData.find(
-        //   (b) => b.massif.id === massif.properties.id
-        // )
-        // store.dispatch(actionsTypes.SET_SELECTED_BRA, selectedBra)
+        await store.dispatch(actionsTypes.FETCH_BRA_DATA, recordId)
       }
     }
   },

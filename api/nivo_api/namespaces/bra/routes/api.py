@@ -5,7 +5,7 @@ from flask import jsonify
 from flask_restx import Resource, marshal
 from flask_restx._http import HTTPStatus
 from geojson import FeatureCollection, Feature
-from sqlalchemy import select, Date, func, true
+from sqlalchemy import select, Date, func, true, and_
 from sqlalchemy.orm import subqueryload
 from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import INTERVAL
@@ -78,6 +78,26 @@ class LastBraListResource(Resource):
             )
             return marshal(res, bra_model)
 
+@bra_api.route("/record/<uuid:record_id>")
+class LastBraListResource(Resource):
+    def get(self, record_id: UUID) -> Dict:
+        """
+        Return a specific BRA with it's ID.
+        """
+        with session_scope() as sess:
+            res = (
+                sess.query(BraRecord)
+                .filter(
+                    BraRecord.br_id == record_id
+                )
+                .options(subqueryload(BraRecord.risks))
+                .options(subqueryload(BraRecord.snow_records))
+                .options(subqueryload(BraRecord.fresh_snow_records))
+                .options(subqueryload(BraRecord.weather_forecasts))
+                .options(subqueryload(BraRecord.risk_forecasts))
+                .all()
+            )
+            return marshal(res, bra_model)
 
 @bra_api.route("/massifs/<uuid:massif_id>/last")
 class LastBraRecordResource(Resource):
@@ -180,11 +200,29 @@ class MassifResource(Resource):
                 .limit(1)
                 .lateral()
             )
+            # Also select if it has a previous and next 
+            next_bra = (
+                select([br.c.br_id.label('next_bra_id')])
+                .where(and_(br.c.br_massif == m.c.m_id, br.c.br_production_date > lateral.c.br_production_date))
+                .order_by(br.c.br_production_date.desc())
+                .limit(1)
+                .lateral()
+            )
+            previous_bra = (
+                select([br.c.br_id.label('previous_bra_id')])
+                .where(and_(br.c.br_massif == m.c.m_id, br.c.br_production_date < lateral.c.br_production_date))
+                .order_by(br.c.br_production_date.desc())
+                .limit(1)
+                .lateral()
+            )
             # selecting everything wrapped up. Also joining on department
             query = (
-                select([lateral, d.c.d_id, d.c.d_name, d.c.d_number,])
+                select([lateral, d.c.d_id, d.c.d_name, d.c.d_number,next_bra, previous_bra])
                 .select_from(
-                    m.join(lateral, true()).join(d, d.c.d_id == m.c.m_department)
+                    m.join(lateral, true())
+                     .join(d, d.c.d_id == m.c.m_department)
+                     .outerjoin(next_bra, true())
+                     .outerjoin(previous_bra, true())
                 )
                 .order_by(m.c.m_id, lateral.c.br_production_date.desc())
             )
@@ -194,6 +232,8 @@ class MassifResource(Resource):
             lateral_results = con.execute(query).fetchall()
             # transform into json
             results_in_json = marshal(lateral_results, massifs_model)
+            # print(f"{results_in_json[0].previous_bra_id=}")
+            # print(f"{results_in_json[0].next_bra_id=}")
             features = list()
             for i, result in enumerate(results_in_json):
                 risks = con.execute(

@@ -182,6 +182,8 @@ massifs_model = bra_api.model(
                     )
                 )
             ),
+            "next_bra": UUIDField(attribute="next_bra_id"),
+            "previous_bra": UUIDField(attribute="previous_bra_id")
         },
     },
 )

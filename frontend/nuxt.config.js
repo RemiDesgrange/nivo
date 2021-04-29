@@ -138,7 +138,7 @@ export default {
       release: process.env.COMMIT_REF || process.env.npm_package_version,
     },
     publishRelease: true,
-    disabled: true,
+    disabled: process.env.SENTRY_DISABLED === 'false'?false:true,
   },
   moment: {
     defaultLocale: 'fr',
