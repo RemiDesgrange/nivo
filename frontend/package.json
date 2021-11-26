@@ -18,7 +18,7 @@
     "@nuxtjs/sentry": "^5.1.5",
     "@turf/point-on-feature": "latest",
     "@turf/turf": "^6.4.0",
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "bootstrap": "^4.6.0",
     "bootstrap-vue": "^2.21.2",
     "hex-to-rgba": "^2.0.1",
