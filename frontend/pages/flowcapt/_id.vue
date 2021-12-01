@@ -16,7 +16,7 @@
               <flow-capt-map />
             </base-map>
           </div>
-          <div class="w-100"></div>
+          <div class="w-100" />
           <div class="col">
             <h2>
               <a :href="flowCaptData.url" target="_blank">liens ISAW</a>
@@ -72,34 +72,34 @@ import BaseMap from '@/components/map/BaseMap'
 import {
   // globalMutationTypes as mutationsType,
   globalActionsTypes as actionsType,
-  mapMutationTypes,
+  mapMutationTypes
 } from '~/modules/stateTypes'
 
 export default {
   components: {
     FlowCaptMap,
     FlowCaptChart,
-    BaseMap,
+    BaseMap
   },
-  async asyncData({ store, params }) {
+  async asyncData ({ store, params }) {
     store.commit('map/' + mapMutationTypes.SET_VISIBILITY, {
       layerName: 'massifs',
-      visibility: false,
+      visibility: false
     })
     store.commit('map/' + mapMutationTypes.SET_VISIBILITY, {
       layerName: 'flowcapt',
-      visibility: true,
+      visibility: true
     })
     store.commit('map/' + mapMutationTypes.SET_VISIBILITY, {
       layerName: 'posteNivo',
-      visibility: false,
+      visibility: false
     })
     await store.dispatch(actionsType.FETCH_FLOWCAPT_STATIONS)
     await store.dispatch(actionsType.FETCH_FLOWCAPT_DATA, params.id)
     store.dispatch(
       actionsType.SET_SELECTED_FLOWCAPT_STATION,
       store.state.flowCaptStations.features.find(
-        (e) => e.properties.fcs_id === params.id
+        e => e.properties.fcs_id === params.id
       )
     )
   },
@@ -107,13 +107,13 @@ export default {
     ...mapState([
       'flowCaptData',
       'flowCaptStations',
-      'selectedFlowCaptStation',
-    ]),
+      'selectedFlowCaptStation'
+    ])
   },
   methods: {
-    oldLastData(dateAsStr) {
+    oldLastData (dateAsStr) {
       return moment().diff(moment(dateAsStr), 'days') > 1
-    },
-  },
+    }
+  }
 }
 </script>

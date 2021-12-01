@@ -3,7 +3,7 @@ import {
   globalMutationTypes as types,
   globalActionsTypes as actionsTypes,
   alertTypes,
-  mapMutationTypes,
+  mapMutationTypes
 } from '@/modules/stateTypes'
 
 export const strict = false
@@ -23,38 +23,38 @@ export const state = () => ({
   nivoDataLoading: false,
   flowCaptLoading: false,
   braLoading: false,
-  nivoStationDayLimit: 30,
+  nivoStationDayLimit: 30
 })
 
 export const mutations = {
-  [types.BRA_LOADED](state, newBra) {
+  [types.BRA_LOADED] (state, newBra) {
     state.braData = newBra
   },
-  [types.SET_SELECTED_BRA](state, bra) {
+  [types.SET_SELECTED_BRA] (state, bra) {
     state.braData = bra
   },
-  [types.SET_SELECTED_NIVO_STATION](state, nivo) {
+  [types.SET_SELECTED_NIVO_STATION] (state, nivo) {
     state.selectedNivoStation = nivo
   },
-  [types.SET_SELECTED_FLOWCAPT_STATION](state, flowcapt) {
+  [types.SET_SELECTED_FLOWCAPT_STATION] (state, flowcapt) {
     state.selectedFlowCaptStation = flowcapt
   },
-  [types.NIVO_STATION_LOADED](state, newNivoStations) {
+  [types.NIVO_STATION_LOADED] (state, newNivoStations) {
     state.nivoStations = newNivoStations
   },
-  [types.NIVO_DATA_LOADED](state, newNivoData) {
+  [types.NIVO_DATA_LOADED] (state, newNivoData) {
     state.nivoData = newNivoData
   },
-  [types.MASSIFS_LOADED](state, newMassifs) {
+  [types.MASSIFS_LOADED] (state, newMassifs) {
     state.massifs = newMassifs
   },
-  [types.FLOWCAPT_STATION_LOADED](state, newFlowCapt) {
+  [types.FLOWCAPT_STATION_LOADED] (state, newFlowCapt) {
     state.flowCaptStations = newFlowCapt
   },
-  [types.FLOWCAPT_DATA_LOADED](state, newFlowCapt) {
+  [types.FLOWCAPT_DATA_LOADED] (state, newFlowCapt) {
     state.flowCaptData = newFlowCapt
   },
-  [types.SET_ALERT](state, payload) {
+  [types.SET_ALERT] (state, payload) {
     if (Object.keys(alertTypes).includes(payload.level)) {
       throw new Error('Unexpected alert message type. Aborting.')
     }
@@ -63,12 +63,12 @@ export const mutations = {
       id: beforeLength + 1,
       level: payload.level,
       message: payload.message,
-      duration: payload.duration || 10,
+      duration: payload.duration || 10
     })
   },
-  [types.DECREASE_ALERT_DURATION](state, payload) {
+  [types.DECREASE_ALERT_DURATION] (state, payload) {
     const alertIndexToDecrease = state.alerts
-      .map((a) => a.id)
+      .map(a => a.id)
       .indexOf(payload.alert.id)
     if (alertIndexToDecrease > -1) {
       state.alerts[alertIndexToDecrease].duration = payload.newDuration
@@ -76,38 +76,38 @@ export const mutations = {
       throw new Error('Fail to decrease alert duration. Fatal.')
     }
   },
-  [types.REMOVE_ALERT](state, payload) {
-    state.alerts = state.alerts.filter((e) => e.id !== payload.id)
+  [types.REMOVE_ALERT] (state, payload) {
+    state.alerts = state.alerts.filter(e => e.id !== payload.id)
   },
-  [types.TOGGLE_MASSIFS_LOADING](state) {
+  [types.TOGGLE_MASSIFS_LOADING] (state) {
     state.massifLoading = !state.massifLoading
   },
-  [types.TOGGLE_NIVO_DATA_LOADING](state) {
+  [types.TOGGLE_NIVO_DATA_LOADING] (state) {
     state.nivoDataLoading = !state.nivoDataLoading
   },
-  [types.TOGGLE_NIVO_STATION_LOADING](state) {
+  [types.TOGGLE_NIVO_STATION_LOADING] (state) {
     state.nivoStationLoading = !state.nivoStationLoading
   },
-  [types.TOGGLE_BRA_LOADING](state) {
+  [types.TOGGLE_BRA_LOADING] (state) {
     state.braLoading = !state.braLoading
   },
-  [types.TOGGLE_FLOWCAPT_LOADING](state) {
+  [types.TOGGLE_FLOWCAPT_LOADING] (state) {
     state.flowCaptLoading = !state.flowCaptLoading
   },
-  [types.SET_NIVO_STATION_DAY_LIMIT](state, dayLimit) {
+  [types.SET_NIVO_STATION_DAY_LIMIT] (state, dayLimit) {
     state.nivoStationDayLimit = dayLimit
-  },
+  }
 }
 
 export const actions = {
-  async [actionsTypes.FETCH_MASSIFS]({ commit }) {
+  async [actionsTypes.FETCH_MASSIFS] ({ commit }) {
     commit(types.TOGGLE_MASSIFS_LOADING)
     try {
       const res = await this.$axios.get(`${process.env.baseUrl}/bra/massifs`)
       commit(types.MASSIFS_LOADED, res.data)
       commit(`map/${mapMutationTypes.SET_RAW_GEOJSON}`, {
         layerName: 'massifs',
-        geojson: res.data,
+        geojson: res.data
       })
     } catch (e) {
       commit(types.SET_ALERT, { level: alertTypes.DANGER, message: e })
@@ -115,7 +115,7 @@ export const actions = {
       commit(types.TOGGLE_MASSIFS_LOADING)
     }
   },
-  async [actionsTypes.FETCH_LAST_BRA_DATA]({ commit, dispatch }, massifId) {
+  async [actionsTypes.FETCH_LAST_BRA_DATA] ({ commit, dispatch }, massifId) {
     commit(types.TOGGLE_BRA_LOADING)
     try {
       const res = await this.$axios.get(
@@ -125,13 +125,13 @@ export const actions = {
     } catch (e) {
       commit(types.SET_ALERT, {
         level: alertTypes.DANGER,
-        message: e,
+        message: e
       })
     } finally {
       commit(types.TOGGLE_BRA_LOADING)
     }
   },
-  async [actionsTypes.FETCH_BRA_DATA]({ commit, dispatch }, recordId) {
+  async [actionsTypes.FETCH_BRA_DATA] ({ commit, dispatch }, recordId) {
     commit(types.TOGGLE_BRA_LOADING)
     try {
       const res = await this.$axios.get(
@@ -141,43 +141,43 @@ export const actions = {
     } catch (e) {
       commit(types.SET_ALERT, {
         level: alertTypes.DANGER,
-        message: e,
+        message: e
       })
     } finally {
       commit(types.TOGGLE_BRA_LOADING)
     }
   },
-  async [actionsTypes.FETCH_NIVO_STATIONS]({ commit }) {
+  async [actionsTypes.FETCH_NIVO_STATIONS] ({ commit }) {
     commit(types.TOGGLE_NIVO_STATION_LOADING)
     try {
       const res = await this.$axios.get(`${process.env.baseUrl}/nivo/stations`)
       commit(types.NIVO_STATION_LOADED, res.data)
       commit(`map/${mapMutationTypes.SET_RAW_GEOJSON}`, {
         layerName: 'posteNivo',
-        geojson: res.data,
+        geojson: res.data
       })
     } catch (e) {
       commit(types.SET_ALERT, {
         level: alertTypes.DANGER,
-        message: e,
+        message: e
       })
     } finally {
       commit(types.TOGGLE_NIVO_STATION_LOADING)
     }
   },
-  [actionsTypes.SET_SELECTED_BRA]({ commit }, bra) {
+  [actionsTypes.SET_SELECTED_BRA] ({ commit }, bra) {
     commit(types.SET_SELECTED_BRA, bra)
     commit('map/' + mapMutationTypes.SET_SELECTED_MASSIF, bra.massif)
   },
-  [actionsTypes.SET_SELECTED_NIVO_STATION]({ commit }, nivo) {
+  [actionsTypes.SET_SELECTED_NIVO_STATION] ({ commit }, nivo) {
     commit(types.SET_SELECTED_NIVO_STATION, nivo)
     commit('map/' + mapMutationTypes.SET_SELECTED_NIVO_STATION, nivo)
   },
-  [actionsTypes.SET_SELECTED_FLOWCAPT_STATION]({ commit }, flowcapt) {
+  [actionsTypes.SET_SELECTED_FLOWCAPT_STATION] ({ commit }, flowcapt) {
     commit(types.SET_SELECTED_FLOWCAPT_STATION, flowcapt)
     commit('map/' + mapMutationTypes.SET_SELECTED_FLOWCAPT_STATION, flowcapt)
   },
-  async fetchNivoRecordsByStationIdWithDayLimit(
+  async fetchNivoRecordsByStationIdWithDayLimit (
     { commit, state },
     { nivoStationId, dayLimit }
   ) {
@@ -193,17 +193,17 @@ export const actions = {
       commit(types.TOGGLE_NIVO_DATA_LOADING)
     }
   },
-  async fetchNivoRecordsByStationId(
+  async fetchNivoRecordsByStationId (
     { commit, dispatch, state },
     nivoStationId
   ) {
     const nivoStationDayLimit = state.nivoStationDayLimit
     await dispatch('fetchNivoRecordsByStationIdWithDayLimit', {
       nivoStationId,
-      dayLimit: nivoStationDayLimit,
+      dayLimit: nivoStationDayLimit
     })
   },
-  async fetchLastNivoById({ commit }, nivoStationId) {
+  async fetchLastNivoById ({ commit }, nivoStationId) {
     commit(types.TOGGLE_NIVO_DATA_LOADING)
     try {
       const res = await this.$axios.get(
@@ -216,7 +216,7 @@ export const actions = {
       commit(types.TOGGLE_NIVO_DATA_LOADING)
     }
   },
-  async [actionsTypes.FETCH_FLOWCAPT_STATIONS]({ commit }) {
+  async [actionsTypes.FETCH_FLOWCAPT_STATIONS] ({ commit }) {
     commit(types.TOGGLE_FLOWCAPT_LOADING)
     try {
       const res = await this.$axios.get(
@@ -225,18 +225,18 @@ export const actions = {
       commit(types.FLOWCAPT_STATION_LOADED, res.data)
       commit(`map/${mapMutationTypes.SET_RAW_GEOJSON}`, {
         layerName: 'flowcapt',
-        geojson: res.data,
+        geojson: res.data
       })
     } catch (e) {
       commit(types.SET_ALERT, {
         level: alertTypes.DANGER,
-        message: e,
+        message: e
       })
     } finally {
       commit(types.TOGGLE_FLOWCAPT_LOADING)
     }
   },
-  async [actionsTypes.FETCH_FLOWCAPT_DATA]({ commit }, stationId) {
+  async [actionsTypes.FETCH_FLOWCAPT_DATA] ({ commit }, stationId) {
     commit(types.TOGGLE_FLOWCAPT_LOADING)
     try {
       const res = await this.$axios.get(
@@ -246,25 +246,25 @@ export const actions = {
     } catch (e) {
       commit(types.SET_ALERT, {
         level: alertTypes.DANGER,
-        message: e,
+        message: e
       })
     } finally {
       commit(types.TOGGLE_FLOWCAPT_LOADING)
     }
-  },
+  }
 }
 
 export const getters = {
-  braUrl(state) {
+  braUrl (state) {
     if (state.braData) {
       return `${process.env.baseUrl}/bra/html/${state.braData.id}`
     }
     return null
   },
-  braDate(state) {
+  braDate (state) {
     if (state.braData) {
       return moment(state.braData.production_date).format('YYYY-MM-DD')
     }
     return null
-  },
+  }
 }

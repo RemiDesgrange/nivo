@@ -94,18 +94,18 @@ export default {
   props: {
     value: {
       type: Array,
-      default: () => [],
+      default: () => []
     },
     disabled: {
       type: Boolean,
-      default: true,
-    },
+      default: true
+    }
   },
   methods: {
-    toggle(e) {
+    toggle (e) {
       return e
-    },
-  },
+    }
+  }
 }
 </script>
 

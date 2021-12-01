@@ -72,15 +72,15 @@ import { mapGettersTypes } from '~/modules/stateTypes'
 
 export default {
   components: {
-    OlOverlay,
+    OlOverlay
   },
   computed: {
     ...mapState(['nivoStations', 'selectedNivoStation']),
     ...mapGetters('map', [
       mapGettersTypes.SELECTED_NIVO_STATION_HOVER,
-      mapGettersTypes.SELECTED_NIVO_STATION_CLICK,
-    ]),
-  },
+      mapGettersTypes.SELECTED_NIVO_STATION_CLICK
+    ])
+  }
 }
 </script>
 <style scoped>

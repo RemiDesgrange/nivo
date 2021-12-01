@@ -11,8 +11,8 @@ export default {
       {
         hid: 'description',
         name: 'description',
-        content: process.env.npm_package_description || '',
-      },
+        content: process.env.npm_package_description || ''
+      }
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
@@ -20,21 +20,21 @@ export default {
         rel: 'icon',
         type: 'image/png',
         sizes: '96x96',
-        href: '/favicon-96x96.png',
+        href: '/favicon-96x96.png'
       },
       {
         rel: 'icon',
         type: 'image/png',
         sizes: '32x32',
-        href: '/favicon-32x32.png',
+        href: '/favicon-32x32.png'
       },
       {
         rel: 'icon',
         type: 'image/png',
         sizes: '16x16',
-        href: '/favicon-16x16.png',
-      },
-    ],
+        href: '/favicon-16x16.png'
+      }
+    ]
   },
   /*
    ** Customize the progress-bar color
@@ -55,7 +55,7 @@ export default {
   buildModules: [
     // Doc: https://github.com/nuxt-community/eslint-module
     '@nuxtjs/eslint-module',
-    '@nuxtjs/moment',
+    '@nuxtjs/moment'
   ],
   /*
    ** Nuxt.js modules
@@ -68,7 +68,7 @@ export default {
     /*
      ** You can extend webpack config here
      */
-    extend(config, ctx) {
+    extend (config, ctx) {
       if (ctx.dev && ctx.isClient) {
         config.module.rules.push({
           enforce: 'pre',
@@ -76,11 +76,11 @@ export default {
           loader: 'eslint-loader',
           exclude: /(node_modules)/,
           options: {
-            fix: true,
-          },
+            fix: true
+          }
         })
       }
-    },
+    }
   },
   env: {
     baseUrl: `${process.env.API_PREFIX || 'http'}://${
@@ -88,10 +88,10 @@ export default {
     }:${process.env.API_PORT || 8000}`,
     ignBaseMapURL:
       process.env.IGN_BASE_MAP_URL ||
-      'https://wxs.ign.fr/an7nvfzojv5wa96dsga5nk8w/geoportail/wmts',
+      'https://wxs.ign.fr/an7nvfzojv5wa96dsga5nk8w/geoportail/wmts'
   },
   axios: {
-    progress: true,
+    progress: true
   },
   bootstrapVue: {
     icons: false,
@@ -129,19 +129,19 @@ export default {
       'BIconX',
       'BIconCheck',
       'BProgress',
-      'BAlert',
-    ],
+      'BAlert'
+    ]
   },
   sentry: {
     config: {
       environment: process.env.ENV || 'production',
-      release: process.env.COMMIT_REF || process.env.npm_package_version,
+      release: process.env.COMMIT_REF || process.env.npm_package_version
     },
     publishRelease: true,
-    disabled: process.env.SENTRY_DISABLED === 'false'?false:true,
+    disabled: process.env.SENTRY_DISABLED !== 'false'
   },
   moment: {
     defaultLocale: 'fr',
-    locales: ['fr'],
-  },
+    locales: ['fr']
+  }
 }

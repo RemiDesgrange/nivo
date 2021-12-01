@@ -25,7 +25,7 @@
       </p>
     </div>
     <div v-else>
-      <img src="~/assets/R-1_70.png" class="img-no-risk" alt="Pas de risque" />
+      <img src="~/assets/R-1_70.png" class="img-no-risk" alt="Pas de risque">
     </div>
 
     <div v-if="isDifferent" class="value-bra-high">
@@ -35,7 +35,9 @@
     </div>
 
     <div v-if="isDifferent" class="value-bra-threshold">
-      <p class="is-small">{{ altitudeThresold }}m</p>
+      <p class="is-small">
+        {{ altitudeThresold }}m
+      </p>
     </div>
 
     <div v-if="isDifferent" class="value-bra-low">
@@ -51,29 +53,29 @@ export default {
   props: {
     risk: {
       type: Number,
-      validator: (val) => val > 0 && val < 6,
-      default: null,
+      validator: val => val > 0 && val < 6,
+      default: null
     },
     riskHigh: {
       type: Number,
-      validator: (val) => val > 0 && val < 6,
-      default: null,
+      validator: val => val > 0 && val < 6,
+      default: null
     },
     riskLow: {
       type: Number,
-      validator: (val) => val > 0 && val < 6,
-      default: null,
+      validator: val => val > 0 && val < 6,
+      default: null
     },
     altitudeThresold: {
       type: Number,
-      default: null,
-    },
+      default: null
+    }
   },
   computed: {
-    isDifferent() {
+    isDifferent () {
       return !!(this.riskHigh && this.riskLow)
-    },
-  },
+    }
+  }
 }
 </script>
 

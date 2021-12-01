@@ -10,7 +10,7 @@
               Aucune garantie quand à la fiabilité de ces données ne peux être
               garantie.
             </p>
-            <hr class="my-4" />
+            <hr class="my-4">
             <h3>Liste des stations</h3>
             <ul v-if="flowCaptStations" class="list-unstyled">
               <li
@@ -31,8 +31,8 @@
               <flow-capt-map />
             </base-map>
           </div>
-          <div class="w-100"></div>
-          <div class="col"></div>
+          <div class="w-100" />
+          <div class="col" />
         </div>
       </div>
     </div>
@@ -45,29 +45,29 @@ import FlowCaptMap from '@/components/map/FlowCaptMap'
 import BaseMap from '@/components/map/BaseMap'
 import {
   globalActionsTypes as actionsTypes,
-  mapMutationTypes,
+  mapMutationTypes
 } from '~/modules/stateTypes'
 
 export default {
   components: {
     FlowCaptMap,
-    BaseMap,
+    BaseMap
   },
-  async asyncData({ store }) {
+  async asyncData ({ store }) {
     store.commit('map/' + mapMutationTypes.SET_VISIBILITY, {
       layerName: 'massifs',
-      visibility: false,
+      visibility: false
     })
     store.commit('map/' + mapMutationTypes.SET_VISIBILITY, {
       layerName: 'flowcapt',
-      visibility: true,
+      visibility: true
     })
     store.commit('map/' + mapMutationTypes.SET_VISIBILITY, {
       layerName: 'posteNivo',
-      visibility: false,
+      visibility: false
     })
     await store.dispatch(actionsTypes.FETCH_FLOWCAPT_STATIONS)
   },
-  computed: mapState(['flowCaptStations']),
+  computed: mapState(['flowCaptStations'])
 }
 </script>

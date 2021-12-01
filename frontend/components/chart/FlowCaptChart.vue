@@ -20,8 +20,8 @@ export default {
   components: {
     Temperature,
     Wind,
-    Snow,
+    Snow
   },
-  computed: mapState(['flowCaptData', 'flowCaptLoading']),
+  computed: mapState(['flowCaptData', 'flowCaptLoading'])
 }
 </script>

@@ -12,36 +12,36 @@ WindbarbHighcharts(Highcharts)
 export default {
   mixins: [NivoStationChartMixin],
   computed: {
-    chartWindOptions() {
+    chartWindOptions () {
       const measures = this.nivoData
       return {
         chart: {
-          zoomType: 'x',
+          zoomType: 'x'
         },
         title: {
-          text: 'Force et Direction du vent',
+          text: 'Force et Direction du vent'
         },
         xAxis: {
           type: 'datetime',
-          offset: 40,
+          offset: 40
         },
         yAxis: {
           title: {
-            text: 'Vitesse du vent (km/h',
-          },
+            text: 'Vitesse du vent (km/h'
+          }
         },
         plotOptions: {
           series: {
             pointStart: this.lastData,
             pointInterval: 3600 * 1000, // 1h
             marker: {
-              radius: 0,
-            },
-          },
+              radius: 0
+            }
+          }
         },
         tooltip: {
           headerFormat: '<b>{series.name}</b><br>',
-          valueSuffix: '{point.x:%e. %b %H:%M:%Y}: {point.y:.2f} km/h',
+          valueSuffix: '{point.x:%e. %b %H:%M:%Y}: {point.y:.2f} km/h'
         },
         series: [
           {
@@ -50,8 +50,8 @@ export default {
             }),
             name: 'Vitesse du vent',
             keys: ['y'],
-            type: 'area',
-          },
+            type: 'area'
+          }
           // {
           //   data: measures.map((measure, index) => {
           //     return [measure.ff, measures[index].dd]
@@ -67,9 +67,9 @@ export default {
           //   name: 'Direction du vent',
           //   type: 'windbarb',
           // },
-        ],
+        ]
       }
-    },
-  },
+    }
+  }
 }
 </script>

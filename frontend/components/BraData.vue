@@ -5,11 +5,15 @@
         <b-col>
           <b-button-toolbar key-nav aria-label="Toolbar with button groups">
             <b-button-group class="mr-1">
-              <b-button :disabled="noFollowed">Jour suivant</b-button>
-              <b-button :disabled="noPrevious">Jour précédent</b-button>
+              <b-button :disabled="noFollowed">
+                Jour suivant
+              </b-button>
+              <b-button :disabled="noPrevious">
+                Jour précédent
+              </b-button>
             </b-button-group>
             <b-input-group class="mr1">
-              <b-form-input :value="braDate" type="date"></b-form-input>
+              <b-form-input :value="braDate" type="date" />
             </b-input-group>
           </b-button-toolbar>
         </b-col>
@@ -30,7 +34,9 @@
     <div v-else>
       <div class="container">
         <b-jumbotron>
-          <template slot="header"> Bienvenue sur Nivo ! </template>
+          <template slot="header">
+            Bienvenue sur Nivo !
+          </template>
           <template slot="lead">
             Pour consulter les données d'un massifs, cliquez sur celui-ci dans
             la carte à droite.
@@ -52,16 +58,16 @@
 import { mapState, mapGetters } from 'vuex'
 
 export default {
-  data() {
+  data () {
     return {
       noPrevious: false,
-      noFollowed: true,
+      noFollowed: true
     }
   },
   computed: {
     ...mapState(['braLoading']),
-    ...mapGetters(['braUrl', 'braDate']),
-  },
+    ...mapGetters(['braUrl', 'braDate'])
+  }
 }
 </script>
 

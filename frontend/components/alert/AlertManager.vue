@@ -12,8 +12,8 @@ import Alert from '@/components/alert/Alert'
 
 export default {
   components: {
-    'alert-comp': Alert,
+    'alert-comp': Alert
   },
-  computed: mapState(['alerts']),
+  computed: mapState(['alerts'])
 }
 </script>

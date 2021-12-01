@@ -28,7 +28,9 @@
     </b-row>
     <b-row v-if="displayLink" no-gutters>
       <b-card-body>
-        <b-button :to="name.toLowerCase()">Voir le BRA</b-button>
+        <b-button :to="name.toLowerCase()">
+          Voir le BRA
+        </b-button>
       </b-card-body>
     </b-row>
   </b-card>
@@ -42,41 +44,41 @@ import BraIndicatorSvg from '~/components/utils/BraIndicatorSvg'
 export default {
   components: {
     InputOrientation,
-    BraIndicatorSvg,
+    BraIndicatorSvg
   },
   props: {
     name: {
       type: String,
-      required: true,
+      required: true
     },
     bradata: {
       type: Object,
-      required: true,
+      required: true
     },
     displayLink: {
       type: Boolean,
-      required: true,
-    },
+      required: true
+    }
   },
   methods: {
-    getRisk(risks, level) {
+    getRisk (risks, level) {
       if (risks.length === 1) {
         return null
       }
       switch (level) {
         case 'high': {
-          const riskHigh = risks.find((r) => r.altitude.charAt(0) === '>')
-          if (riskHigh) return riskHigh.risk
+          const riskHigh = risks.find(r => r.altitude.charAt(0) === '>')
+          if (riskHigh) { return riskHigh.risk }
           break
         }
         case 'low': {
-          const riskLow = risks.find((r) => r.altitude.charAt(0) === '<')
-          if (riskLow) return riskLow.risk
+          const riskLow = risks.find(r => r.altitude.charAt(0) === '<')
+          if (riskLow) { return riskLow.risk }
           break
         }
       }
     },
-    getAltitudeThreshold(risks) {
+    getAltitudeThreshold (risks) {
       if (risks) {
         if (risks.length === 1) {
           return null
@@ -84,10 +86,10 @@ export default {
         return parseInt(risks[0].altitude.substring(1))
       }
     },
-    formatDateStr(dateStr) {
+    formatDateStr (dateStr) {
       return moment(new Date(dateStr)).format('DD/MM/YYYY')
-    },
-  },
+    }
+  }
 }
 </script>
 

@@ -8,57 +8,57 @@ import moment from 'moment'
 
 export default {
   components: {
-    Chart,
+    Chart
   },
   props: {
     title: {
       type: String,
-      default: 'Inconnu',
+      default: 'Inconnu'
     },
     yAxisText: { type: String, default: 'Inconnu' },
     yAxisLabel: { type: String, default: '{value} m' },
     pointStart: {
       type: Number,
-      default: moment().utc().valueOf(),
+      default: moment().utc().valueOf()
     },
     pointInterval: { type: Number, default: 3600 * 1000 }, // in milliseconds !!
     pointIntervalUnit: {
       type: String,
-      default: undefined,
+      default: undefined
     },
     tooltip: {
       type: Object,
-      default() {
+      default () {
         return {
           headerFormat: '<b>{series.name}</b><br>',
-          pointFormat: '{point.x:%e. %b %H:%M}: {point.y:.2f} m',
+          pointFormat: '{point.x:%e. %b %H:%M}: {point.y:.2f} m'
         }
-      },
+      }
     },
     series: {
       type: Array,
-      required: true,
-    },
+      required: true
+    }
   },
-  data() {
+  data () {
     return {
       chartOptions: {
         chart: {
-          zoomType: 'x',
+          zoomType: 'x'
         },
         title: {
-          text: this.title,
+          text: this.title
         },
         xAxis: {
-          type: 'datetime',
+          type: 'datetime'
         },
         yAxis: {
           title: {
-            text: this.yAxisText,
+            text: this.yAxisText
           },
           labels: {
-            format: this.yAxisLabel,
-          },
+            format: this.yAxisLabel
+          }
         },
         plotOptions: {
           series: {
@@ -66,14 +66,14 @@ export default {
             pointInterval: this.pointInterval,
             pointIntervalUnit: this.pointIntervalUnit,
             marker: {
-              radius: 0,
-            },
-          },
+              radius: 0
+            }
+          }
         },
         tooltip: this.tooltip,
-        series: this.series,
-      },
+        series: this.series
+      }
     }
-  },
+  }
 }
 </script>

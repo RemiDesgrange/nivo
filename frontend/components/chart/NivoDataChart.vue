@@ -18,10 +18,10 @@ import Snow from '~/components/chart/nivo_station/Snow'
 export default {
   components: {
     Wind,
-    Snow,
+    Snow
   },
   computed: {
-    show() {
+    show () {
       return this.nivoDataLoading || this.nivoStationLoading
     },
     ...mapState([
@@ -29,34 +29,34 @@ export default {
       'nivoStations',
       'selectedNivoStation',
       'nivoStationLoading',
-      'nivoDataLoading',
+      'nivoDataLoading'
     ]),
-    chartAirTempOptions() {
+    chartAirTempOptions () {
       return [
         {
           name: 'Humidité',
-          data: this.nivoData.map((n) => n.u),
+          data: this.nivoData.map(n => n.u)
         },
         {
           name: 'Température',
-          data: this.nivoData.map((n) => n.t + 273.15),
+          data: this.nivoData.map(n => n.t + 273.15)
         },
         {
           name: 'Point de rosé',
-          data: this.nivoData.map((n) => n.td + 273.15),
-        },
+          data: this.nivoData.map(n => n.td + 273.15)
+        }
       ]
-    },
+    }
   },
   methods: {
-    lastData() {
+    lastData () {
       const lastData = this.nivoData
-        .map((n) => moment(n.date))
+        .map(n => moment(n.date))
         .sort()
         .reverse()
         .pop()
       return lastData.utc().valueOf()
-    },
-  },
+    }
+  }
 }
 </script>

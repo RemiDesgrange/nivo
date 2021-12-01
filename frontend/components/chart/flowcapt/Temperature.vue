@@ -24,24 +24,24 @@ import FlowCaptChartMixin from '~/components/chart/flowcapt/FlowCaptChartMixin'
 export default {
   mixins: [FlowCaptChartMixin],
   computed: {
-    airHumidity() {
+    airHumidity () {
       return [
         {
           data: this.flowCaptData.measures.air_humidity_mean_nc,
           type: 'area',
-          name: "Température de l'air",
-        },
+          name: "Température de l'air"
+        }
       ]
     },
-    airTemperature() {
+    airTemperature () {
       return [
         {
           data: this.flowCaptData.measures.air_temperature_mean_nc,
           type: 'area',
-          name: "Humidité de l'air",
-        },
+          name: "Humidité de l'air"
+        }
       ]
-    },
-  },
+    }
+  }
 }
 </script>

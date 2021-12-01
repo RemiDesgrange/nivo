@@ -7,16 +7,16 @@ import BaseAreaChart from '~/components/chart/BaseAreaChart'
 export default {
   components: {
     Chart,
-    BaseAreaChart,
+    BaseAreaChart
   },
   computed: {
     ...mapState(['flowCaptData']),
-    lastData() {
+    lastData () {
       return moment(this.flowCaptData.lastdata)
         .subtract(168, 'hours')
         .utc()
         .valueOf()
-    },
-  },
+    }
+  }
 }
 </script>

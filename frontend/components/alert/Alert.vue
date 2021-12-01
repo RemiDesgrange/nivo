@@ -15,7 +15,7 @@
         :max="duration"
         :value="alert.duration"
         height="4px"
-      ></b-progress>
+      />
     </b-alert>
   </div>
 </template>
@@ -27,22 +27,22 @@ export default {
   props: {
     alert: {
       type: Object,
-      required: true,
-    },
+      required: true
+    }
   },
-  data() {
+  data () {
     return {
-      duration: this.alert.duration,
+      duration: this.alert.duration
     }
   },
   methods: {
-    countDownChanged(dismissCountDown) {
+    countDownChanged (dismissCountDown) {
       this.DECREASE_ALERT_DURATION({
         alert: this.alert,
-        newDuration: dismissCountDown,
+        newDuration: dismissCountDown
       })
     },
-    ...mapMutations(['DECREASE_ALERT_DURATION', 'REMOVE_ALERT']),
-  },
+    ...mapMutations(['DECREASE_ALERT_DURATION', 'REMOVE_ALERT'])
+  }
 }
 </script>

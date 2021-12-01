@@ -14,7 +14,7 @@
               </a>
               Météo France
             </p>
-            <hr class="my-4" />
+            <hr class="my-4">
             <h3>Liste des stations</h3>
             <ul v-if="nivoStations" class="list-unstyled">
               <li
@@ -54,48 +54,48 @@ import BaseMap from '~/components/map/BaseMap'
 import {
   globalActionsTypes as actionTypes,
   globalMutationTypes as types,
-  mapMutationTypes,
+  mapMutationTypes
 } from '~/modules/stateTypes'
 
 export default {
   components: {
     NivoMap,
-    BaseMap,
+    BaseMap
   },
   filters: {
-    cleanStationsName(station) {
+    cleanStationsName (station) {
       return station.toLowerCase().replace('_', ' ')
-    },
+    }
   },
-  async asyncData({ store }) {
+  async asyncData ({ store }) {
     store.commit('map/' + mapMutationTypes.SET_VISIBILITY, {
       layerName: 'massifs',
-      visibility: false,
+      visibility: false
     })
     store.commit('map/' + mapMutationTypes.SET_VISIBILITY, {
       layerName: 'flowcapt',
-      visibility: false,
+      visibility: false
     })
     store.commit('map/' + mapMutationTypes.SET_VISIBILITY, {
       layerName: 'posteNivo',
-      visibility: true,
+      visibility: true
     })
     await store.dispatch(actionTypes.FETCH_NIVO_STATIONS)
   },
   computed: {
-    ...mapState(['nivoStations']),
+    ...mapState(['nivoStations'])
   },
   methods: {
-    showOverlay(id) {
+    showOverlay (id) {
       this.$store.commit(
         types.SET_SELECTED_NIVO_STATION,
-        this.nivoStations.features.find((n) => n.properties.nss_id === id)
+        this.nivoStations.features.find(n => n.properties.nss_id === id)
       )
     },
-    hideOverlay() {
+    hideOverlay () {
       this.$store.commit(types.SET_SELECTED_NIVO_STATION, null)
-    },
-  },
+    }
+  }
 }
 </script>
 

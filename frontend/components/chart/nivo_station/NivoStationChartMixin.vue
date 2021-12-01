@@ -7,14 +7,14 @@ import BaseAreaChart from '~/components/chart/BaseAreaChart'
 export default {
   components: {
     Chart,
-    BaseAreaChart,
+    BaseAreaChart
   },
   computed: {
     ...mapState(['nivoData']),
-    lastData() {
+    lastData () {
       const lastDate = moment(this.nivoData.slice().reverse().pop().date)
       return lastDate.utc().valueOf()
-    },
-  },
+    }
+  }
 }
 </script>

@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div id="map"></div>
-    <slot></slot>
+    <div id="map" />
+    <slot />
     <ol-layer-tree />
   </div>
 </template>
@@ -12,47 +12,47 @@ import { mapGetters, mapActions, mapState, mapMutations } from 'vuex'
 import {
   mapMutationTypes,
   mapGettersTypes,
-  mapActionsTypes,
+  mapActionsTypes
 } from '~/modules/stateTypes'
 import 'ol/ol.css'
 import OlLayerTree from '~/components/map/OlLayerTree'
 
 export default {
   components: {
-    OlLayerTree,
+    OlLayerTree
   },
   computed: {
     ...mapGetters('map', [
       mapGettersTypes.GET_BASE_LAYERS,
-      mapGettersTypes.SELECTED_BASE_LAYER,
+      mapGettersTypes.SELECTED_BASE_LAYER
     ]),
     ...mapState('map', ['map', 'slopes']),
     slopesOpacity: {
-      get() {
+      get () {
         return this.slopes.getOpacity()
       },
-      set(val) {
+      set (val) {
         this.SET_SLOPES_OPACITY(val)
-      },
+      }
     },
     slopesVisibility: {
-      get() {
+      get () {
         return this.slopes.getVisible()
       },
-      set(val) {
+      set (val) {
         this.SET_SLOPES_VISIBILITY(val)
-      },
+      }
     },
     selectBaseLayer: {
-      get() {
+      get () {
         return this.SELECTED_BASE_LAYER
       },
-      set(val) {
+      set (val) {
         this.SET_SELECTED_BASE_LAYER(val)
-      },
-    },
+      }
+    }
   },
-  mounted() {
+  mounted () {
     this.INIT_MAP()
   },
   methods: {
@@ -60,9 +60,9 @@ export default {
     ...mapMutations('map', [
       mapMutationTypes.SET_SLOPES_OPACITY,
       mapMutationTypes.SET_SELECTED_BASE_LAYER,
-      mapMutationTypes.SET_SLOPES_VISIBILITY,
-    ]),
-  },
+      mapMutationTypes.SET_SLOPES_VISIBILITY
+    ])
+  }
 }
 </script>
 

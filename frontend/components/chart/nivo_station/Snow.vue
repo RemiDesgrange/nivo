@@ -9,49 +9,49 @@ import NivoStationChartMixin from '~/components/chart/nivo_station/NivoStationCh
 export default {
   mixins: [NivoStationChartMixin],
   computed: {
-    chartSnowOptions() {
+    chartSnowOptions () {
       const sortedMeasure = this.nivoData
         .slice()
         .sort((a, b) => moment(a.date) - moment(b.date))
       return {
         chart: {
-          zoomType: 'x',
+          zoomType: 'x'
         },
         title: {
-          text: 'Hauteur de neige',
+          text: 'Hauteur de neige'
         },
         xAxis: {
-          type: 'datetime',
+          type: 'datetime'
         },
         yAxis: {
           title: {
-            text: 'Hauteur (cm)',
-          },
+            text: 'Hauteur (cm)'
+          }
         },
         tooltip: {
           headerFormat: '<b>{series.name}</b><br>',
-          pointFormat: '{point.x:%e. %b %H:%M:%Y}: {point.y:.2f} cm',
+          pointFormat: '{point.x:%e. %b %H:%M:%Y}: {point.y:.2f} cm'
         },
         series: [
           {
             type: 'area',
             name: 'Hauteur de neige',
-            data: sortedMeasure.map((n) => [
+            data: sortedMeasure.map(n => [
               moment(n.date).utc().valueOf(),
-              n.ht_neige * 100,
-            ]),
+              n.ht_neige * 100
+            ])
           },
           {
             type: 'area',
             name: 'Hauteur de neige fraiche',
-            data: sortedMeasure.map((n) => [
+            data: sortedMeasure.map(n => [
               moment(n.date).utc().valueOf(),
-              n.ssfrai,
-            ]),
-          },
-        ],
+              n.ssfrai
+            ])
+          }
+        ]
       }
-    },
-  },
+    }
+  }
 }
 </script>

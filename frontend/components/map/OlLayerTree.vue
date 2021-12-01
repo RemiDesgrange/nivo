@@ -11,11 +11,12 @@
             :key="layer.get('name')"
             :value="layer.get('name')"
             name="baselayers-radio"
-            >{{ layer.get('label') }}
+          >
+            {{ layer.get('label') }}
           </b-form-radio>
         </b-form-radio-group>
       </b-form-group>
-      <hr />
+      <hr>
       <p>Pentes</p>
       <b-form-checkbox v-model="slopesVisibility" name="slopes" switch>
         IGN 30°/40°/45°
@@ -26,8 +27,8 @@
         min="0"
         max="1"
         step="0.1"
-      ></b-form-input>
-      <hr />
+      />
+      <hr>
       <p>Couche</p>
       <b-form-checkbox
         v-model="flowCaptVisibility"
@@ -59,57 +60,57 @@ export default {
   computed: {
     ...mapGetters('map', [
       mapGettersTypes.GET_BASE_LAYERS,
-      mapGettersTypes.SELECTED_BASE_LAYER,
+      mapGettersTypes.SELECTED_BASE_LAYER
     ]),
     ...mapState('map', ['map', 'slopes', 'flowcapt', 'posteNivo', 'massifs']),
     slopesOpacity: {
-      get() {
+      get () {
         return this.slopes.getOpacity()
       },
-      set(val) {
+      set (val) {
         this.SET_SLOPES_OPACITY(parseFloat(val))
-      },
+      }
     },
     slopesVisibility: {
-      get() {
+      get () {
         return this.slopes.getVisible()
       },
-      set(val) {
+      set (val) {
         this.SET_SLOPES_VISIBILITY(Boolean(val))
-      },
+      }
     },
     flowCaptVisibility: {
-      get() {
+      get () {
         return this.flowcapt.getVisible()
       },
-      set(val) {
+      set (val) {
         this.SET_FLOWCAPT_VISIBILITY(Boolean(val))
-      },
+      }
     },
     massifVisibility: {
-      get() {
+      get () {
         return this.massifs.getVisible()
       },
-      set(val) {
+      set (val) {
         this.SET_MASSIFS_VISIBILITY(Boolean(val))
-      },
+      }
     },
     nivoStationVisibility: {
-      get() {
+      get () {
         return this.posteNivo.getVisible()
       },
-      set(val) {
+      set (val) {
         this.SET_NIVO_STATION_VISIBILITY(Boolean(val))
-      },
+      }
     },
     selectBaseLayer: {
-      get() {
+      get () {
         return this.SELECTED_BASE_LAYER
       },
-      set(val) {
+      set (val) {
         this.SET_SELECTED_BASE_LAYER(val)
-      },
-    },
+      }
+    }
   },
   methods: {
     ...mapMutations('map', [
@@ -118,8 +119,8 @@ export default {
       mapMutationTypes.SET_SLOPES_VISIBILITY,
       mapMutationTypes.SET_NIVO_STATION_VISIBILITY,
       mapMutationTypes.SET_FLOWCAPT_VISIBILITY,
-      mapMutationTypes.SET_MASSIFS_VISIBILITY,
-    ]),
-  },
+      mapMutationTypes.SET_MASSIFS_VISIBILITY
+    ])
+  }
 }
 </script>

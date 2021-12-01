@@ -11,7 +11,7 @@
               <bra-map />
             </base-map>
           </b-col>
-          <div class="w-100"></div>
+          <div class="w-100" />
           <b-col>
             <pre>{{ braData }}</pre>
             <bra-chart v-if="braData" />
@@ -33,7 +33,7 @@ import {
   globalMutationTypes as types,
   globalActionsTypes as actionsTypes,
   mapMutationTypes,
-  mapGettersTypes,
+  mapGettersTypes
 } from '~/modules/stateTypes'
 
 export default {
@@ -41,33 +41,33 @@ export default {
     BaseMap,
     BraMap,
     BraData,
-    BraChart,
+    BraChart
   },
-  async asyncData({ store, params }) {
+  async asyncData ({ store, params }) {
     // set map visibility
     store.commit('map/' + mapMutationTypes.SET_VISIBILITY, {
       layerName: 'massifs',
-      visibility: true,
+      visibility: true
     })
     store.commit('map/' + mapMutationTypes.SET_VISIBILITY, {
       layerName: 'flowcapt',
-      visibility: false,
+      visibility: false
     })
     store.commit('map/' + mapMutationTypes.SET_VISIBILITY, {
       layerName: 'posteNivo',
-      visibility: false,
+      visibility: false
     })
     // fetch massif
     await store.dispatch(actionsTypes.FETCH_MASSIFS)
     // select the fetched massif
     if (params.massif !== undefined) {
       const massif = store.state.massifs.features.find(
-        (massif) => params.massif.toUpperCase() === massif.properties.name
+        massif => params.massif.toUpperCase() === massif.properties.name
       )
       if (!massif) {
         store.commit(types.SET_ALERT, {
           level: alertTypes.DANGER,
-          message: 'Massifs cannot be found',
+          message: 'Massifs cannot be found'
         })
       } else {
         await store.dispatch(
@@ -84,18 +84,18 @@ export default {
   computed: {
     ...mapState(['braData']),
     ...mapGetters('map', [mapGettersTypes.SELECTED_MASSIF_CLICK]),
-    selectedMassif() {
+    selectedMassif () {
       return this.SELECTED_MASSIF_CLICK
-    },
+    }
   },
   watch: {
-    selectedMassif(newMassif) {
+    selectedMassif (newMassif) {
       if (newMassif.length > 0) {
         this.$router.push(`/${newMassif[0].get('name').toLowerCase()}`)
       } else {
         this.$router.push('/')
       }
-    },
-  },
+    }
+  }
 }
 </script>

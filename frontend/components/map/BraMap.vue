@@ -25,12 +25,12 @@ import { mapGettersTypes } from '~/modules/stateTypes'
 export default {
   components: {
     OlOverlay,
-    BraOverlay,
+    BraOverlay
   },
   computed: {
     ...mapState('map', ['massifs']),
-    ...mapGetters('map', [mapGettersTypes.SELECTED_MASSIF_HOVER]),
-  },
+    ...mapGetters('map', [mapGettersTypes.SELECTED_MASSIF_HOVER])
+  }
 }
 </script>
 

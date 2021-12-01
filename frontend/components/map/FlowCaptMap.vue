@@ -53,13 +53,13 @@ import { mapGettersTypes as getterTypes } from '~/modules/stateTypes'
 
 export default {
   components: {
-    OlOverlay,
+    OlOverlay
   },
   computed: {
     ...mapGetters('map', [
       getterTypes.SELECTED_FLOWCAPT_STATION_HOVER,
-      getterTypes.SELECTED_FLOWCAPT_STATION_CLICK,
-    ]),
-  },
+      getterTypes.SELECTED_FLOWCAPT_STATION_CLICK
+    ])
+  }
 }
 </script>

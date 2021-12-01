@@ -12,7 +12,7 @@ import CircleStyle from 'ol/style/Circle'
  * @return {Point}
  * @private
  */
-function createPointGeom(lonOrCoordinates, lat) {
+function createPointGeom (lonOrCoordinates, lat) {
   const coordinates = Array.isArray(lonOrCoordinates)
     ? lonOrCoordinates
     : [lonOrCoordinates, lat]
@@ -26,7 +26,7 @@ function createPointGeom(lonOrCoordinates, lat) {
  * @throws {Error}
  * @private
  */
-function toSimpleGeom(geom) {
+function toSimpleGeom (geom) {
   if (geom instanceof Circle) {
     geom = createPointGeom(geom.getCenter())
   }
@@ -42,11 +42,11 @@ function toSimpleGeom(geom) {
  * @param {Geometry|Object} geom
  * @return {Coordinate|undefined}
  */
-export function findPointOnSurface(geom) {
+export function findPointOnSurface (geom) {
   const simpleGeom = toSimpleGeom(geom)
   const pointFeature = pointOnFeature({
     type: simpleGeom.type || simpleGeom.getType(),
-    coordinates: simpleGeom.coordinates || simpleGeom.getCoordinates(),
+    coordinates: simpleGeom.coordinates || simpleGeom.getCoordinates()
   })
 
   if (pointFeature && pointFeature.geometry) {
@@ -59,7 +59,7 @@ export function findPointOnSurface(geom) {
  * @param {Feature} feature
  * @returns {Style}
  */
-export function selectionStyleBasedOnExisting(feature) {
+export function selectionStyleBasedOnExisting (feature) {
   // takes an existing styles and make it sligthly bigger when selected.
   const existingStyle = feature.getStyle()
   if (existingStyle instanceof Style) {
@@ -67,7 +67,7 @@ export function selectionStyleBasedOnExisting(feature) {
     stroke.setWidth(stroke.getWidth() + 3)
     return new Style({
       stroke,
-      fill: existingStyle.getFill(),
+      fill: existingStyle.getFill()
     })
   }
 }
@@ -79,7 +79,7 @@ export function selectionStyleBasedOnExisting(feature) {
  * @returns {string}
  * @private
  */
-function _setOpacityInRGBA(color, opacity) {
+function _setOpacityInRGBA (color, opacity) {
   const newcol = color.split(',')
   newcol.pop()
   newcol.push(` ${opacity})`)
@@ -91,16 +91,16 @@ function _setOpacityInRGBA(color, opacity) {
  * @param {Feature} feature
  * @returns {Style}
  */
-export function massifsStyleFunc(feature) {
+export function massifsStyleFunc (feature) {
   const risk = feature.get('latest_record').max_risk
   const color = {
     5: 'rgba(254, 5, 0, 1)',
     4: 'rgba(254, 35, 32, 1)',
     3: 'rgba(255, 158, 1, 1)',
     2: 'rgba(254, 255, 0, 1)',
-    1: 'rgba(205, 255, 96, 1)',
+    1: 'rgba(205, 255, 96, 1)'
   }
-  const index = Object.keys(color).find((e) => Number(e) === risk)
+  const index = Object.keys(color).find(e => Number(e) === risk)
   let currentRiskColor = null
   if (index === undefined) {
     currentRiskColor = 'rgba(86, 130, 243, 1)'
@@ -110,27 +110,27 @@ export function massifsStyleFunc(feature) {
 
   return new Style({
     fill: new Fill({
-      color: _setOpacityInRGBA(currentRiskColor, 0.5),
+      color: _setOpacityInRGBA(currentRiskColor, 0.5)
     }),
     stroke: new Stroke({
       color: currentRiskColor,
-      width: 2,
-    }),
+      width: 2
+    })
   })
 }
 
-export function flowcaptStyleFunc(feature) {
+export function flowcaptStyleFunc (feature) {
   return new Style({
     image: new CircleStyle({
       radius: 5,
       fill: new Fill({
-        color: 'rgba(40,254,0,0.5)',
+        color: 'rgba(40,254,0,0.5)'
       }),
       stroke: new Stroke({
         color: 'rgba(255, 255, 255, 1)',
-        width: 2,
-      }),
-    }),
+        width: 2
+      })
+    })
   })
 }
 
@@ -139,17 +139,17 @@ export function flowcaptStyleFunc(feature) {
  * @param {Feature} feature
  * @returns {Style}
  */
-export function nivoStationStyleFunc(feature) {
+export function nivoStationStyleFunc (feature) {
   return new Style({
     image: new CircleStyle({
       radius: 5,
       fill: new Fill({
-        color: 'rgba(254, 5, 0, 0.5)',
+        color: 'rgba(254, 5, 0, 0.5)'
       }),
       stroke: new Stroke({
         color: 'rgba(255, 255, 255, 1)',
-        width: 2,
-      }),
-    }),
+        width: 2
+      })
+    })
   })
 }
