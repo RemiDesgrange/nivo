@@ -4,6 +4,7 @@ from sqlalchemy.engine import Engine, Connection
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session, scoped_session
 from flask import current_app, has_app_context
+from typing import Optional, Generator
 
 from nivo_api.settings import Config
 
@@ -30,7 +31,7 @@ def create_database_connections() -> "DatabaseConnections":
 
 
 @contextmanager
-def connection_scope(engine: Engine = None) -> Connection:
+def connection_scope(engine: Optional[Engine] = None) -> Generator[Connection, None, None]:
     """
     Get a SQLAlchemy Engine connection. This method is a context manager. You can either pass the engine to the function
     or, if an app context, get the engine from `current_app` directly (without needing anything).
@@ -47,7 +48,7 @@ def connection_scope(engine: Engine = None) -> Connection:
 
 
 @contextmanager
-def session_scope(session: Session = None):
+def session_scope(session: Optional[Session] = None) -> Generator[Session, None, None]:
     """
     Get a SQLAlchemy session (for ORM). This method is a context manager. You can either pass the session to the function
     or, if an app context, get the engine from `current_app` directly (without needing anything).

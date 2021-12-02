@@ -48,7 +48,7 @@ export default {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: [],
+  plugins: [{ src: '@/plugins/map-plugin', ssr: false }],
   /*
    ** Nuxt.js dev-modules
    */
@@ -85,7 +85,7 @@ export default {
   env: {
     baseUrl: `${process.env.API_PREFIX || 'http'}://${
       process.env.API_HOST || 'localhost'
-    }:${process.env.API_PORT || 8000}`,
+    }:${process.env.API_PORT || 9000}`,
     ignBaseMapURL:
       process.env.IGN_BASE_MAP_URL ||
       'https://wxs.ign.fr/an7nvfzojv5wa96dsga5nk8w/geoportail/wmts'

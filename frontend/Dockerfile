@@ -1,4 +1,4 @@
-FROM node:14-slim
+FROM node:16-slim
 
 ARG SENTRY_DSN
 ARG SENTRY_DISABLED

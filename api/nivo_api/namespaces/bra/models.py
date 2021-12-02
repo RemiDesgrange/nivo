@@ -54,6 +54,8 @@ bra_model = bra_api.model(
     "BraModel",
     {
         "id": UUIDField(attribute="br_id"),
+        "next_bra_id": UUIDField(attribute="next_bra_id"),
+        "previous_bra_id": UUIDField(attribute="previous_bra_id"),
         "production_date": fields.DateTime(attribute="br_production_date"),
         "expiration_date": fields.DateTime(attribute="br_expiration_date"),
         "max_risk": fields.Integer(attribute="br_max_risk"),
@@ -159,10 +161,10 @@ massifs_model = bra_api.model(
         "id": UUIDField(attribute="m_id"),
         "name": fields.String(attribute="m_name"),
         "department": {
-                    "id": UUIDField(attribute="d_id"),
-                    "name": fields.String(attribute="d_name"),
-                    "number": fields.Integer(attribute="d_number"),
-                },
+            "id": UUIDField(attribute="d_id"),
+            "name": fields.String(attribute="d_name"),
+            "number": fields.Integer(attribute="d_number"),
+        },
         "latest_record": {
             "id": UUIDField(attribute="br_id"),
             "max_risk": fields.Integer(attribute="br_max_risk"),
@@ -183,7 +185,7 @@ massifs_model = bra_api.model(
                 )
             ),
             "next_bra": UUIDField(attribute="next_bra_id"),
-            "previous_bra": UUIDField(attribute="previous_bra_id")
+            "previous_bra": UUIDField(attribute="previous_bra_id"),
         },
     },
 )

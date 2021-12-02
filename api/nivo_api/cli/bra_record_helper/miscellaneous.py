@@ -83,14 +83,14 @@ def get_bra_xml(massif: str, bra_date: datetime) -> ET:
 
 def get_massif_geom(massif: str) -> WKBElement:
     """process to get the massifs geometries:
-      * go on the meteofrance bra website
-      * then get the html "area" element
-     * then convert it to fake GeoJSON (wrong coordinates)
-     * then open it in qgis.
-     * Select *all* the geom of the layer.
-     * rotate -90°
-     * swap X and Y coordinates (with plugin)
-     * use grass v.transform with various x, y scale and rotation until you get what you want.
+     * go on the meteofrance bra website
+     * then get the html "area" element
+    * then convert it to fake GeoJSON (wrong coordinates)
+    * then open it in qgis.
+    * Select *all* the geom of the layer.
+    * rotate -90°
+    * swap X and Y coordinates (with plugin)
+    * use grass v.transform with various x, y scale and rotation until you get what you want.
     """
     with resource_stream("nivo_api", "cli/data/all_massifs.geojson") as fp:
         gj = geojson.load(fp)

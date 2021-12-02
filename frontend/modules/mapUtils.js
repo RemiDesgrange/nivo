@@ -1,6 +1,7 @@
 import Style from 'ol/style/Style'
 import Fill from 'ol/style/Fill'
 import Stroke from 'ol/style/Stroke'
+import Icon from 'ol/style/Icon'
 import Point from 'ol/geom/Point'
 import pointOnFeature from '@turf/point-on-feature'
 import Circle from 'ol/geom/Circle'
@@ -100,23 +101,41 @@ export function massifsStyleFunc (feature) {
     2: 'rgba(254, 255, 0, 1)',
     1: 'rgba(205, 255, 96, 1)'
   }
+  let imgName = '9_PasdinfoV1'
   const index = Object.keys(color).find(e => Number(e) === risk)
-  let currentRiskColor = null
-  if (index === undefined) {
-    currentRiskColor = 'rgba(86, 130, 243, 1)'
-  } else {
+  let currentRiskColor = 'rgba(86, 130, 243, 1)'
+  if (index !== undefined) {
     currentRiskColor = color[index]
+    imgName = `${risk}_transparent`
   }
 
-  return new Style({
-    fill: new Fill({
-      color: _setOpacityInRGBA(currentRiskColor, 0.5)
+  return [
+    new Style({
+      image: new Icon({
+        src: `/images/${imgName}.png`,
+        scale: 0.5
+      }),
+      geometry: (feature) => {
+        const geometry = feature.getGeometry()
+        const geometryType = geometry.getType()
+        return (
+          geometryType === 'Polygon'
+            ? geometry.getInteriorPoint()
+            : geometryType === 'MultiPolygon'
+              ? geometry.getInteriorPoints()
+              : geometry
+        )
+      }
     }),
-    stroke: new Stroke({
-      color: currentRiskColor,
-      width: 2
-    })
-  })
+    new Style({
+      fill: new Fill({
+        color: _setOpacityInRGBA(currentRiskColor, 0.5)
+      }),
+      stroke: new Stroke({
+        color: currentRiskColor,
+        width: 2
+      })
+    })]
 }
 
 export function flowcaptStyleFunc (feature) {

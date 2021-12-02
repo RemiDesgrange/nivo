@@ -46,7 +46,9 @@ def setup_logging(app: Flask) -> None:
 def init_sentry():
     # sentry is service that collect all exception in the app ans send it to sentry.io, or your own instance
     # the endpoint to contact sentry is set via SENTRY_DSN env var
-    sentry_sdk.init(integrations=[FlaskIntegration(), SqlalchemyIntegration()],)
+    sentry_sdk.init(
+        integrations=[FlaskIntegration(), SqlalchemyIntegration()],
+    )
 
 
 def init_db(app: Flask) -> None:

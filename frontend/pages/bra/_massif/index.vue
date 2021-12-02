@@ -59,18 +59,18 @@ export default {
     // fetch massif
     await store.dispatch(actionsTypes.FETCH_MASSIFS)
     // select the fetched massif
-    if (params.massif !== undefined && !params.record_id !== undefined) {
+    if (params.massif !== undefined) {
       const massif = store.state.massifs.features.find(
         massif => params.massif.toUpperCase() === massif.properties.name
       )
-      const recordId = params.record_id
-      if (!massif && !recordId) {
+      console.log(massif)
+      if (!massif) {
         store.commit(types.SET_ALERT, {
           level: alertTypes.DANGER,
           message: 'Massifs for that date cannot be found'
         })
       } else {
-        await store.dispatch(actionsTypes.FETCH_BRA_DATA, recordId)
+        await store.dispatch(actionsTypes.FETCH_LAST_BRA_DATA, massif.properties.id)
       }
     }
   },

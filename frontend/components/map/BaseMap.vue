@@ -7,8 +7,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions, mapState, mapMutations } from 'vuex'
-
+import { mapActions, mapState, mapMutations } from 'vuex'
 import {
   mapMutationTypes,
   mapGettersTypes,
@@ -22,14 +21,14 @@ export default {
     OlLayerTree
   },
   computed: {
-    ...mapGetters('map', [
+    ...mapActions('map', [
       mapGettersTypes.GET_BASE_LAYERS,
       mapGettersTypes.SELECTED_BASE_LAYER
     ]),
-    ...mapState('map', ['map', 'slopes']),
+    ...mapState('map', ['slopes']),
     slopesOpacity: {
       get () {
-        return this.slopes.getOpacity()
+        return this.$mapService.slopes.getOpacity()
       },
       set (val) {
         this.SET_SLOPES_OPACITY(val)
@@ -37,7 +36,7 @@ export default {
     },
     slopesVisibility: {
       get () {
-        return this.slopes.getVisible()
+        return this.$mapService.slopes.getVisible()
       },
       set (val) {
         this.SET_SLOPES_VISIBILITY(val)

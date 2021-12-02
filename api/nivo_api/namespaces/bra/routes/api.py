@@ -22,7 +22,12 @@ from nivo_api.core.db.models.sql.bra import (
     MassifTable,
     RiskTable,
 )
-from nivo_api.namespaces.bra.models import bra_model, zone_model, department_model, massifs_model
+from nivo_api.namespaces.bra.models import (
+    bra_model,
+    zone_model,
+    department_model,
+    massifs_model,
+)
 from nivo_api.namespaces.bra.namespace import bra_api
 from nivo_api.namespaces.utils import GeometryField
 
@@ -42,7 +47,10 @@ class MassifsRecordRessource(Resource):
             res = (
                 sess.query(BraRecord)
                 .filter(BraRecord.br_massif == massif_id)
-                .filter(BraRecord.br_production_date > (func.now() - func.cast(concat(args["limit"], 'DAYS'), INTERVAL)))
+                .filter(
+                    BraRecord.br_production_date
+                    > (func.now() - func.cast(concat(args["limit"], "DAYS"), INTERVAL))
+                )
                 .order_by(BraRecord.br_production_date.desc())
                 .options(subqueryload(BraRecord.risks))
                 .options(subqueryload(BraRecord.snow_records))
@@ -62,21 +70,18 @@ class LastBraListResource(Resource):
         Return the last record for all massifs.
         """
         with session_scope() as sess:
+            subq = sess.query(BraRecord).subquery()
             res = (
-                sess.query(BraRecord)
-                .join(Massif)
+                sess.query(subq)
                 .filter(
-                    BraRecord.br_production_date.cast(Date)
+                    subq.c.br_production_date.cast(Date)
                     == select([func.max(BraRecord.br_production_date.cast(Date))])
-                )
-                .options(subqueryload(BraRecord.risks))
-                .options(subqueryload(BraRecord.snow_records))
-                .options(subqueryload(BraRecord.fresh_snow_records))
-                .options(subqueryload(BraRecord.weather_forecasts))
-                .options(subqueryload(BraRecord.risk_forecasts))
-                .all()
-            )
+                ) 
+            ).all()
+            #TODO it does not return relationship. Subqueryload doesn't work with subquery.
+            res = [r._asdict() for r in res]
             return marshal(res, bra_model)
+
 
 @bra_api.route("/record/<uuid:record_id>")
 class LastBraListResource(Resource):
@@ -85,19 +90,11 @@ class LastBraListResource(Resource):
         Return a specific BRA with it's ID.
         """
         with session_scope() as sess:
-            res = (
-                sess.query(BraRecord)
-                .filter(
-                    BraRecord.br_id == record_id
-                )
-                .options(subqueryload(BraRecord.risks))
-                .options(subqueryload(BraRecord.snow_records))
-                .options(subqueryload(BraRecord.fresh_snow_records))
-                .options(subqueryload(BraRecord.weather_forecasts))
-                .options(subqueryload(BraRecord.risk_forecasts))
-                .all()
-            )
-            return marshal(res, bra_model)
+            global_rec = sess.query(BraRecord).subquery()
+            filtered = sess.query(global_rec).filter(global_rec.c.br_id == record_id).first()
+            #record = BraRecord(**filtered._asdict()) #TODO it does not return relationship. Subqueryload doesn't work with subquery.
+            return marshal(filtered._asdict(), bra_model)
+
 
 @bra_api.route("/massifs/<uuid:massif_id>/last")
 class LastBraRecordResource(Resource):
@@ -111,12 +108,6 @@ class LastBraRecordResource(Resource):
                 .filter(BraRecord.br_massif == massif_id)
                 .order_by(BraRecord.br_production_date.desc())
                 .limit(1)
-                .options(subqueryload(BraRecord.risks))
-                .options(subqueryload(BraRecord.snow_records))
-                .options(subqueryload(BraRecord.fresh_snow_records))
-                .options(subqueryload(BraRecord.weather_forecasts))
-                .options(subqueryload(BraRecord.risk_forecasts))
-                .options(subqueryload(BraRecord.massif))
             )
             res = s.first()
             return marshal(res, bra_model)
@@ -200,29 +191,48 @@ class MassifResource(Resource):
                 .limit(1)
                 .lateral()
             )
-            # Also select if it has a previous and next 
+            # Also select if it has a previous and next
             next_bra = (
-                select([br.c.br_id.label('next_bra_id')])
-                .where(and_(br.c.br_massif == m.c.m_id, br.c.br_production_date > lateral.c.br_production_date))
+                select([br.c.br_id.label("next_bra_id")])
+                .where(
+                    and_(
+                        br.c.br_massif == m.c.m_id,
+                        br.c.br_production_date > lateral.c.br_production_date,
+                    )
+                )
                 .order_by(br.c.br_production_date.desc())
                 .limit(1)
                 .lateral()
             )
             previous_bra = (
-                select([br.c.br_id.label('previous_bra_id')])
-                .where(and_(br.c.br_massif == m.c.m_id, br.c.br_production_date < lateral.c.br_production_date))
+                select([br.c.br_id.label("previous_bra_id")])
+                .where(
+                    and_(
+                        br.c.br_massif == m.c.m_id,
+                        br.c.br_production_date < lateral.c.br_production_date,
+                    )
+                )
                 .order_by(br.c.br_production_date.desc())
                 .limit(1)
                 .lateral()
             )
             # selecting everything wrapped up. Also joining on department
             query = (
-                select([lateral, d.c.d_id, d.c.d_name, d.c.d_number,next_bra, previous_bra])
+                select(
+                    [
+                        lateral,
+                        d.c.d_id,
+                        d.c.d_name,
+                        d.c.d_number,
+                        next_bra,
+                        previous_bra,
+                    ]
+                )
                 .select_from(
                     m.join(lateral, true())
-                     .join(d, d.c.d_id == m.c.m_department)
-                     .outerjoin(next_bra, true())
-                     .outerjoin(previous_bra, true())
+                    .join(d, d.c.d_id == m.c.m_department)
+                    .outerjoin(next_bra, true())
+                    .outerjoin(previous_bra, true())
                 )
                 .order_by(m.c.m_id, lateral.c.br_production_date.desc())
             )
@@ -237,20 +247,24 @@ class MassifResource(Resource):
             features = list()
             for i, result in enumerate(results_in_json):
                 risks = con.execute(
-                        RiskTable.select(RiskTable.c.r_record_id == result["latest_record"]["id"])
-                    ).fetchall()
+                    RiskTable.select(
+                        RiskTable.c.r_record_id == result["latest_record"]["id"]
+                    )
+                ).fetchall()
                 result["latest_record"]["risks"] = [
-                                    {
-                                        "id": r.r_id,
-                                        "risk": r.r_risk,
-                                        "altitude": r.r_altitude_limit,
-                                    }
-                                    for r in risks
-                                ]
-                features.append(Feature(
-                    geometry=GeometryField().format(lateral_results[i].the_geom),
-                    properties=result
-                ))
+                    {
+                        "id": r.r_id,
+                        "risk": r.r_risk,
+                        "altitude": r.r_altitude_limit,
+                    }
+                    for r in risks
+                ]
+                features.append(
+                    Feature(
+                        geometry=GeometryField().format(lateral_results[i].the_geom),
+                        properties=result,
+                    )
+                )
             if len(features) == 1:
                 return jsonify(features[0])
             return jsonify(FeatureCollection(features))

@@ -1,4 +1,8 @@
-# ASSETS
+## Risks assets
+
+Risks images have been downloaded from meteo-france website.
+
+## ASSETS
 
 This directory contains your un-compiled assets such as LESS, SASS, or JavaScript.
 

@@ -193,17 +193,14 @@ class TestGetWeatherForecastAtAltitude:
         for i, data in enumerate(res):
             assert data["wfaa_wind_altitude"] == (2000, 2500)[i % 2]
             assert data["wfaa_wf_id"] == wf_id
-            assert (
-                data["wfaa_wind_direction"]
-                == (
-                    WindDirection.NE,
-                    WindDirection.N,
-                    WindDirection.NE,
-                    WindDirection.N,
-                    WindDirection.NE,
-                    WindDirection.NE,
-                )[i]
-            )
+            assert data["wfaa_wind_direction"] == (
+                WindDirection.NE,
+                WindDirection.N,
+                WindDirection.NE,
+                WindDirection.N,
+                WindDirection.NE,
+                WindDirection.NE,
+            )[i]
             assert data["wfaa_wind_force"] == (20, 50, 40, 60, 60, 70)[i]
 
 

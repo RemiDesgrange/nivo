@@ -58,6 +58,7 @@ export const mutations = {
     if (Object.keys(alertTypes).includes(payload.level)) {
       throw new Error('Unexpected alert message type. Aborting.')
     }
+    console.log(payload.message)
     const beforeLength = state.alerts.length
     state.alerts.push({
       id: beforeLength + 1,

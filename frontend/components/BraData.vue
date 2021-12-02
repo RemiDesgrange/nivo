@@ -5,10 +5,10 @@
         <b-col>
           <b-button-toolbar key-nav aria-label="Toolbar with button groups">
             <b-button-group class="mr-1">
-              <b-button :disabled="noFollowed">
+              <b-button :disabled="noFollowed" :to="nextBraPath">
                 Jour suivant
               </b-button>
-              <b-button :disabled="noPrevious">
+              <b-button :disabled="noPrevious" :to="previousBraPath">
                 Jour précédent
               </b-button>
             </b-button-group>
@@ -58,15 +58,21 @@
 import { mapState, mapGetters } from 'vuex'
 
 export default {
-  data () {
-    return {
-      noPrevious: false,
-      noFollowed: true
-    }
-  },
   computed: {
-    ...mapState(['braLoading']),
-    ...mapGetters(['braUrl', 'braDate'])
+    ...mapState(['braLoading', 'braData']),
+    ...mapGetters(['braUrl', 'braDate']),
+    noPrevious () {
+      return !this.braData.previous_bra_id
+    },
+    noFollowed () {
+      return !this.braData.next_bra_id
+    },
+    previousBraPath () {
+      return `/bra/${this.$nuxt.context.params.massif}/${this.braData.previous_bra_id}`
+    },
+    nextBraPath () {
+      return `/bra/${this.$nuxt.context.params.massif}/${this.braData.next_bra_id}`
+    }
   }
 }
 </script>

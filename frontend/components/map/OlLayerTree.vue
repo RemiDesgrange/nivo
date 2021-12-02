@@ -52,20 +52,19 @@
 </template>
 
 <script>
-import { mapGetters, mapState, mapMutations } from 'vuex'
+import { mapMutations, mapActions } from 'vuex'
 
 import { mapMutationTypes, mapGettersTypes } from '~/modules/stateTypes'
 
 export default {
   computed: {
-    ...mapGetters('map', [
+    ...mapActions('map', [
       mapGettersTypes.GET_BASE_LAYERS,
       mapGettersTypes.SELECTED_BASE_LAYER
     ]),
-    ...mapState('map', ['map', 'slopes', 'flowcapt', 'posteNivo', 'massifs']),
     slopesOpacity: {
       get () {
-        return this.slopes.getOpacity()
+        return this.$mapService.slopes.getOpacity()
       },
       set (val) {
         this.SET_SLOPES_OPACITY(parseFloat(val))
@@ -73,7 +72,7 @@ export default {
     },
     slopesVisibility: {
       get () {
-        return this.slopes.getVisible()
+        return this.$mapService.slopes.getVisible()
       },
       set (val) {
         this.SET_SLOPES_VISIBILITY(Boolean(val))
@@ -81,7 +80,7 @@ export default {
     },
     flowCaptVisibility: {
       get () {
-        return this.flowcapt.getVisible()
+        return this.$mapService.flowcapt.getVisible()
       },
       set (val) {
         this.SET_FLOWCAPT_VISIBILITY(Boolean(val))
@@ -89,7 +88,7 @@ export default {
     },
     massifVisibility: {
       get () {
-        return this.massifs.getVisible()
+        return this.$mapService.massifs.getVisible()
       },
       set (val) {
         this.SET_MASSIFS_VISIBILITY(Boolean(val))
@@ -97,7 +96,7 @@ export default {
     },
     nivoStationVisibility: {
       get () {
-        return this.posteNivo.getVisible()
+        return this.$mapService.posteNivo.getVisible()
       },
       set (val) {
         this.SET_NIVO_STATION_VISIBILITY(Boolean(val))
