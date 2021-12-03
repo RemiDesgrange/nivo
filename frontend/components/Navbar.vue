@@ -27,6 +27,11 @@
           </b-nav-item>
         </b-navbar-nav>
       </b-collapse>
+      <b-navbar-nav class="ml-auto">
+        <b-nav-item href="https://github.com/RemiDesgrange/nivo">
+          <b-icon-github />
+        </b-nav-item>
+      </b-navbar-nav>
     </b-navbar>
   </div>
 </template>

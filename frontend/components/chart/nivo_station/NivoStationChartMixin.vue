@@ -12,8 +12,11 @@ export default {
   computed: {
     ...mapState(['nivoData']),
     lastData () {
-      const lastDate = moment(this.nivoData.slice().reverse().pop().date)
-      return lastDate.utc().valueOf()
+      if (this.nivoData.length > 0) {
+        const lastDate = moment(this.nivoData.slice().reverse().pop().date)
+        return lastDate.utc().valueOf()
+      }
+      return null
     }
   }
 }

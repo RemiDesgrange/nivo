@@ -35,5 +35,5 @@ export default new TileLayer({
   }),
   name: 'slopes',
   opacity: 0.5,
-  visible: true
+  visible: false
 })

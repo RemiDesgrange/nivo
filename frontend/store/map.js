@@ -97,16 +97,6 @@ export const actions = {
   },
   [mapActionsTypes.ADD_FEATURES] ({ commit }, { layer, features }) {
     commit('ADD_FEATURES', { layer, features })
-  },
-  [getterTypes.GET_BASE_LAYERS] () {
-    return this.$mapService.getBaseLayers().getLayers().getArray()
-  },
-  [getterTypes.SELECTED_BASE_LAYER] () {
-    const selected = this.$mapService.getBaseLayers()
-      .getLayers()
-      .getArray()
-      .find(l => l.getVisible())
-    return selected.get('name')
   }
 }
 
@@ -211,8 +201,7 @@ export const mutations = {
   [types.SET_SELECTED_BASE_LAYER] (state, layerName) {
     // only 1 base layer can be visible
     this.$mapService.getBaseLayers()
-      .getLayers()
-      .getArray()
+      .getLayersArray()
       .filter(l => l.get('name') === layerName)
       .map(l => l.setVisible(true))
   },

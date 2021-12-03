@@ -99,11 +99,13 @@ class MassifsRecordRessource(Resource):
 
 @bra_api.route("/last")
 class LastBraListResource(Resource):
+    @bra_api.response(HTTPStatus.INTERNAL_SERVER_ERROR, "Something went wrong")
+    @bra_api.response(HTTPStatus.NOT_FOUND, "last bra cannot be found.")
+    @bra_api.response(HTTPStatus.OK, "OK", bra_model)
     def get(self) -> List[Dict]:
         """
         Return the last record for all massifs.
         """
-        # FIXME: next_bra_id and previous_bra_id are not displayed because of the query filter. Need a subquery (and a lot of work.)
         with session_scope() as sess:
             results = (
                 sess.query(
@@ -147,6 +149,9 @@ class LastBraListResource(Resource):
 
 @bra_api.route("/record/<uuid:record_id>")
 class LastBraListResource(Resource):
+    @bra_api.response(HTTPStatus.INTERNAL_SERVER_ERROR, "Something went wrong")
+    @bra_api.response(HTTPStatus.NOT_FOUND, "record for this bra cannot be found.")
+    @bra_api.response(HTTPStatus.OK, "OK", bra_model)
     def get(self, record_id: UUID) -> Dict:
         """
         Return a specific BRA with it's ID.
@@ -192,25 +197,41 @@ class LastBraListResource(Resource):
             record_as_dict["risk_forecasts"] = sess.query(RiskForecast).filter(
                 RiskForecast.rf_bra_record == result_filtered.br_id
             )
-
             return marshal(record_as_dict, bra_model)
 
 
 @bra_api.route("/massifs/<uuid:massif_id>/last")
 class LastBraRecordResource(Resource):
+    @bra_api.response(HTTPStatus.INTERNAL_SERVER_ERROR, "Something went wrong")
+    @bra_api.response(HTTPStatus.NOT_FOUND, "bra for this massif cannot be found.")
+    @bra_api.response(HTTPStatus.OK, "OK", bra_model)
     def get(self, massif_id: UUID) -> Dict:
         """
         Return a record for a massifs. With all the associated metadata.
         """
         with session_scope() as sess:
-            s = (
-                sess.query(BraRecord)
+            request = (
+                sess.query(BraRecord, func.lag(BraRecord.br_id)
+                .over(
+                    order_by=BraRecord.br_production_date,
+                    partition_by=BraRecord.br_massif,
+                )
+                .label("previous_bra_id"),
+                func.lead(BraRecord.br_id)
+                .over(
+                    order_by=BraRecord.br_production_date,
+                    partition_by=BraRecord.br_massif,
+                )
+                .label("next_bra_id"))
                 .filter(BraRecord.br_massif == massif_id)
                 .order_by(BraRecord.br_production_date.desc())
                 .limit(1)
             )
-            res = s.first()
-            return marshal(res, bra_model)
+            result = request.first()
+            json = marshal(result.BraRecord, bra_model)
+            json["previous_bra_id"] = result.previous_bra_id
+            json["next_bra_id"] = result.next_bra_id
+            return json
 
 
 @bra_api.route("/zone")

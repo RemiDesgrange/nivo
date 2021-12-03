@@ -59,7 +59,8 @@ class MapService {
     this.map.addInteraction(new Select({
       features: this.#selectedFeatures[layer][options.collection],
       layers: [this[layer]],
-      condition: options.condition ?? null
+      condition: options.condition ?? null,
+      style: options.style
     }))
     // populate back the store when collection is hydrated or suppressed.
     this.#selectedFeatures[layer][options.collection].on('add', (e) => {

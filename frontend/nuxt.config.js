@@ -128,6 +128,7 @@ export default {
       'BOverlay',
       'BIconX',
       'BIconCheck',
+      'BIconGithub',
       'BProgress',
       'BAlert'
     ]

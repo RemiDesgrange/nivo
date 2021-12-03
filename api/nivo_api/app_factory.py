@@ -36,7 +36,7 @@ def create_api(app: Flask) -> Api:
 def load_config(app: Flask) -> None:
     app.config.from_object("nivo_api.settings.Config")
     app.config.from_envvar("CONFIG_FILE", silent=True)
-    app.config["RESTPLUS_JSON"] = {"cls": UUIDEncoder}
+    app.config["RESTX_JSON"] = {"cls": UUIDEncoder}
 
 
 def setup_logging(app: Flask) -> None:

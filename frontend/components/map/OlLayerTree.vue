@@ -5,9 +5,9 @@
     </b-button>
     <b-collapse id="collapse-layer-tree">
       <b-form-group label="Fond de plan">
-        <b-form-radio-group v-model="selectBaseLayer" stacked>
+        <b-form-radio-group v-model="selectBaseLayerName" stacked>
           <b-form-radio
-            v-for="layer in GET_BASE_LAYERS"
+            v-for="layer in baseLayers"
             :key="layer.get('name')"
             :value="layer.get('name')"
             name="baselayers-radio"
@@ -58,6 +58,12 @@ import { mapMutationTypes, mapGettersTypes } from '~/modules/stateTypes'
 
 export default {
   computed: {
+    baseLayers () {
+      return this.$mapService.baseLayers.getLayersArray()
+    },
+    selectedBaseLayer () {
+      return this.$mapService.baseLayers.getLayersArray().find(l => l.getVisible())
+    },
     ...mapActions('map', [
       mapGettersTypes.GET_BASE_LAYERS,
       mapGettersTypes.SELECTED_BASE_LAYER
@@ -102,9 +108,9 @@ export default {
         this.SET_NIVO_STATION_VISIBILITY(Boolean(val))
       }
     },
-    selectBaseLayer: {
+    selectBaseLayerName: {
       get () {
-        return this.SELECTED_BASE_LAYER
+        return this.selectedBaseLayer.get('name')
       },
       set (val) {
         this.SET_SELECTED_BASE_LAYER(val)
