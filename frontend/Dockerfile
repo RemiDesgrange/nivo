@@ -11,12 +11,12 @@ WORKDIR /app
 RUN chown node:node /app
 
 USER node
-COPY package.json package-lock.json /app/
+COPY --chown=node:node package.json package-lock.json /app/
 RUN npm install
 
 ENV NODE_ENV=production
 ENV HOST 0.0.0.0
-COPY . .
+COPY --chown=node:node . .
 RUN npm run build
 EXPOSE 3000
 CMD ["npm", "run", "start"]
