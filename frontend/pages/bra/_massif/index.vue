@@ -63,7 +63,6 @@ export default {
       const massif = store.state.massifs.features.find(
         massif => params.massif.toUpperCase() === massif.properties.name
       )
-      console.log(massif)
       if (!massif) {
         store.commit(types.SET_ALERT, {
           level: alertTypes.DANGER,
@@ -84,7 +83,7 @@ export default {
   watch: {
     selectedMassif (newMassif) {
       if (newMassif.length > 0) {
-        this.$router.push(`/${newMassif[0].get('name').toLowerCase()}`)
+        this.$router.push(`/bra/${newMassif[0].get('name').toLowerCase()}`)
       } else {
         this.$router.push('/')
       }

@@ -31,7 +31,9 @@ def create_database_connections() -> "DatabaseConnections":
 
 
 @contextmanager
-def connection_scope(engine: Optional[Engine] = None) -> Generator[Connection, None, None]:
+def connection_scope(
+    engine: Optional[Engine] = None,
+) -> Generator[Connection, None, None]:
     """
     Get a SQLAlchemy Engine connection. This method is a context manager. You can either pass the engine to the function
     or, if an app context, get the engine from `current_app` directly (without needing anything).

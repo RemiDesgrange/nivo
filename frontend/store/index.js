@@ -58,7 +58,7 @@ export const mutations = {
     if (Object.keys(alertTypes).includes(payload.level)) {
       throw new Error('Unexpected alert message type. Aborting.')
     }
-    console.log(payload.message)
+    console.error(payload.message)
     const beforeLength = state.alerts.length
     state.alerts.push({
       id: beforeLength + 1,
@@ -101,7 +101,11 @@ export const mutations = {
 }
 
 export const actions = {
-  async [actionsTypes.FETCH_MASSIFS] ({ commit }) {
+  async [actionsTypes.FETCH_MASSIFS] ({ commit, state }) {
+    // if massifs have already been downloaded
+    if (state.massifs.length > 0) {
+      return
+    }
     commit(types.TOGGLE_MASSIFS_LOADING)
     try {
       const res = await this.$axios.get(`${process.env.baseUrl}/bra/massifs`)

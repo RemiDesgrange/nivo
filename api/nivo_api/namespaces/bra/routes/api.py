@@ -15,7 +15,17 @@ from nivo_api.core.api_schema.geojson import (
     FeatureCollection as FeatureCollectionSchema,
 )
 from nivo_api.core.db.connection import connection_scope, session_scope
-from nivo_api.core.db.models.orm.bra import Massif, Department, Zone, BraRecord
+from nivo_api.core.db.models.orm.bra import (
+    Massif,
+    Department,
+    RiskForecast,
+    Zone,
+    BraRecord,
+    Risk,
+    SnowRecord,
+    FreshSnowRecord,
+    WeatherForecast,
+)
 from nivo_api.core.db.models.sql.bra import (
     DepartmentTable,
     BraRecordTable,
@@ -44,13 +54,27 @@ class MassifsRecordRessource(Resource):
         """
         args = massif_record_parser.parse_args()
         with session_scope() as sess:
-            res = (
-                sess.query(BraRecord)
-                .filter(BraRecord.br_massif == massif_id)
+            results = (
+                sess.query(
+                    BraRecord,
+                    func.lag(BraRecord.br_id)
+                    .over(
+                        order_by=BraRecord.br_production_date,
+                        partition_by=BraRecord.br_massif,
+                    )
+                    .label("previous_bra_id"),
+                    func.lead(BraRecord.br_id)
+                    .over(
+                        order_by=BraRecord.br_production_date,
+                        partition_by=BraRecord.br_massif,
+                    )
+                    .label("next_bra_id"),
+                )
                 .filter(
                     BraRecord.br_production_date
                     > (func.now() - func.cast(concat(args["limit"], "DAYS"), INTERVAL))
                 )
+                .filter(BraRecord.br_massif == massif_id)
                 .order_by(BraRecord.br_production_date.desc())
                 .options(subqueryload(BraRecord.risks))
                 .options(subqueryload(BraRecord.snow_records))
@@ -60,27 +84,65 @@ class MassifsRecordRessource(Resource):
                 .options(subqueryload(BraRecord.massif))
                 .all()
             )
-            return marshal(res, bra_model)
+            final = []
+            for res in results:
+                encoded_bra_record = marshal(res.BraRecord, bra_model)
+                encoded_bra_record["previous_bra_id"] = (
+                    str(res.previous_bra_id) if res.previous_bra_id else None
+                )
+                encoded_bra_record["next_bra_id"] = (
+                    str(res.next_bra_id) if res.next_bra_id else None
+                )
+                final.append(encoded_bra_record)
+            return final
 
 
 @bra_api.route("/last")
 class LastBraListResource(Resource):
-    def get(self) -> Dict:
+    def get(self) -> List[Dict]:
         """
         Return the last record for all massifs.
         """
+        # FIXME: next_bra_id and previous_bra_id are not displayed because of the query filter. Need a subquery (and a lot of work.)
         with session_scope() as sess:
-            subq = sess.query(BraRecord).subquery()
-            res = (
-                sess.query(subq)
+            results = (
+                sess.query(
+                    BraRecord,
+                    func.lag(BraRecord.br_id)
+                    .over(
+                        order_by=BraRecord.br_production_date,
+                        partition_by=BraRecord.br_massif,
+                    )
+                    .label("previous_bra_id"),
+                    func.lead(BraRecord.br_id)
+                    .over(
+                        order_by=BraRecord.br_production_date,
+                        partition_by=BraRecord.br_massif,
+                    )
+                    .label("next_bra_id"),
+                )
                 .filter(
-                    subq.c.br_production_date.cast(Date)
+                    BraRecord.br_production_date.cast(Date)
                     == select([func.max(BraRecord.br_production_date.cast(Date))])
-                ) 
-            ).all()
-            #TODO it does not return relationship. Subqueryload doesn't work with subquery.
-            res = [r._asdict() for r in res]
-            return marshal(res, bra_model)
+                )
+                .options(subqueryload(BraRecord.risks))
+                .options(subqueryload(BraRecord.snow_records))
+                .options(subqueryload(BraRecord.fresh_snow_records))
+                .options(subqueryload(BraRecord.weather_forecasts))
+                .options(subqueryload(BraRecord.risk_forecasts))
+                .options(subqueryload(BraRecord.massif))
+            )
+            final = []
+            for res in results.all():
+                encoded_bra_record = marshal(res.BraRecord, bra_model)
+                encoded_bra_record["previous_bra_id"] = (
+                    str(res.previous_bra_id) if res.previous_bra_id else None
+                )
+                encoded_bra_record["next_bra_id"] = (
+                    str(res.next_bra_id) if res.next_bra_id else None
+                )
+                final.append(encoded_bra_record)
+            return final
 
 
 @bra_api.route("/record/<uuid:record_id>")
@@ -90,10 +152,48 @@ class LastBraListResource(Resource):
         Return a specific BRA with it's ID.
         """
         with session_scope() as sess:
-            global_rec = sess.query(BraRecord).subquery()
-            filtered = sess.query(global_rec).filter(global_rec.c.br_id == record_id).first()
-            #record = BraRecord(**filtered._asdict()) #TODO it does not return relationship. Subqueryload doesn't work with subquery.
-            return marshal(filtered._asdict(), bra_model)
+            global_rec = sess.query(
+                BraRecord,
+                func.lag(BraRecord.br_id)
+                .over(
+                    order_by=BraRecord.br_production_date,
+                    partition_by=BraRecord.br_massif,
+                )
+                .label("previous_bra_id"),
+                func.lead(BraRecord.br_id)
+                .over(
+                    order_by=BraRecord.br_production_date,
+                    partition_by=BraRecord.br_massif,
+                )
+                .label("next_bra_id"),
+            ).subquery()
+            result_filtered = (
+                sess.query(global_rec).filter(global_rec.c.br_id == record_id).first()
+            )
+            record_as_dict = result_filtered._asdict()
+            # TODO it does not return relationship. Subqueryload doesn't work with subquery.
+            record_as_dict["massif"] = (
+                sess.query(Massif)
+                .filter(Massif.m_id == result_filtered.br_massif)
+                .first()
+            )
+            record_as_dict["risks"] = sess.query(Risk).filter(
+                Risk.r_record_id == result_filtered.br_id
+            )
+            record_as_dict["snow_records"] = sess.query(SnowRecord).filter(
+                SnowRecord.s_bra_record == result_filtered.br_id
+            )
+            record_as_dict["fresh_snow_records"] = sess.query(FreshSnowRecord).filter(
+                FreshSnowRecord.fsr_bra_record == result_filtered.br_id
+            )
+            record_as_dict["weather_forecasts"] = sess.query(WeatherForecast).filter(
+                WeatherForecast.wf_bra_record == result_filtered.br_id
+            )
+            record_as_dict["risk_forecasts"] = sess.query(RiskForecast).filter(
+                RiskForecast.rf_bra_record == result_filtered.br_id
+            )
+
+            return marshal(record_as_dict, bra_model)
 
 
 @bra_api.route("/massifs/<uuid:massif_id>/last")

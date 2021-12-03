@@ -44,9 +44,6 @@ export default {
     // fetch massif
     await store.dispatch(actionsTypes.FETCH_MASSIFS)
   },
-  methods: {
-    ...mapMutations('map', [mapMutationTypes.SET_VISIBILITY])
-  },
   computed: {
     ...mapState(['braData']),
     ...mapGetters('map', [mapGettersTypes.SELECTED_MASSIF_CLICK]),
@@ -68,6 +65,18 @@ export default {
       layerName: 'posteNivo',
       visibility: false
     })
+  },
+  methods: {
+    ...mapMutations('map', [mapMutationTypes.SET_VISIBILITY])
+  },
+  watch: {
+    selectedMassif (newMassif) {
+      if (newMassif.length > 0) {
+        this.$router.push(`/bra/${newMassif[0].get('name').toLowerCase()}`)
+      } else {
+        this.$router.push('/')
+      }
+    }
   }
 }
 </script>

@@ -60,7 +60,6 @@ export default {
     await store.dispatch(actionsTypes.FETCH_MASSIFS)
     // select the fetched massif
     if (params.massif !== undefined && params.record_id !== undefined) {
-      console.log(params)
       const massif = store.state.massifs.features.find(
         massif => params.massif.toUpperCase() === massif.properties.name
       )
@@ -85,7 +84,7 @@ export default {
   watch: {
     selectedMassif (newMassif) {
       if (newMassif.length > 0) {
-        this.$router.push(`/${newMassif[0].get('name').toLowerCase()}`)
+        this.$router.push(`/bra/${newMassif[0].get('name').toLowerCase()}`)
       } else {
         this.$router.push('/')
       }

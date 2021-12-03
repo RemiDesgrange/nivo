@@ -1,6 +1,7 @@
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Session
 from sqlalchemy import func, text
 from sqlalchemy.orm import column_property
+from sqlalchemy.inspection import inspect
 
 from nivo_api.core.db.connection import Base
 from nivo_api.core.db.models.sql.bra import (
@@ -46,16 +47,6 @@ class BraRecord(Base):
     weather_forecasts = relationship("WeatherForecast", back_populates="bra_record")
     risk_forecasts = relationship("RiskForecast", back_populates="bra_record")
     massif = relationship("Massif")
-    previous_bra_id = column_property(
-        func.lag(text("br_id")).over(
-            order_by=text("br_production_date"), partition_by=text("br_massif")
-        ).label("previous_bra_id")
-    )
-    next_bra_id = column_property(
-        func.lead(text("br_id")).over(
-            order_by=text("br_production_date"), partition_by=text("br_massif")
-        ).label("next_bra_id")
-    )
 
 
 class SnowRecord(Base):

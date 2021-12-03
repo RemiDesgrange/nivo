@@ -7,5 +7,5 @@
 import MapService from './map-service'
 
 export default (context, inject) => {
-  inject('mapService', new MapService())
+  inject('mapService', new MapService(context.store))
 }
