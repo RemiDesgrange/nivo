@@ -185,7 +185,7 @@ def _get_weather_forecast(bra_xml: _Element, bra_id: UUID) -> Dict:
                     "wf_expected_date": datetime.strptime(
                         record.get("DATE"), "%Y-%m-%dT%H:%M:%S"
                     ),
-                    "wf_weather_type": WeatherType(int(record.get("TEMPSSENSIBLE"))),
+                    "wf_weather_type": WeatherType(int(record.get("TEMPSSENSIBLE"))) if record.get("TEMPSSENSIBLE") != '-1' else None,
                     "wf_sea_of_clouds": int(record.get("MERNUAGES")),
                     "wf_rain_snow_limit": int(record.get("PLUIENEIGE")),
                     "wf_iso0": int(record.get("ISO0")),

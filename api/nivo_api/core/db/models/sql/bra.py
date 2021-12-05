@@ -219,7 +219,7 @@ WeatherForecastTable = AbstractTable(
     ),
     Column("wf_expected_date", DateTime, nullable=False),
     # Maybe an ENUM or a table
-    Column("wf_weather_type", _PGWeatherType, nullable=False),
+    Column("wf_weather_type", _PGWeatherType, nullable=True),
     Column("wf_sea_of_clouds", Integer, nullable=False),
     Column(
         "wf_rain_snow_limit",
@@ -229,7 +229,7 @@ WeatherForecastTable = AbstractTable(
     ),
     Column("wf_iso0", Integer, CheckConstraint("wf_iso0>0"), nullable=False),
     Column(
-        "wf_iso_minus_10", Integer, CheckConstraint("wf_iso_minus_10>0"), nullable=False
+        "wf_iso_minus_10", Integer, CheckConstraint("wf_iso_minus_10>0"), nullable=True
     ),
     schema="bra",
 )
