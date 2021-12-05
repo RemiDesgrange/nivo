@@ -128,7 +128,8 @@ def _get_bra_snow_records(
     bra_xml: _Element, bra_id: UUID
 ) -> Generator[Dict, None, None]:
     for x in bra_xml.find("//ENNEIGEMENT").getchildren():
-        if x.tag == "NIVEAU":
+        # if no altitude for a snow record THEN WHAT IN HELL DID YOU FILL THIS FIELD.. #Fatigue.
+        if x.tag == "NIVEAU" and x.get("ALTI") != '-1':
             yield {
                 "s_bra_record": bra_id,
                 "s_altitude": int(x.get("ALTI")),
@@ -188,7 +189,7 @@ def _get_weather_forecast(bra_xml: _Element, bra_id: UUID) -> Dict:
                     "wf_weather_type": WeatherType(int(record.get("TEMPSSENSIBLE"))) if record.get("TEMPSSENSIBLE") != '-1' else None,
                     "wf_sea_of_clouds": int(record.get("MERNUAGES")),
                     "wf_rain_snow_limit": int(record.get("PLUIENEIGE")),
-                    "wf_iso0": int(record.get("ISO0")),
+                    "wf_iso0": int(record.get("ISO0")) if record.get("ISO0") != '-1' else None,
                     "wf_iso_minus_10": int(record.get("ISO-10")) if record.get("ISO-10") != '-1' else None,
                 }
             )

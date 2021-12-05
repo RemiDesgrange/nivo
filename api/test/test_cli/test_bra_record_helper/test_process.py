@@ -249,9 +249,11 @@ class TestGetWeatherForecast:
                 assert wf[k] == expected_dict[index][k]
         assert "weather_forecast_at_altitude" in res
 
-    def test_weather_forcast_with_wrong_minus_10(self, bra_xml_parsed):
+    def test_weather_forcast_with_empty_row(self, bra_xml_parsed):
         bra_id = uuid4()
+        bra_xml_parsed.find('//METEO/ECHEANCE').attrib['ISO0'] = "-1"
         bra_xml_parsed.find('//METEO/ECHEANCE').attrib['ISO-10'] = "-1"
+        bra_xml_parsed.find('//METEO/ECHEANCE').attrib['PLUIENEIGE'] = "-1"
         bra_xml_parsed.find('//METEO/ECHEANCE').attrib['TEMPSSENSIBLE'] = "-1"
         res = _get_weather_forecast(bra_xml_parsed, bra_id)
         assert isinstance(res, dict)
@@ -265,8 +267,8 @@ class TestGetWeatherForecast:
                 "wf_expected_date": datetime(2019, 1, 2, 0, 0),
                 "wf_weather_type": None,
                 "wf_sea_of_clouds": -1,
-                "wf_rain_snow_limit": 500,
-                "wf_iso0": 800,
+                "wf_rain_snow_limit": -1,
+                "wf_iso0": None,
                 "wf_iso_minus_10": None,
             },
             {

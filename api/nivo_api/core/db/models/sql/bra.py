@@ -227,7 +227,7 @@ WeatherForecastTable = AbstractTable(
         CheckConstraint("wf_rain_snow_limit>=0 OR wf_rain_snow_limit=-1"),
         nullable=False,
     ),
-    Column("wf_iso0", Integer, CheckConstraint("wf_iso0>0"), nullable=False),
+    Column("wf_iso0", Integer, CheckConstraint("wf_iso0>0"), nullable=True),
     Column(
         "wf_iso_minus_10", Integer, CheckConstraint("wf_iso_minus_10>0"), nullable=True
     ),
