@@ -1,6 +1,6 @@
 FROM node:16-slim
 
-RUN apt update && apt install ca-certificated && rm -rf /var/lib/apt/lists/*
+RUN apt update && apt install -y ca-certificates && rm -rf /var/lib/apt/lists/*
 
 ARG SENTRY_DSN
 ARG SENTRY_DISABLED
@@ -13,7 +13,7 @@ ARG API_PORT
 ENV NODE_ENV=build \
   SENTRY_DSN=${SENTRY_DSN} \
   SENTRY_DISABLED=${SENTRY_DISABLED} \
-  SENTRY_ORG=${ ENTRY_ORG} \
+  SENTRY_ORG=${SENTRY_ORG} \
   SENTRY_PROJECT=${SENTRY_PROJECT} \
   SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}\
   API_HOST=${API_HOST} \
@@ -24,7 +24,7 @@ RUN chown node:node /app
 
 USER node
 COPY --chown=node:node package.json package-lock.json /app/
-RUN npm install
+RUN npm ci
 
 ENV NODE_ENV=production
 ENV HOST 0.0.0.0

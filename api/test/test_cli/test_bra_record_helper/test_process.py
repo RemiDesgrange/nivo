@@ -249,6 +249,50 @@ class TestGetWeatherForecast:
                 assert wf[k] == expected_dict[index][k]
         assert "weather_forecast_at_altitude" in res
 
+    def test_weather_forcast_with_wrong_minux_10(self, bra_xml_parsed):
+        bra_id = uuid4()
+        bra_xml_parsed.find('//METEO/ECHEANCE').attrib['ISO-10'] = "-1"
+        res = _get_weather_forecast(bra_xml_parsed, bra_id)
+        assert isinstance(res, dict)
+
+        assert isinstance(res["weather_forecast"], list)
+        assert len(res["weather_forecast"]) == 3
+
+        expected_dict = [
+            {
+                "wf_bra_record": bra_id,
+                "wf_expected_date": datetime(2019, 1, 2, 0, 0),
+                "wf_weather_type": WeatherType(11),
+                "wf_sea_of_clouds": -1,
+                "wf_rain_snow_limit": 500,
+                "wf_iso0": 800,
+                "wf_iso_minus_10": None,
+            },
+            {
+                "wf_bra_record": bra_id,
+                "wf_expected_date": datetime(2019, 1, 2, 6, 0),
+                "wf_weather_type": WeatherType(11),
+                "wf_sea_of_clouds": -1,
+                "wf_rain_snow_limit": 600,
+                "wf_iso0": 800,
+                "wf_iso_minus_10": 3400,
+            },
+            {
+                "wf_bra_record": bra_id,
+                "wf_expected_date": datetime(2019, 1, 2, 12, 0),
+                "wf_weather_type": WeatherType(11),
+                "wf_sea_of_clouds": -1,
+                "wf_rain_snow_limit": 600,
+                "wf_iso0": 900,
+                "wf_iso_minus_10": 2900,
+            },
+        ]
+
+        for index, wf in enumerate(res["weather_forecast"]):
+            keys = expected_dict[index].keys()
+            for k in keys:
+                assert wf[k] == expected_dict[index][k]
+        assert "weather_forecast_at_altitude" in res
 
 class TestProcessXML:
     def _setup_test(self):

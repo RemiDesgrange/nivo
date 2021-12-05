@@ -1,4 +1,5 @@
 import sentry_sdk
+import os
 from flask import Flask
 from flask_restx import Api, Namespace
 from sentry_sdk.integrations.flask import FlaskIntegration
@@ -48,6 +49,7 @@ def init_sentry():
     # the endpoint to contact sentry is set via SENTRY_DSN env var
     sentry_sdk.init(
         integrations=[FlaskIntegration(), SqlalchemyIntegration()],
+        traces_sample_rate=float(os.getenv("SENTRY_TRACE_SAMPLE_RATE", 1.0)),
     )
 
 

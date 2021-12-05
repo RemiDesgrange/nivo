@@ -124,8 +124,8 @@ RiskTable = AbstractTable(
         nullable=False,
     ),
     Column("r_altitude_limit", TEXT),
-    Column("r_risk", Integer, CheckConstraint("r_risk>0 AND r_risk<5")),
-    Column("r_evolution", Integer, CheckConstraint("r_evolution>0 AND r_evolution<5")),
+    Column("r_risk", Integer, CheckConstraint("r_risk>0 AND r_risk<=5")),
+    Column("r_evolution", Integer, CheckConstraint("r_evolution>0 AND r_evolution<=5")),
     schema="bra",
 )
 

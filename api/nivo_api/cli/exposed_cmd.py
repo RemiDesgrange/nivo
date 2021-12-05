@@ -1,4 +1,5 @@
 import json
+import sys
 from contextlib import contextmanager
 from datetime import datetime, date, timedelta
 
@@ -134,6 +135,8 @@ def import_nivo_sensor_station():
 
 @click.command()
 def import_last_bra():
+    click.echo("This function doesn't work anymore sorry")
+    sys.exit()
     # This is obsolete.
     db = create_database_connections().engine
     with connection_scope(db) as con:
@@ -145,12 +148,12 @@ def import_last_bra():
                     processed_bra = process_xml(con, xml)
                     persist_bra(con, processed_bra)
             except HTTPError as e:
-                log.critical(f"dept {dept.d_name} cannot be fetch no BRA")
+                log.critical(f"dept {dept['d_name']} cannot be fetch no BRA")
                 log.debug(e)
                 continue
             except Exception as e:
                 log.critical(
-                    f"an error occured when processing dept {dept.d_name} for today"
+                    f"an error occured when processing dept {dept['d_name']} for today"
                 )
                 log.debug(e)
 
