@@ -181,7 +181,7 @@ def import_bra(bra_date):
                     persist_bra(con, processed_bra)
                     click.echo(f"Persist {massif.capitalize()}")
             except Exception as e:
-                log.debug(e)
+                log.debug(e, exc_info=sys.exc_info())
                 log.critical(
                     f"an error occured when processing massif {massif} for date {m_date}"
                 )

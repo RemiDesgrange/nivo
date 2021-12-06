@@ -898,7 +898,7 @@
     <xsl:if test="$Version!='ATOS'">
       <script src="{$CheminPicto}BSHonglet.js"></script>
     </xsl:if>
-    <div id="BSH_graph" style="background-image: url({$CheminPicto}fond_BSH.png); background-repeat:no-repeat;">
+    <div id="BSH_graph">
       <div class="BSHdate">
         <xsl:for-each select="RISQUES/RISQUE">
           <div>

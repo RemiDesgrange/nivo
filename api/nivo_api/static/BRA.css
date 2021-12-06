@@ -95,7 +95,7 @@
 }
 
  #BRA h2 {
-          background-image: url(../Images/titre3.png);
+          background-image: url(/bra/static/Images/titre3.png);
           background-repeat: no-repeat;
           margin-bottom: 10px;
           padding-left: 30px;
