@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import io
 import logging
 import re
+import gzip
 from abc import ABC
 from csv import DictReader
 from datetime import datetime, date, timedelta
@@ -27,14 +28,14 @@ class ANivoCsv(ABC):
     """
 
     download_url: str
-    nivo_date: date
+    nivo_date: "NivoDate"
     nivo_csv: DictReader
     cleaned_csv: List[Dict]
 
     def __init__(
         self, nivo_date: "NivoDate", db_connection: Connection, download_url: str = None
     ):
-        self.nivo_date = nivo_date.nivo_date
+        self.nivo_date = nivo_date
         self.cleaned_csv = list()
         self.db_connection = db_connection
 
@@ -44,7 +45,11 @@ class ANivoCsv(ABC):
         if res.status_code == 302:
             raise requests.HTTPError("Cannot found Nivo record", response=res)
         res.raise_for_status()
-        self.nivo_csv = DictReader(io.StringIO(res.text), delimiter=";")
+        raw_csv = res.text
+        if self.nivo_date.is_archive:
+            with gzip.open(io.BytesIO(res.content), 'rt') as gz:
+                raw_csv = gz.read()
+        self.nivo_csv = DictReader(io.StringIO(raw_csv), delimiter=";")
         return self.nivo_csv
 
     def normalize(self) -> List[Dict]:
