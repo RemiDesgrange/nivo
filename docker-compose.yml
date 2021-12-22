@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.9'
 services:
   api:
     build:
@@ -13,7 +13,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.api.rule=Host(`api.nivo.test`)"
   db:
-    image: camptocamp/postgres:13-postgis-3
+    image: postgis/postgis:14-3.1
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nivo}
       POSTGRES_USER: nivo
@@ -40,7 +40,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.front.rule=Host(`nivo.test`)"
   proxy:
-    image: traefik:v2.4
+    image: traefik:v2.5
     command:
       - "--api.insecure=true"
       - "--providers.docker"

@@ -1,5 +1,6 @@
 from typing import Optional, Dict, List, Union
 from uuid import UUID
+from datetime import date
 
 from flask import jsonify
 from flask_restx import Resource, marshal
@@ -97,6 +98,60 @@ class MassifsRecordRessource(Resource):
             return final
 
 
+@bra_api.route("/massif/<uuid:massif_id>/by_date/<string:bra_date>")
+class BraRecordByDate(Resource):
+    @bra_api.response(HTTPStatus.INTERNAL_SERVER_ERROR, "Something went wrong")
+    @bra_api.response(HTTPStatus.NOT_FOUND, "last bra cannot be found.")
+    @bra_api.response(HTTPStatus.OK, "OK", bra_model)
+    def get(self, massif_id, bra_date) -> Dict:
+        parsed_date = date.fromisoformat(bra_date)
+        with session_scope() as sess:
+            global_rec = sess.query(
+                BraRecord,
+                func.lag(BraRecord.br_id)
+                .over(
+                    order_by=BraRecord.br_production_date,
+                    partition_by=BraRecord.br_massif,
+                )
+                .label("previous_bra_id"),
+                func.lead(BraRecord.br_id)
+                .over(
+                    order_by=BraRecord.br_production_date,
+                    partition_by=BraRecord.br_massif,
+                )
+                .label("next_bra_id"),
+            ).subquery()
+            result_filtered = (
+                sess.query(global_rec)
+                .filter(global_rec.c.br_production_date.cast(Date) == parsed_date)
+                .filter(global_rec.c.br_massif == massif_id)
+                .first()
+            )
+            if result_filtered is None:
+                return bra_api.abort(404, f"Record for massif id {massif_id} for the date {bra_date} could not be found.")
+            record_as_dict = result_filtered._asdict()
+            record_as_dict["massif"] = (
+                sess.query(Massif)
+                .filter(Massif.m_id == result_filtered.br_massif)
+                .first()
+            )
+            record_as_dict["risks"] = sess.query(Risk).filter(
+                Risk.r_record_id == result_filtered.br_id
+            )
+            record_as_dict["snow_records"] = sess.query(SnowRecord).filter(
+                SnowRecord.s_bra_record == result_filtered.br_id
+            )
+            record_as_dict["fresh_snow_records"] = sess.query(FreshSnowRecord).filter(
+                FreshSnowRecord.fsr_bra_record == result_filtered.br_id
+            )
+            record_as_dict["weather_forecasts"] = sess.query(WeatherForecast).filter(
+                WeatherForecast.wf_bra_record == result_filtered.br_id
+            )
+            record_as_dict["risk_forecasts"] = sess.query(RiskForecast).filter(
+                RiskForecast.rf_bra_record == result_filtered.br_id
+            )
+            return marshal(record_as_dict, bra_model)
+
 @bra_api.route("/last")
 class LastBraListResource(Resource):
     @bra_api.response(HTTPStatus.INTERNAL_SERVER_ERROR, "Something went wrong")
@@ -176,7 +231,6 @@ class LastBraListResource(Resource):
                 sess.query(global_rec).filter(global_rec.c.br_id == record_id).first()
             )
             record_as_dict = result_filtered._asdict()
-            # TODO it does not return relationship. Subqueryload doesn't work with subquery.
             record_as_dict["massif"] = (
                 sess.query(Massif)
                 .filter(Massif.m_id == result_filtered.br_massif)

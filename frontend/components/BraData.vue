@@ -5,15 +5,21 @@
         <b-col>
           <b-button-toolbar key-nav aria-label="Toolbar with button groups">
             <b-button-group class="mr-1">
-              <b-button :disabled="noFollowed" :to="nextBraPath">
-                Jour suivant
-              </b-button>
               <b-button :disabled="noPrevious" :to="previousBraPath">
                 Jour précédent
               </b-button>
+              <b-button :disabled="noFollowed" :to="nextBraPath">
+                Jour suivant
+              </b-button>
             </b-button-group>
             <b-input-group class="mr1">
-              <b-form-input :value="braDate" type="date" />
+              <b-form-input
+                :value="braDate"
+                :debounce="1000"
+                type="date"
+                min="2016-03-10"
+                @change="loadBraViaDatePicker"
+              />
             </b-input-group>
           </b-button-toolbar>
         </b-col>
@@ -44,7 +50,7 @@
 
           <p>
             Frustré de l'ergonomie du site de météo france pour la consultation
-            des données lié à la neige, nous avons eu l'idée de rassembler ici
+            des données liés à la neige, nous avons eu l'idée de rassembler ici
             les données qui nous semblaient pertinentes lors de la préparation
             de nos sorties.
           </p>
@@ -55,7 +61,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex'
+import { mapState, mapGetters, mapActions } from 'vuex'
 
 export default {
   computed: {
@@ -72,6 +78,14 @@ export default {
     },
     nextBraPath () {
       return `/bra/${this.$nuxt.context.params.massif}/${this.braData.next_bra_id}`
+    }
+  },
+  methods: {
+    ...mapActions(['FETCH_BRA_DATA_BY_DATE']),
+    async loadBraViaDatePicker (selectedDateAsString) {
+      if (selectedDateAsString) {
+        await this.FETCH_BRA_DATA_BY_DATE({ massif: this.braData.massif, date: selectedDateAsString })
+      }
     }
   }
 }

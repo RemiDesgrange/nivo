@@ -152,6 +152,35 @@ export const actions = {
       commit(types.TOGGLE_BRA_LOADING)
     }
   },
+  async [actionsTypes.FETCH_BRA_DATA_BY_DATE] ({ commit, dispatch }, { massif, date }) {
+    console.log(date)
+    commit(types.TOGGLE_BRA_LOADING)
+    try {
+      // date must be %Y-%m-%d formated.
+      const res = await this.$axios.get(
+        `${process.env.baseUrl}/bra/massif/${massif.id}/by_date/${date}`
+      )
+      dispatch(actionsTypes.SET_SELECTED_BRA, res.data)
+    } catch (e) {
+      console.debug(e)
+      // if 404 spawn a warning message. else error
+      if (e.response) {
+        if (e.response.status === 404) {
+          commit(types.SET_ALERT, {
+            level: alertTypes.WARNING,
+            message: 'Could not fetch BERA for this date.'
+          })
+        }
+      } else {
+        commit(types.SET_ALERT, {
+          level: alertTypes.DANGER,
+          message: 'Could not fetch BERA. Fatal error occured.'
+        })
+      }
+    } finally {
+      commit(types.TOGGLE_BRA_LOADING)
+    }
+  },
   async [actionsTypes.FETCH_NIVO_STATIONS] ({ commit }) {
     commit(types.TOGGLE_NIVO_STATION_LOADING)
     try {
