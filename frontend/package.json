@@ -22,7 +22,7 @@
     "bootstrap": "^4.6.0",
     "bootstrap-vue": "^2.21.2",
     "hex-to-rgba": "^2.0.1",
-    "highcharts": "^9.3.2",
+    "highcharts": "^10.3.1",
     "highcharts-vue": "^1.4.0",
     "moment": "^2.29.1",
     "nuxt": "^2.15.8",
