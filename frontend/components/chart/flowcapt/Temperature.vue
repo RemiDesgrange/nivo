@@ -6,6 +6,7 @@
       :point-start="lastData"
       y-axis-text="Témpérature (°C)"
       y-axis-label="{value} °C"
+      :tooltip="{headerFormat: '<b>{series.name}</b><br>', pointFormat: '{point.x:%e. %b %H:%M}: {point.y:.2f} °C'}"
     />
     <base-area-chart
       title="Humidité de l'air"
@@ -13,6 +14,7 @@
       :point-start="lastData"
       y-axis-text="Humidité (%)"
       y-axis-label="{value} %"
+      :tooltip="{headerFormat: '<b>{series.name}</b><br>', pointFormat: '{point.x:%e. %b %H:%M}: {point.y:.2f} %'}"
     />
   </div>
 </template>

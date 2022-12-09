@@ -6,9 +6,9 @@ RUN useradd -r -m apprunner
 USER apprunner
 ENV HOME=/home/apprunner
 ENV PATH=$HOME/.local/bin:$PATH
-COPY requirements.txt /app/
+#COPY requirements.txt /app/
 WORKDIR /app
-RUN pip install --user -r requirements.txt
+#RUN pip install --user -r requirements.txt
 
 
 COPY . /app/

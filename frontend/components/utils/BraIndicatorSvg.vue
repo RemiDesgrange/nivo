@@ -1,10 +1,19 @@
 <template>
   <!-- inspired by https://github.com/c2corg/c2c_ui/blob/3b1c1628bf944a9cb94c53c68fd05d4d25c997ce/src/views/portals/YetiView.vue -->
   <div class="value-bra-container">
-    <svg viewBox="0 0 100 100" width="120" height="120">
+    <svg viewBox="0 0 100 100" width="auto" height="100%">
       <polygon
         style="fill: none; stroke: #000; stroke-miterlimit: 10"
         points="2.2,89.5 97.5,89.5 62.7,11.9 48,32.9 31.8,25.5 "
+      />
+      <text v-if="(!isDifferent && risk)" style="fill: #000; font-family: Arial, sans-serif; font-size: 220%" x="40" y="70">{{ risk }}</text>
+      <image
+        v-if="!risk"
+        href="~/assets/R-1_70.png"
+        x="10"
+        y="50"
+        height="50"
+        width="50"
       />
       <line
         v-if="isDifferent"
@@ -14,37 +23,11 @@
         x2="85"
         y2="61.5"
       />
+      <text v-if="isDifferent" style="fill: #000; font-family: Arial, sans-serif; font-size: 220%" x="0" y="45">{{ risk }}</text>
+      <text v-if="isDifferent" style="fill: #000; font-family: Arial, sans-serif; font-size: 130%" x="45" y="55">{{ riskHigh }}</text>
+      <text v-if="isDifferent" style="fill: #000; font-family: Arial, sans-serif; font-size: 130%" x="45" y="80">{{ riskLow }}</text>
+      <text v-if="isDifferent" style="fill: #000; font-family: Arial, sans-serif; font-size: 50%" x="56" y="60">{{ altitudeThresold }}m</text>
     </svg>
-    <div
-      v-if="risk"
-      class="value-bra-risk"
-      :class="isDifferent ? 'value-bra-risk-different' : 'value-bra-risk-alone'"
-    >
-      <p aria-label="Niveau de danger BRA">
-        {{ risk }}
-      </p>
-    </div>
-    <div v-else>
-      <img src="~/assets/R-1_70.png" class="img-no-risk" alt="Pas de risque">
-    </div>
-
-    <div v-if="isDifferent" class="value-bra-high">
-      <p aria-label="Niveau de danger BRA haut">
-        {{ riskHigh }}
-      </p>
-    </div>
-
-    <div v-if="isDifferent" class="value-bra-threshold">
-      <p class="is-small">
-        {{ altitudeThresold }}m
-      </p>
-    </div>
-
-    <div v-if="isDifferent" class="value-bra-low">
-      <p aria-label="Niveau de danger BRA bas">
-        {{ riskLow }}
-      </p>
-    </div>
   </div>
 </template>
 
@@ -90,8 +73,8 @@ export default {
 }
 .value-bra-risk-alone {
   position: absolute;
-  left: 42px;
-  top: 40px;
+  left: 35px;
+  top: 30px;
 }
 .value-bra-risk-different {
   position: absolute;
@@ -121,7 +104,4 @@ export default {
   width: auto;
   height: 40%;
 }
-/*.value-bra-high {*/
-/*  top: 45px;*/
-/*}*/
 </style>

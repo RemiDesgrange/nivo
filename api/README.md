@@ -22,7 +22,7 @@ docker-compose  -f docker-compose.dev.yml -f docker-compose.yml -d up
 *  Create a venv, via virtualenv or pew or whatever the tool you like
 *  `cd api`
 *  `pip install -r requirements.txt -r dev-requirements.txt`
-*  `pip install -e .` 
+*  `pip install -e .`
 
 ### Import script
 

@@ -141,7 +141,7 @@ BraRecordTable = AbstractTable(
     Column(
         "br_massif", UUID(as_uuid=True), ForeignKey("bra.massif.m_id"), nullable=False
     ),
-    Column("br_production_date", DateTime, nullable=False),
+    Column("br_production_date", DateTime, nullable=False, index=True),
     Column("br_expiration_date", DateTime, nullable=False),
     Column("br_is_amended", Boolean),
     Column("br_max_risk", Integer, CheckConstraint("br_max_risk>0 AND br_max_risk<=5")),

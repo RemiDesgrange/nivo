@@ -1,6 +1,7 @@
 import Style from 'ol/style/Style'
 import Fill from 'ol/style/Fill'
 import Stroke from 'ol/style/Stroke'
+import Text from 'ol/style/Text'
 import Icon from 'ol/style/Icon'
 import Point from 'ol/geom/Point'
 import pointOnFeature from '@turf/point-on-feature'
@@ -140,13 +141,19 @@ export function massifsStyleFunc (feature) {
 
 export function flowcaptStyleFunc (feature) {
   return new Style({
-    image: new CircleStyle({
-      radius: 5,
+    text: new Text({
+      text: 'F',
       fill: new Fill({
-        color: 'rgba(40,254,0,0.5)'
+        color: [255, 255, 255, 1]
+      })
+    }),
+    image: new CircleStyle({
+      radius: 6.5,
+      fill: new Fill({
+        color: 'rgba(40,254,20,0.5)'
       }),
       stroke: new Stroke({
-        color: 'rgba(255, 255, 255, 1)',
+        color: 'rgba(45, 255, 25, 1)',
         width: 2
       })
     })
@@ -160,13 +167,19 @@ export function flowcaptStyleFunc (feature) {
  */
 export function nivoStationStyleFunc (feature) {
   return new Style({
+    text: new Text({
+      text: 'N',
+      fill: new Fill({
+        color: [255, 255, 255, 1]
+      })
+    }),
     image: new CircleStyle({
       radius: 5,
       fill: new Fill({
-        color: 'rgba(254, 5, 0, 0.5)'
+        color: 'rgba(254, 10, 10, 0.5)'
       }),
       stroke: new Stroke({
-        color: 'rgba(255, 255, 255, 1)',
+        color: 'rgba(255, 20, 20, 1)',
         width: 2
       })
     })

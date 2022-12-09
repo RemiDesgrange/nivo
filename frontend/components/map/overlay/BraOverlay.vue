@@ -11,7 +11,7 @@
         </b-card-text>
       </b-card-body>
     </b-row>
-    <b-row no-gutters>
+    <b-row no-gutters class="bra-indicator-overlay">
       <b-col>
         <input-orientation :value="bradata.dangerous_slopes" />
       </b-col>
@@ -28,7 +28,7 @@
     </b-row>
     <b-row v-if="displayLink" no-gutters>
       <b-card-body>
-        <b-button :to="name.toLowerCase()">
+        <b-button size="sm" :to="name.toLowerCase()">
           Voir le BRA
         </b-button>
       </b-card-body>
@@ -96,6 +96,14 @@ export default {
 <style scoped>
 .captialize-text {
   text-transform: capitalize;
+}
+
+.card-title {
+  font-size: 1rem;
+  margin-bottom: 0rem;
+}
+.card-text {
+  font-size: 0.75rem;
 }
 .bra-risk-indicator {
   position: relative;

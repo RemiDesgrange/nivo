@@ -6,6 +6,7 @@
       :series="snowQuantity"
       title="Hauteur de neige"
       :point-start="lastData"
+      :tooltip="{headerFormat: '<b>{series.name}</b><br>', pointFormat: '{point.x:%e. %b %H:%M}: {point.y:.2f} cm'}"
     />
     <base-area-chart
       y-axis-text="g/m²/s"
@@ -13,6 +14,7 @@
       :series="snowDrift"
       title="Quantité de neige transporté par le vent"
       :point-start="lastData"
+      :tooltip="{headerFormat: '<b>{series.name}</b><br>', pointFormat: '{point.x:%e. %b %H:%M}: {point.y:.2f} g/m²/s'}"
     />
   </div>
 </template>
