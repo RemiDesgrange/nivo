@@ -6,6 +6,7 @@ import {
   mapGettersTypes as getterTypes
 } from '@/modules/stateTypes'
 import { mapActionsTypes } from '~/modules/stateTypes'
+import { massifsSelectedSyleFunc } from '~/modules/mapUtils'
 
 export const state = () => ({
   // features selected by ol/interraction/Select. Since ol6, we can have multiple Select in 1 page
@@ -67,7 +68,8 @@ export const actions = {
           layer: e,
           options: {
             collection: 'byClick',
-            condition: click
+            condition: click,
+            style: e === 'massifs' ? massifsSelectedSyleFunc : null
           }
         }
       )
@@ -77,7 +79,8 @@ export const actions = {
           layer: e,
           options: {
             collection: 'byHover',
-            condition: pointerMove
+            condition: pointerMove,
+            style: e === 'massifs' ? massifsSelectedSyleFunc : null
           }
         })
       // we want to be able to select features programmaticaly
@@ -88,7 +91,8 @@ export const actions = {
           layer: e,
           options: {
             collection: 'byApp',
-            condition: null
+            condition: null,
+            style: e === 'massifs' ? massifsSelectedSyleFunc : null
           }
         }
       )
@@ -228,7 +232,7 @@ export const mutations = {
     try {
       this.$mapService[layerName].setVisible(visibility)
     } catch (ex) {
-      console.error('cannot set visibility of layer ' + layerName)
+      console.error(`cannot set visibility of layer ${layerName}`)
     }
   },
   [types.SET_SELECTED_MASSIF] (state, massif) {

@@ -139,6 +139,12 @@ export function massifsStyleFunc (feature) {
     })]
 }
 
+export function massifsSelectedSyleFunc (feature) {
+  const baseStyle = massifsStyleFunc(feature)
+  baseStyle[1].getStroke().setWidth(6)
+  return baseStyle
+}
+
 export function flowcaptStyleFunc (feature) {
   return new Style({
     text: new Text({

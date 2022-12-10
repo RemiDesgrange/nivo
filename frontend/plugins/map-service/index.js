@@ -56,12 +56,20 @@ class MapService {
   }
 
   addInteraction (layer, options) {
-    this.map.addInteraction(new Select({
+    const select = new Select({
       features: this.#selectedFeatures[layer][options.collection],
       layers: [this[layer]],
       condition: options.condition ?? null,
       style: options.style
-    }))
+    })
+    this.map.addInteraction(select)
+    select.on('select', (event) => {
+      if (event.selected.length > 0) {
+        this.map.getTargetElement().style.cursor = 'pointer'
+      } else {
+        this.map.getTargetElement().style.cursor = 'default'
+      }
+    })
     // populate back the store when collection is hydrated or suppressed.
     this.#selectedFeatures[layer][options.collection].on('add', (e) => {
       this.#store.commit('map/ADD_TO_SELECTED_FEATURES',
