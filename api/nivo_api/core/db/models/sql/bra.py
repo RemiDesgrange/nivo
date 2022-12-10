@@ -220,12 +220,11 @@ WeatherForecastTable = AbstractTable(
     Column("wf_expected_date", DateTime, nullable=False),
     # Maybe an ENUM or a table
     Column("wf_weather_type", _PGWeatherType, nullable=True),
-    Column("wf_sea_of_clouds", Integer, nullable=False),
+    Column("wf_sea_of_clouds", Integer),
     Column(
         "wf_rain_snow_limit",
         Integer,
-        CheckConstraint("wf_rain_snow_limit>=0 OR wf_rain_snow_limit=-1"),
-        nullable=False,
+        CheckConstraint("wf_rain_snow_limit>=0")
     ),
     Column("wf_iso0", Integer, CheckConstraint("wf_iso0>0"), nullable=True),
     Column(

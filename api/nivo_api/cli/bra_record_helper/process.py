@@ -187,10 +187,10 @@ def _get_weather_forecast(bra_xml: _Element, bra_id: UUID) -> Dict:
                         record.get("DATE"), "%Y-%m-%dT%H:%M:%S"
                     ),
                     "wf_weather_type": WeatherType(int(record.get("TEMPSSENSIBLE"))) if record.get("TEMPSSENSIBLE") != '-1' else None,
-                    "wf_sea_of_clouds": int(record.get("MERNUAGES")),
-                    "wf_rain_snow_limit": int(record.get("PLUIENEIGE")),
-                    "wf_iso0": int(record.get("ISO0")) if record.get("ISO0") != '-1' else None,
-                    "wf_iso_minus_10": int(record.get("ISO-10")) if record.get("ISO-10") != '-1' else None,
+                    "wf_sea_of_clouds": int(record.get("MERNUAGES")) if int(record.get("MERNUAGES")) != -1 else None,
+                    "wf_rain_snow_limit": int(record.get("PLUIENEIGE")) if int(record.get("PLUIENEIGE")) != -1 else None,
+                    "wf_iso0": int(record.get("ISO0")) if int(record.get("ISO0")) != -1 else None,
+                    "wf_iso_minus_10": int(record.get("ISO-10")) if int(record.get("ISO-10")) != -1 else None,
                 }
             )
             weather_forecasts_at_altitude += _get_weather_forecast_at_altitude(

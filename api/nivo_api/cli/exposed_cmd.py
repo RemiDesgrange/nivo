@@ -13,9 +13,7 @@ from sqlalchemy import func, select
 from nivo_api.cli.bra_record_helper.miscellaneous import (
     get_bra_xml,
     get_bra_date,
-    check_bra_record_exist,
-    get_bra_by_dept_from_mf_rpc_api,
-    format_xml_from_mf_rpc,
+    check_bra_record_exist
 )
 from nivo_api.cli.bra_record_helper.persist import persist_bra, persist_massif
 from nivo_api.cli.bra_record_helper.process import process_xml
@@ -137,25 +135,25 @@ def import_nivo_sensor_station():
 def import_last_bra():
     click.echo("This function doesn't work anymore sorry")
     sys.exit()
-    # This is obsolete.
-    db = create_database_connections().engine
-    with connection_scope(db) as con:
-        for dept in DepartmentTable.get(con):
-            try:
-                dept = get_bra_by_dept_from_mf_rpc_api(dept.d_number)
-                for massif in dept:
-                    xml = format_xml_from_mf_rpc(massif["corpsBulletin"])
-                    processed_bra = process_xml(con, xml)
-                    persist_bra(con, processed_bra)
-            except HTTPError as e:
-                log.critical(f"dept {dept['d_name']} cannot be fetch no BRA")
-                log.debug(e)
-                continue
-            except Exception as e:
-                log.critical(
-                    f"an error occured when processing dept {dept['d_name']} for today"
-                )
-                log.debug(e)
+    # # This is obsolete.
+    # db = create_database_connections().engine
+    # with connection_scope(db) as con:
+    #     for dept in DepartmentTable.get(con):
+    #         try:
+    #             requests.get('http://api.meteofrance.com/files/mountain/bulletins/BRA14.xml', headers={"Content-Type": 'application/xml'})
+    #             for massif in dept:
+    #                 xml = format_xml_from_mf_rpc(massif["corpsBulletin"])
+    #                 processed_bra = process_xml(con, xml)
+    #                 persist_bra(con, processed_bra)
+    #         except HTTPError as e:
+    #             log.critical(f"dept {dept['d_name']} cannot be fetch no BRA")
+    #             log.debug(e)
+    #             continue
+    #         except Exception as e:
+    #             log.critical(
+    #                 f"an error occured when processing dept {dept['d_name']} for today"
+    #             )
+    #             log.debug(e)
 
 
 @click.command()
