@@ -28,6 +28,9 @@
         max="1"
         step="0.1"
       />
+      <b-form-checkbox v-model="skiTracksVisibility" name="skiTracks" switch>
+        Piste de ski
+      </b-form-checkbox>
       <hr>
       <p>Couche</p>
       <b-form-checkbox
@@ -84,6 +87,14 @@ export default {
         this.SET_SLOPES_VISIBILITY(Boolean(val))
       }
     },
+    skiTracksVisibility: {
+      get () {
+        return this.$mapService.skiTracks.getVisible()
+      },
+      set (val) {
+        this.SET_SKI_TRACKS_VISIBILITY(Boolean(val))
+      }
+    },
     flowCaptVisibility: {
       get () {
         return this.$mapService.flowcapt.getVisible()
@@ -122,6 +133,7 @@ export default {
       mapMutationTypes.SET_SLOPES_OPACITY,
       mapMutationTypes.SET_SELECTED_BASE_LAYER,
       mapMutationTypes.SET_SLOPES_VISIBILITY,
+      mapMutationTypes.SET_SKI_TRACKS_VISIBILITY,
       mapMutationTypes.SET_NIVO_STATION_VISIBILITY,
       mapMutationTypes.SET_FLOWCAPT_VISIBILITY,
       mapMutationTypes.SET_MASSIFS_VISIBILITY

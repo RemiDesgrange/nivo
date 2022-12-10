@@ -60,6 +60,7 @@ export const actions = {
     commit(types.ADD_LAYER, this.$mapService.massifs)
     commit(types.ADD_LAYER, this.$mapService.flowcapt)
     commit(types.ADD_LAYER, this.$mapService.posteNivo)
+    commit(types.ADD_LAYER, this.$mapService.skiTracks)
     const layersWithInteratcions = ['flowcapt', 'posteNivo', 'massifs']
     layersWithInteratcions.forEach((e) => {
       commit(
@@ -84,7 +85,6 @@ export const actions = {
           }
         })
       // we want to be able to select features programmaticaly
-
       commit(
         types.ADD_INTERACTION,
         {
@@ -124,6 +124,7 @@ export const mutations = {
       .getArray()
       .find(l => l.get('name') === layer.get('name'))
     if (!isAlreadyExist) {
+      console.log(`Add ${layer.get('name')}`)
       this.$mapService.map.addLayer(layer)
     }
   },
@@ -219,6 +220,10 @@ export const mutations = {
   },
   [types.SET_NIVO_STATION_VISIBILITY] (state, value) {
     this.$mapService.posteNivo.setVisible(value)
+    this.$mapService.map.render()
+  },
+  [types.SET_SKI_TRACKS_VISIBILITY] (state, value) {
+    this.$mapService.skiTracks.setVisible(value)
     this.$mapService.map.render()
   },
   [types.SET_SLOPES_VISIBILITY] (state, value) {

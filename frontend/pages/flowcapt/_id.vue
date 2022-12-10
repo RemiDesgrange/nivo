@@ -31,19 +31,17 @@
               <dt>Dernier relevé</dt>
               <dd v-if="oldLastData(flowCaptData.lastdata)">
                 {{ flowCaptData.lastdata }}
-                <b-icon
+                <b-icon-x
                   id="lastDataIndicatorKo"
                   :style="{ color: 'red' }"
-                  icon="x"
                   font-scale="2"
                 />
               </dd>
               <dd v-else>
                 {{ flowCaptData.lastdata }}
-                <b-icon
+                <b-icon-check
                   id="lastDataIndicatorOk"
                   :style="{ color: 'green' }"
-                  icon="check"
                   font-scale="1.5"
                 />
               </dd>

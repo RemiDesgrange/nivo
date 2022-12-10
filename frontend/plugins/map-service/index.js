@@ -1,7 +1,7 @@
 import { Map as OlMap, View } from 'ol'
 import Select from 'ol/interaction/Select'
 import Collection from 'ol/Collection'
-import { BaseLayers, Slopes, FlowCapt, PosteNivo, Massifs } from './layer'
+import { BaseLayers, Slopes, FlowCapt, PosteNivo, Massifs, OpenSnowMapTracks } from './layer'
 
 class MapService {
   map = new OlMap({
@@ -17,6 +17,7 @@ class MapService {
   flowcapt = null
   posteNivo = null
   massifs = null
+  skiTracks = null
 
   #selectedFeatures = {
     flowcapt: {
@@ -44,6 +45,7 @@ class MapService {
     this.flowcapt = FlowCapt
     this.posteNivo = PosteNivo
     this.massifs = Massifs
+    this.skiTracks = OpenSnowMapTracks
     this.#store = store
   }
 
